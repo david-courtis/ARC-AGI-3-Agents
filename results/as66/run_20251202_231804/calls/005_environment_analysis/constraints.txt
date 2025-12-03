@@ -1,0 +1,4 @@
+- The blue border (Color 12) likely prevents movement up, left, and right within the main play area.
+- The pink bottom boundary (Color 10) likely prevents downward movement.
+- The thin cyan border (Color 9) further restricts movement outside the main blue boundary.
+- The newly appeared bottom bar (Color 14) at (56,8) will likely restrict any further downward movement of objects into that area.

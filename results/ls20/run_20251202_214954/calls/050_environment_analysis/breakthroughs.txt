@@ -1,0 +1,1 @@
+1. Conclusively confirmed that 'Block stack 1', 'Block stack 2', and 'Block L-shape' are solid, impassable walls/obstacles, as ACTION5 consistently failed to move objects through them, regardless of the moving object.

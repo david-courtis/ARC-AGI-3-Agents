@@ -79,7 +79,6 @@ def act(state: AgentState) -> AgentState:
             all_tools,
             tool_choice="required",
             parallel_tool_calls=False,
-            strict=True,
         ).invoke([system_message, *messages])
         messages.append(response)
 
@@ -169,9 +168,10 @@ def analyze_frame_delta(state: AgentState) -> AgentState:
     movements: list[str] = []
     state_changes: list[str] = []
 
-    for i in range(len(latest_frame.frame)):
-        for j in range(len(latest_frame.frame[i])):
-            for k in range(len(latest_frame.frame[i][j])):
+    # Use min to handle frames with different dimensions
+    for i in range(min(len(latest_frame.frame), len(previous_frame.frame))):
+        for j in range(min(len(latest_frame.frame[i]), len(previous_frame.frame[i]))):
+            for k in range(min(len(latest_frame.frame[i][j]), len(previous_frame.frame[i][j]))):
                 if latest_frame.frame[i][j][k] != previous_frame.frame[i][j][k]:
                     if j == 1:
                         state_changes.append("Change in heath indicator")

@@ -1,0 +1,3 @@
+- Cannot move into Bright Green (Void/Wall) areas.
+- Movement is quantized to 8-pixel increments (grid-aligned).
+- Play area is bounded rows ~2-6 and cols ~2-6.

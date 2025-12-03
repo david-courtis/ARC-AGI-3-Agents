@@ -1,0 +1,1 @@
+1. Confirmed that ACTION5's ineffectiveness in this frame is due to the complete depletion of move indicator dots (all red Color 5), explicitly linking action failure to game state rather than just physical obstruction.

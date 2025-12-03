@@ -1,0 +1,2 @@
+1. Confirmed that the 'movable_marker' (Color 11) is an independently movable object that can move even if the 'player_like_object' does not.
+2. The 'player_like_object' remaining stationary while the 'movable_marker' moved implies that ACTION5's effect on the 'player_like_object' can be conditional or it has a secondary effect on other objects if the primary target is blocked.

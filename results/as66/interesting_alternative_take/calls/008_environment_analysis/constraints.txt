@@ -1,0 +1,3 @@
+- Player (Shield) restricts movement to the 4 cardinal perimeter slots.
+- The Active Shield CANNOT enter the central play area.
+- Internal objects (Color 8) appear to move freely or under gravity/physics within the arena.

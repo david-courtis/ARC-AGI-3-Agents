@@ -1,0 +1,1 @@
+1. Confirmed that ACTION5 is context-dependent for interaction/selection/rotation, meaning its effect occurs only when certain conditions are met, such as being adjacent to a specific object or in a particular game state. Its failure implies no such condition was met in this frame.

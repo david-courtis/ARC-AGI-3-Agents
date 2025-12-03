@@ -1,0 +1,1 @@
+1. Confirmed that Color 0 (black) represents non-traversable hard boundaries or walls, specifically observed at the top edge of the playable area and in larger formations at the screen's outer edges.

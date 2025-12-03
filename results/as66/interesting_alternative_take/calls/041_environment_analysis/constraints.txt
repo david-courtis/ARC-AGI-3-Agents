@@ -1,0 +1,4 @@
+- Payload slides continuously in the cardinal direction of the Active Shield.
+- Payload is blocked by Green (Color 3) internal obstacles.
+- Payload is blocked by Blue (Color 1) perimeter walls.
+- Payload generally stops 'resting' against the object that blocked it.

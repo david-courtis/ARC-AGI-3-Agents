@@ -1,0 +1,1 @@
+1. Clarified behavior of 'Dynamic Bottom Bar/Fill' (Color 14) after ACTION1: it consistently appears as a 4x48 block at (4,8) (a section near the top-left of the bottom boundary), confirming its dynamic nature and responsiveness to vertical movement of the 'Moving Block'. This is a consistent 4x48 block at a specific horizontal segment triggered by ACTION1.

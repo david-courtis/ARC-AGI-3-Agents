@@ -1,0 +1,1 @@
+1. Confirmation that the static 'Black Recess' (Color 0) is a direct impediment for movement, as ACTION5, when attempting to move into its space (or directly next to it), resulted in no effect. This significantly solidifies its role as an unpassable obstacle.

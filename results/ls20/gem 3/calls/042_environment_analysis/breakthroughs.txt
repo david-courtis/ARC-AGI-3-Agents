@@ -1,0 +1,4 @@
+1. CONFIRMED WALL: Action 2 failure proves a solid boundary exists at Grid (4,7), directly below the player.
+2. DEAD END: The player is currently positioned at the very bottom of the central corridor. The only valid movement direction is UP (North) towards the Key.
+3. PUZZLE TOPOLOGY: Validated 'Key-Gated Spiral' layout. The player must move UP to collect the Key, then backtrack/loop around the entire map to approach the Red Gate from the North-West to reach the Goal.
+4. STARTING STATE CLARIFICATION: Stage 2 forces an immediate collection/backtrack sequence.

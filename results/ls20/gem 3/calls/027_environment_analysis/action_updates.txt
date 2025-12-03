@@ -1,0 +1,3 @@
+ACTION1: Move UP 8 pixels. Interact with Key (Collect) or Goal (Win if Key held).
+  Reason: Further confirmed by Stage 1 completion. The logic is robust.
+

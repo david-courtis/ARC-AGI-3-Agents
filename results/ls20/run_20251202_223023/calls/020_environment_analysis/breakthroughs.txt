@@ -1,0 +1,1 @@
+1. Confirmed that ACTION5's lack of effect on the move counter means that any attempt to move into an impassable boundary or occupied space does not consume a move. This is a crucial rule for gameplay mechanics.

@@ -1,0 +1,20 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 moves certain objects in the play area one unit 'up' (decreases their row/y coordinate).
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 causes a selected movable object (or objects) to move downwards by one unit (pixel/cell).
+  ACTION3: 0/3 consistent, 1/8 attempts
+  ACTION4: NO OBSERVATIONS YET
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2): Involved in ACTION2 action
+  - Color 9 rectangular block (8x6): Involved in ACTION2 action
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

@@ -1,0 +1,4 @@
+1. LEVEL TRANSITION CONFIRMED: Successfully completing the objective in Stage 1 loaded a new map (Stage 2) and reset the player position and UI move counter.
+2. NEW OBJECT: 'Red Block' (Color 15) identified at Grid (2,2). Its function (Wall/Hazard/Switch) is currently unknown but it marks a distinct path feature.
+3. PATH PUZZLE IDENTIFIED: Direct path to goal (Left) is blocked by void. The valid path requires a winding route (Right->Up->Left->Down) to collect the Key and reach the Goal.
+4. PERSISTENCE: The 'Key' mechanic is consistent; a new Key object exists in this level, matching the Goal's lock symbol.

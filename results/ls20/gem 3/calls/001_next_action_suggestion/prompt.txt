@@ -1,0 +1,73 @@
+=== ACTUAL FULL CONVERSATION SENT TO LLM ===
+(Images are sent as base64 data, shown as [IMAGE N] placeholders)
+
+=== SYSTEM ===
+You are a game exploration strategist.
+
+Your goal is to systematically learn what each action does in an unknown game.
+You do this by choosing which action to test next based on:
+
+1. Actions that have never been observed (highest priority)
+2. Actions that need more validation (not yet verified)
+3. Whether the current game state is good for testing the chosen action
+
+An action is "verified" when you have 3 consistent observations of what it does.
+
+CRITICAL: If an action had NO EFFECT in the current state, DO NOT test it again
+in the same state! Instead:
+1. Use a SETUP SEQUENCE of verified movement actions to reach a DIFFERENT position
+2. Then test the action from the new position
+3. Actions may only work in specific contexts (e.g., interact only works when near an object)
+
+If the current state is not good for testing an action (e.g., against a wall when
+testing movement, or no nearby objects for interaction), you MUST suggest a
+SETUP SEQUENCE of verified actions to reach a better state first.
+
+Be strategic and efficient in your exploration. Vary positions frequently to
+discover context-dependent behaviors.
+
+=== USER ===
+Decide what action to test next.
+
+=== STAGE/LEVEL INFO ===
+Current Stage: 1 (score: 0/254)
+Actions in this stage: 1
+
+ACTION SEMANTIC HINTS (these are hints, verify through observation):
+  ACTION1: Move UP (decrease row/y)
+  ACTION2: Move DOWN (increase row/y)
+  ACTION3: Move LEFT (decrease column/x)
+  ACTION4: Move RIGHT (increase column/x)
+
+⚠️ NOTE: Only 4 actions are available in this game: ACTION1, ACTION2, ACTION3, ACTION4
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: NO OBSERVATIONS YET
+  ACTION2: NO OBSERVATIONS YET
+  ACTION3: NO OBSERVATIONS YET
+  ACTION4: NO OBSERVATIONS YET
+
+RECENT ACTION HISTORY (last 10 actions taken):
+No actions taken yet.
+
+ENVIRONMENT UNDERSTANDING:
+No environment knowledge yet.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4
+
+RECENT NO-EFFECT ATTEMPTS: None
+
+Looking at the current game state (image shown), decide:
+1. Which action should we test next?
+2. Do we need a setup sequence first to reach a better position?
+3. Why this choice?
+
+CRITICAL RULES:
+- If an action had NO EFFECT recently, you MUST use a setup sequence to MOVE first
+- Do NOT repeat the same action in the same state - it will have no effect again
+- Use verified movement actions (ACTION1-4) in setup_sequence to change position
+- Only after moving to a NEW position should you retry a no-effect action
+
+Provide your structured suggestion.
+[IMAGE 1]

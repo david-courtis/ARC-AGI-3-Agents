@@ -1,0 +1,1 @@
+1. Identified Color 6 as a universal boundary color, meaning any space occupied by Color 6 prevents movement, whether it's an explicit block or the background.

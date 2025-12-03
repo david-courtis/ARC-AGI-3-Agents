@@ -1,0 +1,7 @@
+- Upward movement is constrained by the Color 8 (red) border at the top of the play area.
+- Downward movement is likely constrained by the Color 0 (black) and Color 7 (light green) border at the bottom.
+- Leftward movement is constrained by the left edge of the screen.
+- Rightward movement is constrained by the right edge of the screen.
+- ACTION5 had no effect because the object it intended to interact with or move was not in a state or position that allowed the action to produce a visible change.
+- The left edge of the screen definitively acts as an impassable boundary for horizontal movement for 'Playable Block 1' and 'Playable Block 2' as observed when these blocks attempt to move past it.
+- ACTION3 does not produce secondary effects (like UI changes or score) when moving 'Playable Block 1' (Color 12) and 'Playable Block 2' (Color 9) left, but it still successfully moves the blocks.

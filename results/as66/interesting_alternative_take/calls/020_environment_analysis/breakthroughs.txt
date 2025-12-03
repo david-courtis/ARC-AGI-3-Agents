@@ -1,0 +1,4 @@
+1. Confirmed ACTION3 = LEFT Gravity.
+2. Visual Evidence Correction: The moving payload is definitely Color 4 (Orange), contradicting the text log's claim of Color 8.
+3. Confirmed Collision Logic: The payload stops sliding exactly when it abuts a Green obstacle, confirming they are solid walls.
+4. Confirmed Physics: Gravity is applied immediately upon switching the Shield position, causing the payload to slide until blocked.

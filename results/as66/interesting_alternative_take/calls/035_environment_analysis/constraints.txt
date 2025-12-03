@@ -1,0 +1,5 @@
+- Green (Color 3) terrain blocks movement.
+- Blue (Color 1) perimeter walls block movement.
+- Pink (Color 14) perimeter shield ALLOWS movement (wrapping).
+- Movement is continuous 'sliding' until collision or wrap.
+- Payload maintained Y-coordinate (Row 48) while wrapping horizontally.

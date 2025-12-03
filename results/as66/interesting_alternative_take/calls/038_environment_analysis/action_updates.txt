@@ -1,0 +1,3 @@
+ACTION4: Gravity RIGHT / Wrap Gate: Moves Shield to Right. Sets gravity RIGHT. Objects slide RIGHT. If they hit the Pink Shield, they WRAP to the left.
+  Reason: Consistent observation of Shield positioning and subsequent payload movement direction.
+

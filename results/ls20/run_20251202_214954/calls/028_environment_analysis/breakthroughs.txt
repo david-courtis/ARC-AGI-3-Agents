@@ -1,0 +1,1 @@
+1. Confirmed conclusively that 'Block stack 1', 'Block stack 2', and 'Block L-shape' objects are impassable walls/obstacles, as repeated attempts to move past them (ACTION5) consistently result in no change to the moving object's position. This reinforces their role as static environmental barriers.

@@ -1,0 +1,5 @@
+- Objects can move upwards.
+- The dark green area (Color 8) acts as the primary movable space.
+- L-shaped Black Blocks (Color 0) act as fixed obstacles / boundaries.
+- The edges of the 'Light green play area' likely constrain movement.
+- Movement was blocked by some element, as ACTION5 had no effect.

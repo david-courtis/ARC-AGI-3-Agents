@@ -1,0 +1,2 @@
+1. Identified two new large rectangular block objects (Color 9 and Color 12) that are movable. These moved downwards and are distinct from the 'Purple Block Fragment' and 'Cyan Block Fragment' previously observed, suggesting different states or types of blocks exist.
+2. Clarified that 'Color 12' represents a movable block in the play area, which introduces a potential conflict with 'Goal Indicators' being Color 12 (orange) in the UI. This requires further investigation.

@@ -1,0 +1,17 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts
+  ACTION2: NO OBSERVATIONS YET
+  ACTION3: NO OBSERVATIONS YET
+  ACTION4: NO OBSERVATIONS YET
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+Recent Observations:
+  - No movable objects were identified based on this action, or they are obstructed.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

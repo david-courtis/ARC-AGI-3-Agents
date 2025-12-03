@@ -1,0 +1,1 @@
+1. ACTION4 can be a 'no-op' if its reset condition is not met and the player is at the top boundary. This extends the understanding of actions having no effect not just to perpetual no-ops (like ACTION5) but also to conditional actions when their movement component is blocked by a boundary.

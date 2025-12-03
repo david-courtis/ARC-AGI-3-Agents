@@ -1,0 +1,4 @@
+- Movement appears to be confined within the outermost green border.
+- Movement appears to be more strictly confined within the inner blue border.
+- The Color 8 rectangular block moved left without apparent obstruction.
+- The Color 8 rectangular block moved right without apparent obstruction, indicating free movement within the current bounds.

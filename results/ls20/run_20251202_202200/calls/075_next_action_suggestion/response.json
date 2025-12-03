@@ -1,0 +1,7 @@
+{
+  "target_action": "ACTION5",
+  "setup_sequence": [],
+  "reasoning": "ACTION5 has not been attempted at all, so it has the highest priority for initial testing. All other actions have at least one attempt.",
+  "expected_information_gain": "We expect to get a first observation of what ACTION5 does, or at least confirm that it has no visible effect under this specific state.",
+  "current_board_assessment": "The current board state is generic enough for a first attempt at an unattempted action. There are no specific conditions identified yet that would make it good or bad for testing ACTION5."
+}

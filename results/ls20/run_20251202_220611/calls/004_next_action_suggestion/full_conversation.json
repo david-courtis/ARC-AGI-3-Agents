@@ -1,0 +1,21 @@
+[
+  {
+    "role": "system",
+    "content": "You are a game exploration strategist.\n\nYour goal is to systematically learn what each action does in an unknown game.\nYou do this by choosing which action to test next based on:\n\n1. Actions that have never been observed (highest priority)\n2. Actions that need more validation (not yet verified)\n3. Whether the current game state is good for testing the chosen action\n\nAn action is \"verified\" when you have 3 consistent observations of what it does.\n\nCRITICAL: If an action had NO EFFECT in the current state, DO NOT test it again\nin the same state! Instead:\n1. Use a SETUP SEQUENCE of verified movement actions to reach a DIFFERENT position\n2. Then test the action from the new position\n3. Actions may only work in specific contexts (e.g., interact only works when near an object)\n\nIf the current state is not good for testing an action (e.g., against a wall when\ntesting movement, or no nearby objects for interaction), you MUST suggest a\nSETUP SEQUENCE of verified actions to reach a better state first.\n\nBe strategic and efficient in your exploration. Vary positions frequently to\ndiscover context-dependent behaviors."
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "Decide what action to test next.\n\nACTION SEMANTIC HINTS (these are hints, verify through observation):\n  ACTION1: Move UP (decrease row/y)\n  ACTION2: Move DOWN (increase row/y)\n  ACTION3: Move LEFT (decrease column/x)\n  ACTION4: Move RIGHT (increase column/x)\n  ACTION5: INTERACT/SELECT/ROTATE at current position\n\nCURRENT ACTION KNOWLEDGE STATUS:\n  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 causes a combined entity (two blocks, one Color 12 8x2 and one Color 9 8x6) to move 1 unit up within the defined play area.\n  ACTION2: NO OBSERVATIONS YET\n  ACTION3: NO OBSERVATIONS YET\n  ACTION4: NO OBSERVATIONS YET\n  ACTION5: NO OBSERVATIONS YET\n\nRECENT ACTION HISTORY (last 10 actions taken):\n  1. ACTION1: \u2713 EFFECT - Two rectangular blocks, one color 12 (8x2) and one color 9 (...\n\nENVIRONMENT UNDERSTANDING:\nObjects:\n  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action\n  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action\n\nVERIFIED ACTIONS (can use for setup): None\nPENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5\n\nRECENT NO-EFFECT ATTEMPTS: None\n\nLooking at the current game state (image shown), decide:\n1. Which action should we test next?\n2. Do we need a setup sequence first to reach a better position?\n3. Why this choice?\n\nCRITICAL RULES:\n- If an action had NO EFFECT recently, you MUST use a setup sequence to MOVE first\n- Do NOT repeat the same action in the same state - it will have no effect again\n- Use verified movement actions (ACTION1-4) in setup_sequence to change position\n- Only after moving to a NEW position should you retry a no-effect action\n\nProvide your structured suggestion."
+      },
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "[BASE64_IMAGE_DATA_OMITTED]"
+        }
+      }
+    ]
+  }
+]

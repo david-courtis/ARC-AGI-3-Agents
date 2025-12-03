@@ -1,0 +1,4 @@
+1. Confirmed that when ACTION1 does NOT move the Movable Block (Player), the 'Moving Irregular Block' (Color 12) AND the 'Moving Rectangular Block' (Color 13) both move to the LEFT. This is consistent with previous observations in specific conditional scenarios for ACTION1.
+2. Refined understanding of the Movable Block (Player) position: it did NOT move up, confirming ACTION1's conditional nature.
+3. The Dynamic Side Boundary (Right, Color 14, 4x48) at (8,56) DISAPPEARED due to ACTION1.
+4. A Dynamic Top Boundary (Color 14, 48x4) at (4,8) APPEARED due to ACTION1. This continues to support the pattern of dynamic boundary shifts for ACTION1 when the player is blocked.

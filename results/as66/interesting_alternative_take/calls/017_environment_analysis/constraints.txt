@@ -1,0 +1,4 @@
+- Payload slides in the direction of the Active Gravity Controller (Pink Bar) until blocked.
+- Green terrain blocks movement.
+- Outer perimeter blocks movement.
+- Movement is continuous (sliding) until collision, not step-by-step.

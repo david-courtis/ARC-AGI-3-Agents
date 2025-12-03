@@ -1,0 +1,3 @@
+ACTION5: ACTION5 has no currently observable effect on the environment or player entity. It may be a 'no-op', conditional, or its effect is always blocked in current game states.
+  Reason: After repeated observations of 'no effect', even when the player is not visibly blocked, it's safer to define ACTION5 as having no current observable effect rather than assuming a specific blocked movement.
+

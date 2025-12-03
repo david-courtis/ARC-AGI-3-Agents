@@ -1,0 +1,2 @@
+1. Confirmed 'Depleted Move Indicator Dots' (Color 5, red) represent zero remaining moves, indicating the game state is now critical or failed. This solidifies the game's turn-based or move-limited nature.
+2. The 'Small Purple Pixel' (Color 9) is now on top of the 'Yellow Block' (Color 11), suggesting the Yellow Block can interact with, pick up, or carry other objects/fragments.

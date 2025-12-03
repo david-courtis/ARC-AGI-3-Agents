@@ -1,0 +1,19 @@
+{
+  "game_id": "ls20-fa137e247ce6",
+  "n_transitions": 292,
+  "stats": {
+    "total_actions": 292,
+    "unique_states": 111,
+    "pruned_no_change": 5,
+    "pruned_duplicate": 177,
+    "solutions_found": 0,
+    "game_overs": 0
+  },
+  "generated_at": "2025-12-02T18:08:16.028783",
+  "available_actions": [
+    "ACTION1",
+    "ACTION2",
+    "ACTION3",
+    "ACTION4"
+  ]
+}

@@ -1,0 +1,2 @@
+- Upward movement is constrained by the Color 8 (red) border at the top of the play area.
+- Downward movement is likely constrained by the Color 0 (black) and Color 7 (light green) border at the bottom.

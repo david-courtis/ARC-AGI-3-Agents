@@ -1,0 +1,2 @@
+1. The movable player block, Color 11 (light gray) at (24,32) did NOT move with ACTION4, confirming that ACTION4's movement is conditional and can be blocked. This is a new constraint for ACTION4.
+2. The appearance of the Dynamic Side Boundary (Right, Color 14, 4x48) at (8,56) in conjunction with the player block's inability to move right after ACTION4 strongly suggests that this dynamic boundary is the direct cause of the blockage, rather than an internal obstacle. This clarifies a previous 'unconfirmed hypothesis' regarding ACTION5's blockage, and extends it to ACTION4.

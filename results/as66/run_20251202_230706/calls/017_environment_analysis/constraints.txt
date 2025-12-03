@@ -1,0 +1,3 @@
+- Movement is likely constrained by the outer border (light blue, dark blue, light green).
+- Movement might be constrained by the green 'Obstacles/Terrain' objects, preventing passage through them.
+- The pale pink line at the top appears to be a UI element and not a movement constraint for the player within the main play area.

@@ -1,0 +1,3 @@
+1. CONFIRMED GRAVITY MECHANIC: The position of the Pink Shield dictates the 'down' direction for the internal Grey Block. (Shield Left -> Block falls Left).
+2. SLIDING PHYSICS: The block moves multiple steps (sliding) in a single turn if the path is clear, rather than 1 tile per turn.
+3. DIRECT MAPPING: Controls are absolute directions (Left = Left Wall/Gravity), not rotational relative to current position.

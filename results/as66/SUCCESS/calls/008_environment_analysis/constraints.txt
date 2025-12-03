@@ -1,0 +1,3 @@
+- Agent moves via 'sliding' (continues until collision).
+- Agent is blocked by Green (Color 3) obstacles.
+- Agent is blocked by the border walls.

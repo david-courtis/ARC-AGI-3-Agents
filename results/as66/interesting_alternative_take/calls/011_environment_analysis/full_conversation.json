@@ -1,0 +1,101 @@
+[
+  {
+    "role": "system",
+    "content": "You are an environment analyst studying an unknown game world.\n\nYour SOLE FOCUS is understanding the ENVIRONMENT - not the actions.\n\nCRITICAL: YOUR CURRENT UNDERSTANDING MAY BE WRONG!\n- Previous object identifications and role hypotheses are TENTATIVE and may need correction\n- If action results contradict your current understanding, UPDATE IT\n- You can and SHOULD replace incorrect objects/roles with better interpretations\n- Every analysis is an opportunity to REFINE or CORRECT the environment model\n\nYou must discover and document:\n1. BOUNDARIES/WALLS - Where can entities NOT move? What stops movement?\n2. BACKGROUND - What is the base color/pattern? What areas are \"empty\"?\n3. OBJECTS - What distinct objects exist? What are their visual properties?\n4. OBJECT ROLES - Are some objects \"players\"? \"Goals\"? \"Obstacles\"? \"Collectibles\"?\n5. SPATIAL STRUCTURE - Is there a grid? Rooms? Paths? Corridors?\n6. INTERACTABLES - What objects can be interacted with? How do you know?\n7. UI ELEMENTS - Look for move counters, score displays, progress indicators!\n\nCRITICAL: Look for WALLS and BOUNDARIES!\n- If an object tried to move but couldn't, WHY?\n- Is there a border around the play area?\n- Are there internal walls or obstacles blocking movement?\n- What color/pattern indicates a wall vs empty space?\n\nIMPORTANT: UI ELEMENTS AND MOVE COUNTERS!\n- There are likely UI elements (dots, squares, lines) that track the number of SUCCESSFUL moves\n- These counters typically decrease or change with each move that has an EFFECT\n- When the counter runs out (e.g., all dots disappear), the game will FAIL and force a RESET\n- Look for patterns at the top, bottom, or sides of the screen that seem separate from the play area\n- Red dots, grey lines, or colored squares often serve as move/turn indicators\n\nEVIDENCE-BASED ANALYSIS:\n- Only make claims you have EVIDENCE for from observed state changes\n- If you're guessing without evidence, explicitly mark it as \"UNCONFIRMED HYPOTHESIS\"\n- When an action causes a state change, that's EVIDENCE - use it to confirm or refute hypotheses\n- No-effect actions also provide evidence about boundaries and constraints\n\nBe a detective. Make BREAKTHROUGHS in understanding. Don't just describe - ANALYZE.\nWhen you notice something new, explain its SIGNIFICANCE for gameplay.\nWhen previous understanding was WRONG, explicitly note the correction."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 1]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 2]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 3]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Action 4 rotates the active shield position Clockwise (Top -> Right)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 4]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed Control Scheme: Direct Directional Mapping. Action 1=Top, Action 2=Bottom, Action 4=Right. (Action 3 is inferred to be Left)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 5]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: The 'Active Shield' replaces the 'Inactive Wall' at the target location, swapping states."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left)."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Shield rotates between these 4 fixed positions rather than moving continuously."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player (Shield) restricts movement to the 4 cardinal perimeter slots."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: The Active Shield CANNOT enter the central play area."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Internal objects (Color 8) appear to move freely or under gravity/physics within the arena."
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "Analyze the environment in this game frame.\n\n=== STAGE/LEVEL INFO ===\nCurrent Stage: 1 (score: 0/254)\nActions in this stage: 5\n\n\nWHAT JUST HAPPENED:\nACTION3 had effect: The action moved the visible Pink Shield (Player) from the Bottom perimeter to the Left perimeter. S\nEvidence Status: STATE CHANGE OBSERVED - Use this as evidence!\n\nRECENT CHANGES OBSERVED (THIS IS EVIDENCE!):\nTotal: 429 pixels changed. Regions affected: lower_left_playarea (192), upper_left_playarea (112), lower_right_playarea (96), upper_right_playarea (16), top_ui (13) Changes in both play area and UI elements. Change bounding box: rows [0-59], cols [4-55]\n\nObject-level changes: APPEARED: 1 objects\n  + Color 14 rectangular block (4x48) at (8, 4)\nDISAPPEARED: 1 objects\n  - Color 14 rectangular block (48x4) at (56, 8)\nMOVED: 1 objects\n  ~ Color 8 rectangular block (4x4) at (28, 40) moved left\n\n\n=== ACTION ANALYSIS INSIGHTS (from previous LLM analysis of this action) ===\nFull Interpretation: The action moved the visible Pink Shield (Player) from the Bottom perimeter to the Left perimeter. Simultaneously, the internal Grey Block (Color 8) moved horizontally to the left by 12 pixels (3 steps of 4 pixels each) until it encountered an obstacle (Green/Orange cluster). This strongly suggests that the player's directional input controls both the specific wall the Shield occupies AND the direction of 'gravity' or force applied to the internal object (e.g., Shield Left = Gravity Left).\nWhy This Outcome: The 'Left' input was issued while the Shield was at the Bottom. The internal Grey Block had open space to its left. The game logic processed the input by moving the Shield to the Left and sliding the Block leftward until it hit a Green/Orange obstacle.\nUpdated Action Definition: Move LEFT: Relocates the Active Shield to the Left perimeter slot and applies a leftward force/movement to dynamic internal objects.\nEnvironment Updates Discovered:\n  - Confirmed Mechanic: 'Gravity/Directional Control'. The active shield position likely determines the gravitational pull for the internal block (Shield Left = Block falls Left).\n  - Movement Physics: The internal block moves continuously (multiple steps per turn) in the active direction until obstructed.\n  - Control Scheme Validation: Action 3 is confirmed as 'Left', completing the directional set (Up=1/Null, Down=2, Left=3, Right=4).\nObjects Involved: Pink Shield (Color 14), Grey Block (Color 8), Green/Orange Obstacles (Color 3/4), Blue Inactive Wall (Color 1)\n\n\u26a0\ufe0f IMPORTANT: The above insights were discovered by analyzing the action's effect.\nUse these insights to UPDATE your environment understanding!\n\n\nYOUR CURRENT ENVIRONMENT UNDERSTANDING (MAY BE WRONG - UPDATE IF NEEDED):\nBackground: Color 9 (dark red/brown)\nBorder: Yes (Color 3 (green)) - Thick green outer frame enclosing the play area. The inner edge of the frame contains 4 slots (Top, Bottom, Left, Right) that can be either Blue (Inactive) or Pink (Active).\nInternal walls/obstacles:\n  - Green (Color 3) clusters act as internal terrain/obstacles\n  - Green (Color 3) irregular clusters acting as terrain/obstacles\nKnown movement constraints:\n  - Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left).\n  - Shield rotates between these 4 fixed positions rather than moving continuously.\n  - Player (Shield) restricts movement to the 4 cardinal perimeter slots.\n  - The Active Shield CANNOT enter the central play area.\n  - Internal objects (Color 8) appear to move freely or under gravity/physics within the arena.\nIdentified objects:\n  - Active Shield: Color 14 (pink) Horizontal/Vertical Bar (4x48 pixels) (Role: player)\n  - Inactive Walls: Color 1 (blue) Horizontal/Vertical Bar (Role: wall)\n  - Goal / Receptacle: Color 0 (black) U-shaped structure (Role: goal)\n  - Auto-Moving Block: Color 8 (grey) Small Square (4x4) (Role: ball/payload)\n  - Collectible: Color 4 (orange) Small dot/cluster (Role: collectible)\n  - Turn Timer / Indicator: Color 13 (pink) Small horizontal dash (Role: UI Element)\nSpatial structure: Single-screen enclosed square arena with a 4-directional perimeter control system. Internal area contains static obstacles and dynamic moving objects.\n\n\u26a0\ufe0f IMPORTANT: The above understanding is TENTATIVE and based on limited observations.\nIf the action results CONTRADICT this understanding, you MUST update it!\nYou can REPLACE objects_identified entirely if the current list is wrong.\n\nPREVIOUS BREAKTHROUGHS:\n- The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system.\n- The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1).\n- Action 4 rotates the active shield position Clockwise (Top -> Right).\n- Confirmed Control Scheme: Direct Directional Mapping. Action 1=Top, Action 2=Bottom, Action 4=Right. (Action 3 is inferred to be Left).\n- The 'Active Shield' replaces the 'Inactive Wall' at the target location, swapping states.\n\nOPEN QUESTIONS TO INVESTIGATE:\n- What is the specific behavior of the Inactive (Blue) walls? Do they kill the object or just block it?\n- Does the 'Auto-Moving Block' follow gravity (always falls down) or does it bounce?\n- How do we interact with the Orange Collectible? Must the block touch it?\n- Does the Pink Shield bounce the block?\n\nCURRENT ACTION DEFINITIONS (ALSO TENTATIVE):\n  ACTION1: \"Move Active Shield to Top Perimeter\"\n  ACTION2: \"Move Active Shield to Bottom Perimeter\"\n  ACTION3: \"Move LEFT: Relocates the Active Shield to the Left perimeter slot and applies a leftward force/movement to dynamic internal objects.\"\n  ACTION4: \"Move Active Shield to Right Perimeter\"\n\nCRITICAL ANALYSIS TASKS:\n1. LOOK FOR WALLS/BOUNDARIES - If movement failed, identify what blocked it!\n2. What color is the BACKGROUND (empty space)?\n3. What distinct OBJECTS exist? What might their ROLES be?\n4. Are there patterns in the spatial layout?\n5. What movement CONSTRAINTS can you infer?\n6. LOOK FOR MOVE COUNTERS/UI ELEMENTS - Are there dots, squares, or lines that track moves?\n7. UNEXPLORED ELEMENTS: Which colors or sections of the grid have NOT been thoroughly analyzed yet? List specific colors or regions that need more investigation.\n8. DOMAIN DESCRIPTION: Provide a high-level conceptual description of the game. What type of game is this (puzzle, navigation, sokoban-like, etc.)? What appears to be the goal? How do the mechanics work together at a conceptual level?\n\nEVIDENCE-BASED REASONING:\n- State changes are EVIDENCE. Use them to CONFIRM or REFUTE hypotheses.\n- No-effect actions are EVIDENCE of boundaries, walls, or constraints.\n- If you have NO EVIDENCE for a claim, mark it as \"UNCONFIRMED HYPOTHESIS\"\n- Don't make uneducated guesses - only claim what you can support with evidence\n- If previous understanding was based on guessing and now contradicted by evidence, CORRECT IT\n\nUPDATING THE ENVIRONMENT MODEL:\n- Your objects_identified list REPLACES the previous one - include all objects you're confident about\n- If you now think an object has a different role, update the role_hypothesis\n- Add evidence_for_role explaining WHY you think an object has that role\n- If you realize a previous identification was WRONG, simply don't include it (or include corrected version)\n\nMake BREAKTHROUGHS! If you discover something new and significant, list it.\nIf previous understanding was WRONG, note the CORRECTION as a breakthrough.\n\nACTION DEFINITION UPDATES (BE VERY CONSERVATIVE):\nOnly suggest updates to action definitions if you have a DRASTIC new insight that fundamentally\nchanges the understanding of what the action does. Default to NOT suggesting updates.\n\nONLY suggest an update if:\n1. The current definition is completely WRONG or MISSING critical information\n2. You discovered something that CONTRADICTS the current definition\n3. You have HIGH CONFIDENCE based on EVIDENCE (not guessing)\n\nDefault: Leave suggested_action_updates as an EMPTY array unless truly necessary."
+      },
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "[BASE64_IMAGE_DATA_OMITTED]"
+        }
+      }
+    ]
+  }
+]

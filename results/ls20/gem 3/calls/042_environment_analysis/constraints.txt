@@ -1,0 +1,4 @@
+- Player blocked from moving SOUTH from (4,6) by boundary wall.
+- Player bounded Left and Right by internal voids at current position.
+- Movement restricted to Muted Green floor tiles.
+- Red Block at (1,1) acts as a conditional barrier.

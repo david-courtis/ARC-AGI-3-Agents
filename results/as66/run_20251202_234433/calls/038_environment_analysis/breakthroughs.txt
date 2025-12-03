@@ -1,0 +1,1 @@
+1. ACTION4 functionality clarified: ACTION4 successfully moved the player block (Color 11) 4 units to the left, which corrects the previous understanding of ACTION4 as moving right. This clarifies its primary function when unobstructed.

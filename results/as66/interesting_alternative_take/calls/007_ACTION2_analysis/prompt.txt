@@ -1,0 +1,621 @@
+=== ACTUAL FULL CONVERSATION SENT TO LLM ===
+(Images are sent as base64 data, shown as [IMAGE N] placeholders)
+
+=== SYSTEM ===
+You are a game analyst learning how an unknown game works.
+
+You observe state transitions (before/after frames) and analyze what actions do.
+You have NO prior knowledge of this game - base all conclusions on observed evidence only.
+
+Your job is to:
+1. Describe what happened when the action was taken
+2. Build/update a definition of what this action does
+3. Note any objects or environment features involved
+4. Track whether the action had any visible effect
+
+IMPORTANT - CURRENT UNDERSTANDING MAY BE WRONG:
+- The environment understanding provided is TENTATIVE and may be incorrect
+- Object identifications and role hypotheses could be wrong
+- If what you observe CONTRADICTS the current understanding, note this!
+- Your observations help REFINE or CORRECT the environment model
+
+IMPORTANT - UI ELEMENTS AND MOVE COUNTERS:
+- There are likely UI elements (dots, squares, lines) that count successful moves
+- When an action HAS EFFECT (moves something), the move counter typically decreases
+- Changes in UI elements (e.g., red dots disappearing) indicate move consumption, NOT action effects
+- Focus on what happened in the PLAY AREA, not just UI changes
+- Grid boundaries may result in looping interactions.
+- Running out of moves (counter reaches zero) causes game failure and reset
+
+Be precise and EVIDENCE-BASED. If you're uncertain, say so.
+Mark any guesses without evidence as uncertain.
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: The player is positioned at the bottom of a bounded playfield (Color 15/F background), facing upward towards green shape clusters (Color 3). The environment is static.
+Changes: No changes detected. The action had no visible effect on the game state.
+Objects changed: No object-level changes detected
+
+=== ASSISTANT ===
+[My Analysis] NO EFFECT
+
+Interpretation: The action resulted in no visible changes to the game state. The player character (black U-shape at the bottom) remained in its position at row 53, and no projectiles or movement occurred. Given the game's visual similarity to a fixed shooter (e.g., Space Invaders) or paddle game (Avatar at bottom, enemies/obstacles above), vertical movement is likely restricted or disabled by the game rules.
+Why this outcome: The game layout resembles a fixed-axis shooter or arcade game where the player is constrained to the bottom rows (horizontal movement only). Consequently, an input corresponding to 'Move UP' is ignored by the game logic or treated as a null action.
+Consistent: None
+
+=== USER ===
+[Previous Analysis] Action: ACTION4
+
+Context: The game appears to be a perimeter-defense or paddle game where the player controls a Pink Bar (Color 14) acting as a shield or reflector on the borders. The central playfield contains a static Black U-shape (Base) and Green enemies.
+Changes: Total: 397 pixels changed. Regions affected: upper_right_playarea (192), upper_left_playarea (96), lower_right_playarea (96), top_ui (13) Changes in both play area and UI elements. Change bounding box: rows [0-55], cols [8-59]
+Objects changed: APPEARED: 2 objects
+  + Color 13 rectangular block (13x1) at (0, 25)
+  + Color 14 rectangular block (4x48) at (8, 56)
+COLOR CHANGED: 1 objects
+  * Object at (4, 8): color 14 -> 12
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The action caused the Pink Rectangular Bar (Color 14), previously located at the top edge of the playfield, to disappear and reappear along the right edge (effectively rotating the 'active wall' or 'shield' 90 degrees clockwise). The Black U-shape (Color 0) and Green clusters (Color 3) remained static and did not move. A small Pink indicator (Color 13) also appeared in the top UI bezel.
+Why this outcome: The Pink Bar was at the top position. The 'Right' input caused it to shift to the next clockwise position (Right edge). The Black U-shape did not respond to movement inputs, suggesting it is a static base or target.
+Consistent: False
+
+=== USER ===
+Analyze the effect of action ACTION2.
+
+=== STAGE/LEVEL INFO ===
+Current Stage: 1 (score: 0/254)
+Actions in this stage: 4
+
+SEMANTIC HINT: ACTION2 is expected to mean "Move DOWN (increase row/y)" (but verify through observation!)
+
+This is the FIRST time observing this action.
+
+ENVIRONMENT UNDERSTANDING:
+⚠️ NOTE: This understanding is TENTATIVE and may be WRONG. If observations contradict it, the model should be UPDATED.
+
+BACKGROUND: Color 9 (dark red/brown)
+
+BORDER: Yes (Color 3 (green))
+  Description: The playfield is a central square surrounded by a thick frame. The frame consists of specific wall slots on the four cardinal directions (Top, Left, Right, Bottom) and corner blocks.
+
+SPATIAL STRUCTURE:
+  Enclosed square arena with a perimeter control system (4 directional slots for the shield).
+
+DOMAIN DESCRIPTION:
+  A perimeter-control action/puzzle game. The player controls a 'Active Shield' (Pink Bar) that slides along the four walls of a square arena. The goal is likely to protect the central Black U-shape structure or manipulate bouncing objects inside the arena by presenting the correct wall face (Active vs Inactive) to incoming threats.
+
+KEY BREAKTHROUGHS:
+  - The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system.
+  - The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1).
+  - Action 4 rotates the active shield position Clockwise (Top -> Right).
+
+UNEXPLORED ELEMENTS (need investigation):
+  - The Orange pixel at (17, 38) within the green cluster.
+  - The specific interaction rules between the internal 'Base' and the walls.
+
+MOVEMENT CONSTRAINTS:
+  - Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left).
+  - Shield rotates between these 4 fixed positions rather than moving continuously.
+
+INTERNAL WALLS/OBSTACLES:
+  - Green (Color 3) clusters act as internal terrain/obstacles
+
+IDENTIFIED OBJECTS (TENTATIVE - may be wrong!):
+  - Active Shield / Paddle: Color 14 (pink) Vertical Rectangular Bar (4x48 pixels) (Role hypothesis: player)
+      Evidence: This object moves (teleports/rotates) to different sides of the perimeter in response to user actions. It is currently on the Right edge.
+  - Inactive Wall Segments: Color 1 (blue) Rectangular Bars (Role hypothesis: wall)
+      Evidence: These occupy the Left, Top, and Bottom slots where the Active Shield is NOT present. They appear to be the 'closed' or 'inactive' state of the wall.
+  - Base / Structure: Color 0 (black) U-shape (Role hypothesis: goal)
+      Evidence: Centrally located, distinct shape, static. Likely the object the shield is meant to protect or contain.
+  - Terrain Clusters: Color 3 (green) Irregular blobs (Role hypothesis: obstacle)
+      Evidence: Static objects inside the play area that likely block movement of internal entities.
+  - Orange Spec: Color 4 (orange) Single pixel/small dot (Role hypothesis: collectible)
+      Evidence: Located inside a green terrain cluster. Distinct color suggests significance.
+  - Turn/Move Indicator: Color 13 (pink) Small dash (13x1 pixels) (Role hypothesis: UI Element)
+      Evidence: Located in the top bezel/border area (outside playfield). Appeared/Changed with the action.
+
+OPEN QUESTIONS:
+  - What happens if an entity inside the arena hits the Pink Active Shield vs the Blue Inactive Walls?
+  - Does the Orange spec (Color 4) have a function?
+  - Do the Green clusters block internal moving objects?
+  - What is the significance of the Pink UI dash at the top?
+
+Legacy Objects:
+  - Color 0 (Black U-shape, Player): Involved in ACTION1 action
+  - Pink Bar (Color 14): Involved in ACTION4 action
+  - Top Border Area: Involved in ACTION4 action
+  - Right Border Area: Involved in ACTION4 action
+
+Recent Observations:
+  - The game behaves like a fixed shooter/paddle game regarding vertical movement constraints.
+  - The Player Avatar is likely the Pink Bar (Color 14) on the perimeter, not the Black U-shape (Color 0).
+  - The Black U-shape appears to be a static structure (Base) to be defended.
+  - Movement is restricted to the perimeter (Top, Right, Bottom, Left positions).
+
+FRAME CHANGES (before → final state, pixel level):
+Total: 428 pixels changed. Regions affected: lower_right_playarea (192), upper_right_playarea (128), lower_left_playarea (96), top_ui (12) Changes in both play area and UI elements. Change bounding box: rows [0-59], cols [8-59]
+
+ASCII GRID (BEFORE ACTION):
+C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|D|D|D|D|D|D|D|D|D|D|D|D|D|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|E|E|E|E|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5
+
+ASCII GRID (AFTER ACTION - FINAL STATE):
+C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|D|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|4|4|4|4|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|8|8|8|8|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|4|4|4|4|4|4|4|4|4|4|4|4|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|F|F|F|F|0|0|0|0|F|F|F|F|F|F|F|F|4|4|4|4|F|F|F|F|4|4|4|4|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|0|0|0|0|0|0|0|0|0|0|0|0|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|1|1|1|1|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|F|1|1|1|1|3|3|3|C
+C|3|3|3|4|4|4|4|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|4|4|4|4|3|3|3|C
+C|3|3|3|4|4|4|4|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|4|4|4|4|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+C|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|C
+5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5|5
+
+DIFF GRID (. = unchanged, value = new color at that position):
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|D|D|D|D|D|D|.|.|.|.|.|.|.|.|.|.|.|.|.|D|D|D|D|D|D|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|1|1|1|1|.|.|.|.
+.|.|.|.|.|.|.|.|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|E|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+
+OBJECT-LEVEL ANALYSIS (Before → Final state, grouped by visual proximity/similarity):
+APPEARED: 1 objects
+  + Color 14 rectangular block (48x4) at (56, 8)
+DISAPPEARED: 1 objects
+  - Color 14 rectangular block (4x48) at (8, 56)
+MOVED: 1 objects
+  ~ Color 8 rectangular block (4x4) at (16, 40) moved down
+
+OBJECTS BEFORE ACTION:
+Detected 16 objects:
+
+Color 1: 1 objects
+  - 52x56 shape at row 4, col 4
+
+Color 3: 1 objects
+  - 62x62 shape at row 1, col 1
+
+Color 4: 7 objects
+  - 4x4 block at row 4, col 4
+  - 4x4 block at row 4, col 56
+  - 20x12 shape at row 8, col 32
+  - 20x20 shape at row 12, col 12
+  - 16x16 shape at row 28, col 36
+  - 4x4 block at row 56, col 4
+  - 4x4 block at row 56, col 56
+
+Color 5: 1 objects
+  - 64x1 block at row 63, col 0
+
+Color 8: 1 objects
+  - 4x4 block at row 16, col 40
+
+Color 12: 2 objects
+  - 25x63 shape at row 0, col 0
+  - 26x63 shape at row 0, col 38
+
+Color 13: 1 objects
+  - 13x1 block at row 0, col 25
+
+Color 14: 1 objects
+  - 4x48 block at row 8, col 56
+
+Color 15: 1 objects
+  - 48x48 shape at row 8, col 8
+
+ANIMATION SEQUENCE: This action produced 4 animation frames showing the motion.
+The images below show the FULL ANIMATION SEQUENCE - watch how objects move frame by frame!
+
+SEQUENTIAL FRAME ANALYSIS (changes between consecutive animation frames):
+
+--- Frame 0 → Frame 1 (32 pixels changed) ---
+Object Changes: MOVED: 1 objects
+  ~ Color 8 rectangular block (4x4) at (20, 40) moved down
+Diff Grid:
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+
+--- Frame 1 → Frame 2 (32 pixels changed) ---
+Object Changes: MOVED: 1 objects
+  ~ Color 8 rectangular block (4x4) at (24, 40) moved down
+Diff Grid:
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|F|F|F|F|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|8|8|8|8|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+
+--- Frame 2 → Frame 3 (12 pixels changed) ---
+Object Changes: No object-level changes detected
+Diff Grid:
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|D|D|D|D|D|D|.|.|.|.|.|.|.|.|.|.|.|.|.|D|D|D|D|D|D|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+
+I'm showing you a SEQUENCE of 5 LABELED images:
+1. IMAGE 1: Frame BEFORE the action
+2-5. IMAGEs 2-5: Animation frames showing the motion step by step
+
+⚠️ IMPORTANT: Analyze ALL animation frames to understand the FULL motion path!
+Objects may move multiple tiles - track their path through each frame.
+
+IMPORTANT INSTRUCTIONS:
+1. Think about changes at the OBJECT level, not just pixels!
+2. If there are MULTIPLE animation frames, track the FULL MOTION path of objects
+3. REASON about WHY this action produced THIS outcome in THIS context
+4. If the action had NO EFFECT, explain what context caused that (wall? edge? wrong object?)
+5. If the action HAD EFFECT, explain what context enabled that effect
+6. Only set update_definition=true if you need to CHANGE the definition. If the current definition is accurate, set update_definition=false.
+7. If an object changes position or features, analyze what ENVIRONMENTAL FEATURES limit/define/bound the change. What stopped the object? What caused the change to occur in that specific way? All needed information is visible in the environment.
+
+Analyze what happened and provide your structured analysis.
+📷 IMAGE 1: BEFORE ACTION (state prior to executing the action)
+[IMAGE 1]
+📷 IMAGE 2: ANIMATION FRAME 1 (intermediate motion)
+[IMAGE 2]
+📷 IMAGE 3: ANIMATION FRAME 2 (intermediate motion)
+[IMAGE 3]
+📷 IMAGE 4: ANIMATION FRAME 3 (intermediate motion)
+[IMAGE 4]
+📷 IMAGE 5: ANIMATION FRAME 4 (FINAL STATE after action)
+[IMAGE 5]

@@ -1,0 +1,3 @@
+1. Confirmed Grid (5,5) is a valid, walkable floor tile (Muted Green).
+2. Validated 'Clean Movement' hypothesis: The 129 pixel change count matches exactly 1 moved 8x8 object (64 new + 64 old cleared) + 1 UI pixel update.
+3. Established direct link between movement actions and Top-Left UI updates (Move Counter).

@@ -1,0 +1,27 @@
+- The movable black block can move downwards (as seen with ACTION2).
+- Movement is constrained by outer borders (Color 3, 10, 14, 2, 13, 5).
+- The movable black block can move left (as seen with ACTION3).
+- Movement appears to be confined within the bounds defined by the inner Color 14 border and dynamic side blocks.
+- Movement is confined within the bounds defined by the static inner Color 14 border and the dynamically appearing Color 14 side blocks.
+- The movable black block can move right (as seen with ACTION4).
+- Movement appears to be confined within the bounds defined by the inner static Color 14 border and dynamic side blocks.
+- The movable black block is blocked from moving in the direction intended by ACTION5. (UNCONFIRMED HYPOTHESIS: could be blocked by the existing dynamic right boundary, or the green 'landmass' next to it.)
+- The movable black block can move upwards (as seen with ACTION1).
+- The movable black block is blocked from moving in the direction intended by ACTION5 by the existing dynamic right boundary.
+- The movable block can move left by up to four units (as seen with ACTION4).
+- The movable block can move right by two units (as seen with ACTION3).
+- The movable block can move left by four units (as seen with ACTION4).
+- The movable block can move downwards (as seen with ACTION2).
+- The movable block is blocked from moving right by a dynamic right boundary (Color 14, 4x48).
+- The movable block can move upwards (as seen with ACTION1).
+- The movable block can move left by up to four units (as seen with ACTION4).
+- The movable block can move right by two units (as seen with ACTION3 and current ACTION4 observation).
+- The movable block is blocked from moving in the direction intended by ACTION5 by a dynamic right boundary (Color 14, 4x48).
+- The movable block's upward movement (ACTION1) can be blocked by an unknown element/constraint, causing other objects to move and different boundary changes to occur.
+- The movable block (Player) can move downwards (as seen with ACTION2).
+- The movable block (Player) can move left (as seen with ACTION3 and ACTION4).
+- The movable block (Player) can move right (as seen with ACTION4 and ACTION3 observation).
+- The movable block (Player) is blocked from moving in the direction intended by ACTION5 by the existing dynamic right boundary (Color 14, 4x48).
+- The movable block (Player) can move upwards (as seen with ACTION1 in previous observations).
+- The movable block (Player) can move left by up to four units (as seen with ACTION4).
+- The movable block (Player) can move right by two units (as seen with ACTION3 and ACTION4 observation).

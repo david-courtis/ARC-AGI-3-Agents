@@ -1,0 +1,3 @@
+- The aqua, blue, green, pink, and yellow borders likely prevent movement beyond the visible game screen.
+- The green 'landmass' blocks appear to be static obstacles, blocking movement through them.
+- The assumed 'player' block (Color 8) cannot move through the green 'landmass' blocks.

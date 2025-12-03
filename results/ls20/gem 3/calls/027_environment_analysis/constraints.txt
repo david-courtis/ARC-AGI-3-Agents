@@ -1,0 +1,4 @@
+- Cannot move into Bright Green (Color 1) background voids.
+- Movement is constrained to Muted Green (Color 3) floor tiles.
+- Must navigate around the central void to reach the Goal.
+- Movement resets/consumes the visual Move Counter dots at the top left.

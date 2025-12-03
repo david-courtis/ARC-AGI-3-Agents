@@ -1,0 +1,9 @@
+- Objects can move upwards.
+- The dark green area (Color 8) acts as the primary movable space.
+- L-shaped Black Blocks (Color 0) act as fixed obstacles / boundaries.
+- The edges of the 'Light green play area' likely constrain movement.
+- Movement was blocked by some element, as ACTION5 had no effect.
+- Movement was blocked by a boundary, obstacle, or another object, causing ACTION5 to have no effect.
+- The L-shaped block at the bottom left is a fixed obstacle.
+- The fragmented L-shaped pixels (Color 0) in the top center may also act as obstacles or be destroyable.
+- ACTION5 had no effect because all move indicator dots are depleted (red), indicating a game state where actions are no longer possible.

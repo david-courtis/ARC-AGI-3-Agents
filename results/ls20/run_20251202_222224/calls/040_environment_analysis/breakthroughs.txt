@@ -1,0 +1,2 @@
+1. Confirmed that ACTION2 successfully moves 'Playable Block 1' (Color 12) and 'Playable Block 2' (Color 9) downwards, solidifying their role as player-controlled or interactive blocks. This action also updated a pixel in the GUI.
+2. Identified that the 'lower_left_playarea' and 'top_ui' are distinct regions where changes can occur, indicating separate functional areas.

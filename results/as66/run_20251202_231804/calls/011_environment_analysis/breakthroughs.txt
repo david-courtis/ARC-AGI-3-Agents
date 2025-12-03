@@ -1,0 +1,2 @@
+1. Confirmed that ACTION4 causes the 'Moving Block' (Color 8) to move one unit to the right.
+2. Confirmation that the 'Dynamic Bottom Boundary/Fill' (Color 14) is a highly dynamic element, as ACTION4 caused its previous instance at (8,4) to disappear and a new instance to appear at (8,56). This further reinforces its role as a programmatic 'fill' or 'floor' that is responsive to player actions and can occupy different horizontal segments of the bottom boundary.

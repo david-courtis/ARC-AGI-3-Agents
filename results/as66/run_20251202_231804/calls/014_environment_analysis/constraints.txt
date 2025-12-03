@@ -1,0 +1,6 @@
+- The blue border (Color 12) prevents movement up, left, and right within the main play area.
+- The thin cyan border (Color 9) further restricts movement outside the main blue boundary.
+- The pink bottom boundary (Color 10) prevents immediate downward movement into its area.
+- The dynamically appearing Color 14 blocks at the bottom (e.g., at (56,8), (8,4), or (8,56)) will restrict downward movement into those specific areas, effectively acting as a temporary floor or obstacle depending on their position.
+- ACTION5 had NO EFFECT, indicating that the 'Moving Block' (Color 8) was blocked by an unknown constraint to perform this action.
+- The 'Black Recess' (Color 0) likely acts as a static internal obstacle, preventing movement through its space.

@@ -1,0 +1,2 @@
+- Player cannot move into Bright Green areas (walls/void).
+- Player stays within the Muted Green floor area.

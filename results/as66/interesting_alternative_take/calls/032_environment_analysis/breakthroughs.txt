@@ -1,0 +1,4 @@
+1. CONFIRMED WRAP MECHANIC: The 'Active Shield' (Pink) functions as a portal. Objects do not stop at the shield; they pass through and wrap to the opposite side of the screen.
+2. TOROIDAL TOPOLOGY: The playfield effectively becomes a cylinder in the direction of the active gravity.
+3. NON-EUCLIDEAN MOVEMENT: 'Gravity Up' can result in the object appearing lower on the screen due to wrapping from Top to Bottom.
+4. GRAVITY CONFIRMATION: Gravity pulls towards the Pink Shield. (Shield Top = Gravity Up).

@@ -1,0 +1,1 @@
+1. ACTION4 having no effect in this specific state (player at top boundary) confirms it's either a conditional right-move or a conditional reset, reinforcing earlier findings that actions can be no-ops due to boundaries when a condition is not met.

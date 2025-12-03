@@ -1,0 +1,3 @@
+ACTION1: Gravity UP / Wrap Gate: Moves Shield to Top. Sets gravity UP. ALLOWS WRAPPING: Objects slide UP, pass through the top edge, reappear at the bottom, and continue sliding up until blocked.
+  Reason: Observed payload wrapping from top to bottom after Action 1.
+

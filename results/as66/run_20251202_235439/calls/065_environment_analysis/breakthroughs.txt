@@ -1,0 +1,4 @@
+1. Confirmed the movable block can move two units to the right as observed by ACTION4.
+2. Confirmed that ACTION4 causes the current dynamic left boundary to disappear (4x48 at (8,4)) and a new dynamic right boundary to appear (4x48 at (8,56)).
+3. Confirmed that both the 'Moving Irregular Block' (Color 12) and the 'Moving Rectangular Block' (Color 13) move right in response to ACTION4 when the player also moves right. This reinforces their independent but interactive nature.
+4. ACTION4 explicitly moved the Movable Block (Player) two units to the right from (24,24) to (24,26).

@@ -1,0 +1,3 @@
+- Agent cannot move through Green obstacles.
+- Agent cannot move through Blue border walls.
+- Movement is 'sliding': The agent moves in a direction until it hits a wall/obstacle (based on Action 2 definition).

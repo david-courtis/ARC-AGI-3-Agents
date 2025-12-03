@@ -1,0 +1,4 @@
+- Player constrained to Muted Green floor tiles.
+- Cannot move into Bright Green (Color 1) areas (walls/holes).
+- Movement is quantized to 8 pixels per action.
+- Movement consumes 1 unit of the Move Counter resource.

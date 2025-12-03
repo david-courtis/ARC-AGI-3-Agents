@@ -1,0 +1,78 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: Move UP (Decrease Y). If the target position is occupied by a wall/obstacle, the move results in no position change.
+  ACTION2: 1/3 consistent, 1/8 attempts | Def: Move DOWN. The agent slides in the downward direction until it collides with an obstacle (e.g., green wall).
+  ACTION3: 1/3 consistent, 1/8 attempts | Def: Move LEFT. The agent slides left until it hits an obstacle (Green shape) or the wall. The Left Border lights up Pink to indicate the action.
+  ACTION4: NO OBSERVATIONS YET
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+⚠️ NOTE: This understanding is TENTATIVE and may be WRONG. If observations contradict it, the model should be UPDATED.
+
+BACKGROUND: Color 9 (Dark Red)
+
+BORDER: Yes (Color 12 (Blue) and Color 14 (Pink))
+  Description: The play area is enclosed by a wall. The outer rim is Green (Color 3). The inner rim is typically Blue (Color 12). However, specific sections of the inner rim change color to Pink (Color 14) dynamically, likely indicating the most recent movement direction.
+
+SPATIAL STRUCTURE:
+  Grid-based arena (64x64). Distinct floor (Dark Red) with scattered Green obstacles. Enclosed by a functional UI border.
+
+DOMAIN DESCRIPTION:
+  A 2D sliding puzzle game (ice-sliding mechanics). The player controls an orange block that slides across a dark red floor until it hits an obstacle or wall. The objective is likely to navigate through the green terrain obstacles to reach the black U-shaped goal. The borders act as a UI, highlighting the direction of movement.
+
+KEY BREAKTHROUGHS:
+  - Confirmed 'Sliding' Mechanics: The game is not step-by-step; the agent slides until collision.
+  - Identified UI Elements: The top and bottom borders contain dynamic elements (color changing bars) that likely track game state (moves/time).
+  - Identified Goal Candidate: The Black U-shape is the most likely objective.
+  - UI MECHANIC DISCOVERY: The inner border walls change color to Pink (Color 14) to indicate the last direction moved. (Left wall turned pink on Left move; Right wall turned off).
+  - Confirmed Movement Physics: Agent slid left and stopped at a Green obstacle, validating that internal green shapes are solid collision objects, despite the text generic description of hitting the 'wall'.
+
+UNEXPLORED ELEMENTS (need investigation):
+  - The specific pixel patterns in the top bar (Color 12/Magenta/Yellow marks) which likely encode the score or move count.
+
+MOVEMENT CONSTRAINTS:
+  - Agent cannot move through Green obstacles.
+  - Agent cannot move through Blue border walls.
+  - Movement is 'sliding': The agent moves in a direction until it hits a wall/obstacle (based on Action 2 definition).
+  - Agent moves via 'sliding' (continues until collision).
+  - Agent is blocked by Green (Color 3) obstacles.
+  - Agent is blocked by the border walls.
+
+INTERNAL WALLS/OBSTACLES:
+  - Green (Color 3) irregular patches acting as terrain obstacles
+  - Green (Color 3) irregular rocky/forest structures
+
+IDENTIFIED OBJECTS (TENTATIVE - may be wrong!):
+  - Agent: Color 8 (Orange) Square (4x4 pixels) (Role hypothesis: Player Character)
+      Evidence: Moves in response to actions. Visually distinct from background and static terrain.
+  - Terrain Obstacle: Color 3 (Green) Irregular blobs/structures (Role hypothesis: Obstacle)
+      Evidence: The agent stopped moving when it reached the green structure, preventing it from sliding all the way to the border wall.
+  - Goal: Color 0 (Black) U-shape / Cup (Role hypothesis: Target / Goal)
+      Evidence: Distinct unique shape, resembles a container or goal zone. Investigation needed to confirm win condition.
+  - Active Direction Indicator: Color 14 (Pink) Vertical Bar (4x48) (Role hypothesis: UI Input Feedback)
+      Evidence: A Pink bar appeared on the LEFT wall (x=8) when the agent moved LEFT. Simultaneously, a Pink bar disappeared from the RIGHT wall (x=56), suggesting the walls light up to show the active move direction.
+
+OPEN QUESTIONS:
+  - Does the 'Top UI' bar decrement to limit moves (puzzle limit) or increment (timer)?
+  - What happens when the agent overlaps the Black U-shape?
+
+Legacy Objects:
+  - Color 8 (Orange 4x4 Block - Likely Agent): Involved in ACTION1 action
+  - Color 4 (Green Objects - Walls): Involved in ACTION1 action
+  - Color 8 (Orange Agent): Involved in ACTION2 action
+  - Color 4 (Green Wall): Involved in ACTION2 action
+  - Color 14 (Pink Bar UI): Involved in ACTION2 action
+  - Color 12 (Blue Border): Involved in ACTION3 action
+
+Recent Observations:
+  - Movement mechanics appear to be 'sliding' (continuous movement until collision) rather than discrete single steps.
+  - A pink bar (Color 14) toggles between the top and bottom of the play area, likely serving as a turn indicator or state mechanism.
+  - Behavior Confirmation: Basic movement is sliding (continuous motion until collision).
+  - UI Correlation: The Pink position bar moves to the side of the screen corresponding to the agent's movement direction (Moved Left -> Bar appeared on Left).
+  - Map Correction: The object list reported a green shape at (28, 36) which seems incorrect or ghostly, as the agent passed through that space freely. Visual evidence confirms row 28 is a clear channel.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

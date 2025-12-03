@@ -1,0 +1,3 @@
+1. Confirmed Collision Physics: The payload (Orange Block) stopped moving when it hit a Green internal obstacle, proving that internal terrain is solid and blocks the sliding movement.
+2. Confirmed Gravity Direction: Action 4 sets gravity to RIGHT (Pink shield on right), causing rightward movement.
+3. Visual Confirmation of Payload: The moving object is definitively the Orange (Color 4) block, despite automated logs referencing Color 8.

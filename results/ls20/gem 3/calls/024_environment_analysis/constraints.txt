@@ -1,0 +1,3 @@
+- Player cannot move into Bright Green (Color 1) areas.
+- Movement is quantized effectively to the 8x8 grid.
+- Successful movement consumes 1 unit of the Move Counter.

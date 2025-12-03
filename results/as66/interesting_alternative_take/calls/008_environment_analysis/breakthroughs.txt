@@ -1,0 +1,2 @@
+1. Confirmed Control Scheme: Direct Directional Mapping. Action 1=Top, Action 2=Bottom, Action 4=Right. (Action 3 is inferred to be Left).
+2. The 'Active Shield' replaces the 'Inactive Wall' at the target location, swapping states.

@@ -26,7 +26,7 @@ class LangGraphThinking(Agent):
             "action": None,
             "context": [],
             "key_matches_door": False,
-            "llm": kwargs.get("llm", LLM.OPENAI_GPT_41),
+            "llm": kwargs.get("llm", LLM.OPENROUTER_GEMINI_25_FLASH),
             "thoughts": [],
             "frames": [],
             "latest_frame": None,  # type: ignore[typeddict-item]

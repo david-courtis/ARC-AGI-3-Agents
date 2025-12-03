@@ -1,0 +1,1 @@
+1. The exact width of the pale pink 'Move Indicator Bar' (Color 14) has been determined to be 12 pixels when fully visible. This confirms its size when 'full'.

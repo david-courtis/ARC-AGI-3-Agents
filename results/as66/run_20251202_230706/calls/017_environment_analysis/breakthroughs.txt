@@ -1,0 +1,3 @@
+1. A yellow (Color 13) horizontal line, 1 pixel high, is observed at the very bottom of the screen, extending full width. Its position as a distinct element outside the play area suggests it is a new UI element, potentially related to the 'Move Indicator Bar' (Color 14) or another game state indicator.
+2. The pale pink 'Move Indicator Bar' (Color 14) has changed its state from a 12-pixel wide line to a 10-pixel wide line. This confirms it shrinks, indicating move consumption. Specifically, two pixels have been removed from its right side.
+3. The total width of the play area (not including borders) is 16 pixels. This is deduced from the width of the red background between the internal dark blue side borders.

@@ -1,0 +1,606 @@
+=== ACTUAL FULL CONVERSATION SENT TO LLM ===
+(Images are sent as base64 data, shown as [IMAGE N] placeholders)
+
+=== SYSTEM ===
+You are a game analyst learning how an unknown game works.
+
+You observe state transitions (before/after frames) and analyze what actions do.
+You have NO prior knowledge of this game - base all conclusions on observed evidence only.
+
+Your job is to:
+1. Describe what happened when the action was taken
+2. Build/update a definition of what this action does
+3. Note any objects or environment features involved
+4. Track whether the action had any visible effect
+
+IMPORTANT - CURRENT UNDERSTANDING MAY BE WRONG:
+- The environment understanding provided is TENTATIVE and may be incorrect
+- Object identifications and role hypotheses could be wrong
+- If what you observe CONTRADICTS the current understanding, note this!
+- Your observations help REFINE or CORRECT the environment model
+
+IMPORTANT - UI ELEMENTS AND MOVE COUNTERS:
+- There are likely UI elements (dots, squares, lines) that count successful moves
+- When an action HAS EFFECT (moves something), the move counter typically decreases
+- Changes in UI elements (e.g., red dots disappearing) indicate move consumption, NOT action effects
+- Focus on what happened in the PLAY AREA, not just UI changes
+- Grid boundaries may result in looping interactions.
+- Running out of moves (counter reaches zero) causes game failure and reset
+
+Be precise and EVIDENCE-BASED. If you're uncertain, say so.
+Mark any guesses without evidence as uncertain.
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: The Player Block was positioned at row 48. The area above it (rows 40-47) consisted of open floor tiles (color 3).
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-55], cols [2-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (48, 40) moved up
+  ~ Color 9 rectangular block (8x6) at (50, 40) moved up
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The visible action was 'Move UP'. The large purple block with a cyan top (located at the bottom-right of the play area) moved upwards by 8 pixels (1 grid unit). A smaller face-like object at the top of the screeen did not move, suggesting the player controls the block.
+Why this outcome: The space immediately above the block (rows 40-47) was empty floor (color 3), allowing the movement to complete successfully.
+Consistent: None
+
+=== USER ===
+[Previous Analysis] Action: ACTION3
+
+Context: The player was positioned at grid coordinates (40, 40) on the Muted Green floor. The space to the left was open floor.
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [4-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (40, 40) moved left
+  ~ Color 9 rectangular block (8x6) at (42, 40) moved left
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The Player Character (Purple/Cyan block) moved 8 pixels (1 grid unit) to the LEFT. A move counter point in the top UI changed state.
+Why this outcome: The 8x8 area immediately to the left of the player (rows 40-47, cols 32-39) consisted of Muted Green floor tiles (Color 3), which are walkable. Since the path was unobstructed by Bright Green walls, the move executed successfully.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION4
+
+Context: The player started at grid coordinate x:4, y:5 (pixel column 32). The target position at x:5 (pixel column 40) was valid walkable floor.
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [6-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (40, 32) moved right
+  ~ Color 9 rectangular block (8x6) at (42, 32) moved right
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The visible action was 'Move RIGHT'. The Player Character (Purple block with Cyan top) moved 8 pixels (1 grid unit) to the right. The move counter in the top UI decreased by one unit.
+Why this outcome: The 8x8 grid space immediately to the right of the player (rows 40-47, columns 40-47) contained open Muted Green floor tiles (Color 3). Since there were no walls (Color 4) or obstacles blocking the path, the move executed successfully.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: The Player Character started at grid coordinates (5, 5). The target destination (5, 4) was empty. A Debris object exists at (4, 4), to the left of the target position.
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [8-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (40, 40) moved up
+  ~ Color 9 rectangular block (8x6) at (42, 40) moved up
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The action caused the Player Character to move UP by 1 grid unit (8 pixels). The movement was executed cleanly, consuming one 'move' resource from the UI counter.
+Why this outcome: The 8x8 grid cell immediately North of the player (rows 32-39, columns 40-47) was valid, empty Muted Green floor (Color 3). The Debris object located at (4,4) was adjacent to the path but did not obstruct it.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION2
+
+Context: The Player was at (4,5). The Debris obstacle was to the left at (4,4). The space below at (5,5) was open floor.
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [10-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (32, 40) moved down
+  ~ Color 9 rectangular block (8x6) at (34, 40) moved down
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The Player Character moved 8 pixels (1 grid unit) DOWN from grid position (4,5) to (5,5). The Move Counter in the top UI decremented.
+Why this outcome: The target grid cell immediately below the player (Row 5, Col 5; pixels y:40-47, x:40-47) consisted of empty Muted Green floor tiles (Color 3), which are walkable. There were no obstacles (walls, debris, hole) in the southern path.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION3
+
+Context: Player started at Grid (5,5). Debris obstacle was located at Grid (4,4) (North-West of start, North of destination). The destination at Grid (4,5) was empty floor. The action moved the player into column alignment with the debris and goal.
+Changes: Total: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [12-47]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (40, 40) moved left
+  ~ Color 9 rectangular block (8x6) at (42, 40) moved left
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The Player Character (Purple block with Cyan top) moved 8 pixels (1 grid unit) to the LEFT, from column 5 (pixel x:40) to column 4 (pixel x:32). The move counter in the top UI decreased by one unit.
+Why this outcome: The target grid cell to the immediate left (Row 5, Col 4) contained empty Muted Green floor tiles (Color 3), unobstructed by walls or debris. Since the path was clear, the movement executed successfully.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: Player interacting directly with an obstacle (Debris) for the first time.
+Changes: Total: 147 pixels changed. Regions affected: lower_right_playarea (128), lower_left_playarea (9), bottom_ui (9), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-62], cols [1-39]
+Objects changed: DISAPPEARED: 1 objects
+  - Color 9 rectangular block (2x2) at (32, 32)
+MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (40, 32) moved up
+  ~ Color 9 rectangular block (8x6) at (42, 32) moved up
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The Player Character moved UP (North) by 1 grid unit (8 pixels). The target tile (Row 4, Column 4) contained a Debris object. The Player successfully entered the tile, and the Debris object was removed (destroyed or collected) from the play area. The move consumed 1 Move Counter resource (top UI) and triggered a change in the Bottom UI (likely an inventory or score update).
+Why this outcome: The player was positioned at (Col 4, Row 5) facing UP. The adjacent tile at (Col 4, Row 4) contained a Debris object. The game logic defines Debris as 'breakable' or 'collectible' rather than solid, allowing the player to move into its space and clear it.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: The player is navigating a green room. Having previously collected the item at (4,4), the path North to the Goal at (4,2) is now clear. The current move takes the player into the empty space between their previous position and the Goal.
+Changes: Total: 129 pixels changed. Regions affected: upper_right_playarea (64), lower_right_playarea (64), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-39], cols [16-39]
+Objects changed: MOVED: 2 objects
+  ~ Color 12 rectangular block (8x2) at (32, 32) moved up
+  ~ Color 9 rectangular block (8x6) at (34, 32) moved up
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The visible action was 'Move UP'. The Player Character moved 8 pixels (1 grid unit) North from grid coordinate (4,4) to (4,3). The move counter in the Top UI decremented by one unit.
+Why this outcome: The Player was positioned at (4,4). The target tile immediately North at (4,3) consisted of empty Muted Green floor (Color 3). Since there were no walls or obstacles blocking the path, the movement executed normally as a standard step.
+Consistent: True
+
+=== USER ===
+[Previous Analysis] Action: ACTION1
+
+Context: Level Transition Event. The previous room was cleared. A new 8x8 grid room has loaded.
+Changes: Total: 1015 pixels changed. Regions affected: lower_left_playarea (402), upper_left_playarea (208), upper_right_playarea (192), lower_right_playarea (192), bottom_ui (13), top_ui (8) Changes in both play area and UI elements. Change bounding box: rows [2-62], cols [2-47]
+Objects changed: APPEARED: 3 objects
+  + Color 15 rectangular block (4x4) at (10, 10)
+  + Color 5 irregular shape (8x8) at (40, 8)
+  + Color 9 rectangular block (2x2) at (42, 10)
+DISAPPEARED: 2 objects
+  - Color 4 rectangular block (8x16) at (16, 16)
+  - Color 5 irregular shape (8x8) at (16, 32)
+MOVED: 3 objects
+  ~ Color 9 rectangular block (2x2) at (18, 34) moved down+left
+  ~ Color 12 rectangular block (8x2) at (24, 32) moved down+left
+  ~ Color 9 irregular shape (8x8) at (26, 32) moved down+left
+COLOR CHANGED: 1 objects
+  * Object at (62, 12): color 3 -> 14
+
+=== ASSISTANT ===
+[My Analysis] HAD EFFECT
+
+Interpretation: The Player moved UP (North) into the Goal tile. This triggered a successful level completion interaction (likely due to holding the Key), resulting in a complete level transition to a new room layout (Stage 2).
+Why this outcome: The Player was positioned at grid (4,3) directly below the Goal at (4,2). The Player possessed a Key (collected in previous steps) that matched the Goal's symbol. The 'Move UP' action brought the player into contact with the Goal, satisfying the win condition.
+Consistent: True
+
+=== USER ===
+Analyze the effect of action ACTION4.
+
+=== STAGE/LEVEL INFO ===
+Current Stage: 2 (score: 1/254)
+Actions in this stage: 1
+
+Stage History:
+  Stage 1: started at action 0, score=0
+  Stage 2: started at action 9, score=1
+
+SEMANTIC HINT: ACTION4 is expected to mean "Move RIGHT (increase column/x)" (but verify through observation!)
+
+YOUR CURRENT DEFINITION OF ACTION4:
+"Move the player object 8 pixels (1 grid unit) to the RIGHT (Positive X direction). Requires open floor (Color 3) in the target space."
+
+PREVIOUS OBSERVATIONS FOR THIS ACTION (1 total):
+  [1] HAD EFFECT (consistent)
+      Context: The player started at grid coordinate x:4, y:5 (pixel column 32). The target position at x:5 (pixel column 40) was valid walkable floor.
+      Interpretation: The visible action was 'Move RIGHT'. The Player Character (Purple block with Cyan top) moved 8 pixels (1 grid unit) to the right. The move counter in the top UI decreased by one unit.
+
+ENVIRONMENT UNDERSTANDING:
+⚠️ NOTE: This understanding is TENTATIVE and may be WRONG. If observations contradict it, the model should be UPDATED.
+
+BACKGROUND: Color 1 (Bright Green)
+
+BORDER: Yes (Color 1 (Bright Green))
+  Description: The play area is surrounded by a solid Bright Green void. This color acts as a universal 'wall' that blocks movement.
+
+SPATIAL STRUCTURE:
+  Winding Room Layout: Player starts at bottom-right-center (4,6). Goal is at bottom-left (2,6). A void separates them, forcing a path: Right -> Up -> Left -> Down. The path contains a Key (mid-path) and a Red Block (top-left corner).
+
+DOMAIN DESCRIPTION:
+  A grid-based puzzle game where the player navigates a maze-like room to collect a specific 'Key' item and then reach a 'Goal' tile to unlock the next level. Movement is quantized (8x8 grid) and uses a limited 'Move Counter' resource (time/steps). Areas outside the floor are voids (walls).
+
+KEY BREAKTHROUGHS:
+  - Confirmed 'Muted Green' is the walkable floor and 'Bright Green' is the boundary/wall.
+  - identified top-left UI dots as a localized move/time counter that updates with actions.
+  - Verified player object is a composite of Purple (body) and Cyan (top edge).
+  - Identified a specific small object (Purple/Black debris) at grid (4,4) directly North of the player's current position. This may be an obstacle.
+  - Confirmed ACTION3 (Move Left) moves the player 8 pixels.
+  - Confirmed movement logic aligns perfectly with an 8x8 pixel grid.
+  - Spatial mapping refined: Player is currently at grid (5,4). Debris is at (4,3). Goal is at (4,2). Hole is at column 2.
+  - Confirmed 'Move Counter' mechanism: The UI represents a finite resource (time or steps) that acts as a gameplay constraint.
+  - Internal Obstacle identified: A distinct 'Hole' (Bright Green void) exists at approx grid (2,2-3), narrowing the path on the left.
+  - CORRECTION: Debris object precise location confirmed at Grid (4,4) (previously estimated as 4,3). It is directly to the LEFT of the Player's current position (4,5).
+  - Confirmed Move Counter functionality: Top-left UI dots update (decrement) when a successful move occurs.
+  - Confirmed 'Hole' geometry: A 2-tile high vertical void at Column 2 (Rows 2 and 3).
+  - Player Position Update: Player successfully moved from (5,5) to (4,5).
+  - Confirmed Grid (5,5) is a valid, walkable floor tile (Muted Green).
+  - Validated 'Clean Movement' hypothesis: The 129 pixel change count matches exactly 1 moved 8x8 object (64 new + 64 old cleared) + 1 UI pixel update.
+  - Established direct link between movement actions and Top-Left UI updates (Move Counter).
+  - Confirmed alignment: Player (4,5), Debris (4,4), and Goal (4,2) are all on Column 4.
+  - Identified tactical situation: Only one tile (Debris) separates the Player from the path to the Goal.
+  - Verified clean movement: 129 pixel change confirms Player moved 8 pixels left into empty space without triggering other dynamic events.
+  - CRITICAL: The 'Debris' object is a COLLECTIBLE Item (Key/Fragment) that is added to the inventory upon entry.
+  - Interaction mechanic identified: Moving into occupied tile (Rule: Consumable items) -> Item removed from map -> Inventory updated.
+  - The symbol on the collected item matches the symbol on the Goal tile, implying a 'Lock and Key' mechanic.
+  - Player path to goal is now unobstructed.
+  - Confirmed Player position at Grid (4,3), directly South of the Goal at (4,2).
+  - Verified Goal object at (4,2) is a Yellow square with a Purple symbol.
+  - Visual confirmation that the symbol on the Goal tile is identical to the symbol of the collected Key (Inventory), strongly supporting a Lock/Key mechanic.
+  - Player is now positioned to attempt interaction with the Goal on the next Move Up.
+  - LEVEL TRANSITION CONFIRMED: Successfully completing the objective in Stage 1 loaded a new map (Stage 2) and reset the player position and UI move counter.
+  - NEW OBJECT: 'Red Block' (Color 15) identified at Grid (2,2). Its function (Wall/Hazard/Switch) is currently unknown but it marks a distinct path feature.
+  - PATH PUZZLE IDENTIFIED: Direct path to goal (Left) is blocked by void. The valid path requires a winding route (Right->Up->Left->Down) to collect the Key and reach the Goal.
+  - PERSISTENCE: The 'Key' mechanic is consistent; a new Key object exists in this level, matching the Goal's lock symbol.
+
+UNEXPLORED ELEMENTS (need investigation):
+  - The specific interaction properties of the Red Block (Color 15).
+  - The exact trigger area of the UI orange squares.
+
+MOVEMENT CONSTRAINTS:
+  - Player cannot move into Bright Green areas (walls/void).
+  - Player stays within the Muted Green floor area.
+  - Player moves 8 pixels (1 grid unit) per step.
+  - Cannot move into Bright Green (void/wall) areas.
+  - Must remain on Muted Green (floor) tiles.
+  - Cannot move into Bright Green (Void/Wall) areas.
+  - Movement is quantized to 8-pixel increments (grid-aligned).
+  - Play area is bounded rows ~2-6 and cols ~2-6.
+  - Player cannot move into Bright Green (Color 1) areas.
+  - Player movement is locked to 8-pixel grid steps.
+  - Movement consumes 'Move Counter' resources.
+  - Player confined to Muted Green (Color 3) regions.
+  - Player constrained to Muted Green floor tiles.
+  - Cannot move into Bright Green (Color 1) areas (walls/holes).
+  - Movement is quantized to 8 pixels per action.
+  - Movement consumes 1 unit of the Move Counter resource.
+  - Player constrained to Muted Green (Color 3) floor tiles.
+  - Debris at (4,4) likely blocks direct Northward movement from (4,5).
+  - Player cannot move into Bright Green areas.
+  - Movement consumes 1 Top-UI resource.
+  - Movement is quantized to 8-pixel steps.
+  - Movement is quantized effectively to the 8x8 grid.
+  - Successful movement consumes 1 unit of the Move Counter.
+  - Cannot move into Bright Green (Color 1) background voids.
+  - Movement is constrained to Muted Green (Color 3) floor tiles.
+  - Must navigate around the central void to reach the Goal.
+  - Movement resets/consumes the visual Move Counter dots at the top left.
+
+INTERNAL WALLS/OBSTACLES:
+  - Rectangular hole (Bright Green) inside the play area (approx grid x:2, y:2)
+  - Rectangular void (Bright Green) at grid relative x:2, y:2
+  - Possible small obstacle (Purple/Black debris) at grid relative x:4, y:4
+  - Rectangular void (Bright Green) approx 2x4 blocks on the left side (approx grid x:2, y:2-3)
+  - Solid Bright Green border blocking all movement outside the central room area
+  - Rectangular Void/Hole (Bright Green) at Grid (2,2) and (3,2)
+  - Possible isolated obstacle (Debris) at Grid (4,4) which might be pushable or solid
+  - Solid boundary walls at Row 1 (top), Col 1 (left), Col 6/7 (right), Row 7 (bottom)
+  - Rectangular Hole (Bright Green) at Grid Col 2, spanning Rows 2-3
+  - Debris object (Purple/Black) at Grid (4,4) acting as an obstacle
+  - Rectangular Void (Hole) at Grid Column 2, spanning Rows 2 and 3
+  - Debris Object at Grid (4,4) likely acts as an obstacle or interactable block
+  - Rectangular Hole/Void (Bright Green) at Grid Column 2, Rows 2-3
+  - The play area boundaries define a specific room shape (approx 6x5 walkable area)
+  - Bright Green void separating the Start (Col 4) and Goal (Col 2) columns
+  - Central void creating a winding 'S' or 'U' shaped corridor
+
+IDENTIFIED OBJECTS (TENTATIVE - may be wrong!):
+  - Player: Purple/Cyan 8x8 Composite Block (Role hypothesis: player)
+      Evidence: Controlled by actions; persists across levels; focus of camera/interaction.
+  - Goal: Yellow/Black/Purple 8x8 Square with keyhole symbol (Role hypothesis: goal)
+      Evidence: Identical to previous stage's goal which triggered level completion upon contact with Key.
+  - Key / Debris: Purple/Black Small irregular shape (Role hypothesis: collectible_key)
+      Evidence: Matches the object collected in Stage 1 that allowed Goal interaction. Located at the midpoint of the room's path.
+  - Red Block: Color 15 (Dark Red/Brown) Approx 8x8 Square (Role hypothesis: hazard_or_obstacle)
+      Evidence: New object appearing in Stage 2. Distinct warning color. Located at a corner of the path (Grid 2,2).
+  - Move Counter: Red/Grey Row of dots (Role hypothesis: resource_limit)
+      Evidence: Refilled/Reset upon entering Stage 2. Decrements with moves.
+  - Level Indicator / Score: Orange (Color 9) 3 small squares (Role hypothesis: ui_indicator)
+      Evidence: Appears in top-right UI area, distinct from playfield objects.
+
+OPEN QUESTIONS:
+  - What is the function of the Red Block? Is it a hazard (death on contact) or just a wall?
+  - Did the player keep the key from the previous level (indicated by UI) or is that UI showing 'Key Needed'?
+  - What do the 3 Orange squares in the top right UI represent? (Lives? Level count?)
+
+Legacy Objects:
+  - Player Block (Purple/Cyan 8x8 shape): Involved in ACTION1 action
+  - Player Character (Purple/Cyan block): Involved in ACTION3 action
+  - Top UI Move Counter: Involved in ACTION3 action
+  - Move Counter (Top UI): Involved in ACTION4 action
+  - Player Character: Involved in ACTION1 action
+  - Move Counter: Involved in ACTION1 action
+  - Debris (Row 4, Col 4): Involved in ACTION1 action
+  - Bottom UI Element: Involved in ACTION1 action
+  - Goal/Lock: Involved in ACTION1 action
+  - Key (Inventory): Involved in ACTION1 action
+
+Recent Observations:
+  - Player position reset to (4,6) (pixels 32,48) in the new room.
+  - New Goal identified at grid (2,6) (pixels 16,48).
+  - New Collectible/Debris identified at grid (4,4) (pixels 32,32).
+  - New Object Type: Red Block (Color 15) appeared at grid (2,2) (pixels 16,16). Function unknown (likely hazard or switch).
+  - New Path Structure: Winding path connecting Player -> Debris -> Red Block -> Goal.
+
+FRAME CHANGES (before → final state, pixel level):
+NO CHANGES
+
+ASCII GRID (BEFORE ACTION):
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|8|8|4|4|8|8|4|4|8|8|4|4
+4|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|4|4|4|4|4|4|8|8|4|4|8|8|4|4|8|8|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|9|9|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|9|9|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|0|0|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|0|0|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|5|5|5|5|5|5|4|4|4|4|4|4|4|4|C|C|C|C|C|C|C|C|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|5|5|5|5|5|5|4|4|4|4|4|4|4|4|C|C|C|C|C|C|C|C|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|9|9|5|5|5|5|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|9|9|5|5|5|5|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|5|5|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|5|5|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|0|0|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|0|0|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|E|E|E|E|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+
+ASCII GRID (AFTER ACTION - FINAL STATE):
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|8|8|4|4|8|8|4|4|8|8|4|4
+4|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|F|4|4|4|4|4|4|4|8|8|4|4|8|8|4|4|8|8|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|F|F|F|F|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|9|9|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|9|9|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|0|0|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|0|0|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|0|0|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|5|5|5|5|5|5|4|4|4|4|4|4|4|4|C|C|C|C|C|C|C|C|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|5|5|5|5|5|5|4|4|4|4|4|4|4|4|C|C|C|C|C|C|C|C|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|9|9|5|5|5|5|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|9|9|5|5|5|5|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|5|5|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|5|5|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|0|0|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|5|5|0|0|0|0|0|0|4|4|4|4|4|4|4|4|9|9|9|9|9|9|9|9|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|3|4|4|4|4|4|4|4|4
+4|9|9|9|4|4|4|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|0|0|0|0|0|0|4|4|4|4|4|E|E|E|E|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|3|3|3|3|4|4|4|4|4|4|4|4|4|4|4|4|4
+4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4|4
+
+DIFF GRID (. = unchanged, value = new color at that position):
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.
+
+OBJECT-LEVEL ANALYSIS (Before → Final state, grouped by visual proximity/similarity):
+No object-level changes detected
+
+OBJECTS BEFORE ACTION:
+Detected 20 objects:
+
+Color 3: 8 objects
+  - 48x48 shape at row 8, col 8
+  - 4x1 block at row 62, col 17
+  - 4x1 block at row 62, col 22
+  - 4x1 block at row 62, col 27
+  - 4x1 block at row 62, col 32
+  - 4x1 block at row 62, col 37
+  - 4x1 block at row 62, col 42
+  - 4x1 block at row 62, col 47
+
+Color 4: 1 objects
+  - 64x64 shape at row 0, col 0
+
+Color 5: 1 objects
+  - 8x8 shape at row 40, col 8
+
+Color 8: 3 objects
+  - 2x2 block at row 1, col 52
+  - 2x2 block at row 1, col 56
+  - 2x2 block at row 1, col 60
+
+Color 9: 4 objects
+  - 2x2 block at row 24, col 32
+  - 2x2 block at row 42, col 10
+  - 8x6 block at row 42, col 24
+  - 3x3 block at row 54, col 1
+
+Color 12: 1 objects
+  - 8x2 block at row 40, col 24
+
+Color 14: 1 objects
+  - 4x1 block at row 62, col 12
+
+Color 15: 1 objects
+  - 4x4 block at row 10, col 10
+
+I'm showing you 2 LABELED images:
+1. IMAGE 1: The frame BEFORE the action
+2. IMAGE 2: The frame AFTER the action (final state)
+
+IMPORTANT INSTRUCTIONS:
+1. Think about changes at the OBJECT level, not just pixels!
+2. If there are MULTIPLE animation frames, track the FULL MOTION path of objects
+3. REASON about WHY this action produced THIS outcome in THIS context
+4. If the action had NO EFFECT, explain what context caused that (wall? edge? wrong object?)
+5. If the action HAD EFFECT, explain what context enabled that effect
+6. Only set update_definition=true if you need to CHANGE the definition. If the current definition is accurate, set update_definition=false.
+7. If an object changes position or features, analyze what ENVIRONMENTAL FEATURES limit/define/bound the change. What stopped the object? What caused the change to occur in that specific way? All needed information is visible in the environment.
+
+Analyze what happened and provide your structured analysis.
+📷 IMAGE 1: BEFORE ACTION (state prior to executing the action)
+[IMAGE 1]
+📷 IMAGE 2: AFTER ACTION (final state after executing the action)
+[IMAGE 2]

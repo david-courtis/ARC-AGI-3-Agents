@@ -1,0 +1,7 @@
+{
+  "target_action": "ACTION1",
+  "setup_sequence": [],
+  "reasoning": "ACTION4 has recently had multiple 'NO EFFECT' instances and should not be retested in the current state without a setup sequence. ACTION5 also had a 'NO EFFECT' recently and should be tested with different objects or after re-positioning. ACTION3 needs more validation but has fewer attempts than ACTION1 and ACTION4 and has the same consistency as ACTION1. ACTION1 has only 1 consistent observation but 11 attempts and it's important to increase its consistency to try and verify it. It also has a unique 'reset' condition that is important to understand. Since it had an effect recently, there is a chance it will have an effect again.",
+  "expected_information_gain": "To get closer to verifying ACTION1 by observing another consistent effect or to understand the conditions under which it causes a game reset.",
+  "current_board_assessment": "There are several objects present in the current state that have been involved in ACTION1 previously, making it a suitable state to retest ACTION1."
+}

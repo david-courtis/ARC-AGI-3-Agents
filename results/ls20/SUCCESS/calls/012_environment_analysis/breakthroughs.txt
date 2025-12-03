@@ -1,0 +1,4 @@
+1. Discovered 'Depleted Move Indicator Dots' (Color 5, red), confirming the move counter mechanism tracks consumed moves by changing their color.
+2. Identified a new object type: 'Yellow Block' (Color 11), a composite object containing Color 0 and Color 9 pixels, suggesting objects can combine or carry others.
+3. The previous 'Purple Block' and 'Cyan Block' have drastically reduced in size (to 1x2 and 1x2 pixels respectively), indicating they are either broken down, transformed, or represent a different state of the original blocks. This suggests blocks are not static in their initial forms and can be manipulated or consumed.
+4. The L-shaped blocks (Color 0) appear to be breaking down or fragmenting into smaller black pixels, suggesting they might be destroyable or can change shape over time/interaction.

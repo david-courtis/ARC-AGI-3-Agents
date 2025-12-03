@@ -1,0 +1,1 @@
+1. Confirmed that the player entity (Color 12 and Color 9) is currently immovably pressed against the upper Color 0 boundary/top edge of the Color 7 play area, explaining why ACTION5 (which attempts upward movement) always fails. This solidifies the role of Color 0 and the top edge as hard, non-traversable boundaries.

@@ -1,0 +1,4 @@
+1. ACTION1 moves the movable Color 11 (light gray) rectangular block two units upwards.
+2. ACTION1 causes the Dynamic Side Boundary (Right, Color 14, 4x48) to DISAPPEAR.
+3. ACTION1 causes a Dynamic Top Boundary (Color 14, 48x4) to APPEAR at (4,8).
+4. ACTION1 causes the Moving Irregular Block (Color 12) and Moving Rectangular Block (Color 13) to move left by an unknown amount (implied by previous observation of movement to the left and this action moving them left).

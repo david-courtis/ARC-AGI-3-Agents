@@ -1,0 +1,5 @@
+- Payload slides continuously in the direction of gravity until blocked.
+- Gravity direction is determined by the position of the Pink Shield (Bottom = Down).
+- Green obstacles (Color 3) are solid and block movement/support the payload.
+- Perimeter walls block movement.
+- Payload must enter Goal from the open side (Right).

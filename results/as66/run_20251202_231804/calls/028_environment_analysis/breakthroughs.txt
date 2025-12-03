@@ -1,0 +1,1 @@
+1. Confirmed that the 'Moving Block' (Color 8) was blocked from moving downward by ACTION2. This indicates a new, currently unknown, constraint to downward movement beyond the previously identified floor elements. It could be an ephemeral obstacle, a specific interaction with another object, or simply its current position preventing further downward travel.

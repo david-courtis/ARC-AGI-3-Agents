@@ -1,0 +1,3 @@
+ACTION4: Attempts to move 'Block Stack 1' in a specific direction (not yet determined, but blocked in current context). Does not consume a move if blocked.
+  Reason: ACTION4 had no effect and did not consume a move, indicating it was a blocked movement attempt consistent with other blocked actions.
+

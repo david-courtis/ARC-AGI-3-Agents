@@ -1,0 +1,5 @@
+- Payload slides in the cardinal direction of the Active Pink Shield (Gravity).
+- Green (Color 3) internal blocks are solid and stop movement.
+- Blue (Color 1) perimeter walls are solid and stop movement.
+- Pink (Color 14) perimeter shield is permeable (Wrap Gate).
+- Movement is continuous until a collision occurs.

@@ -1,0 +1,2 @@
+1. Confirmed ACTION1 causes the 'Moving Block' (Color 8) to move one unit upwards.
+2. Clarified behavior of the 'Dynamic Bottom Bar/Fill' (Color 14): after ACTION1, it appears at (4,8) (a section near the top-left of the bottom boundary), confirming its dynamic nature and responsiveness to vertical movement of the 'Moving Block'.

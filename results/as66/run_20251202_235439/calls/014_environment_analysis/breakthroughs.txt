@@ -1,0 +1,2 @@
+1. Identified new movement constraint: ACTION5 had no visible effect, indicating the movable black block was blocked from moving. This is strong evidence of a boundary or internal obstacle preventing movement in the direction of ACTION5. The exact reason (dynamic border vs. internal obstacle) is still an open question.
+2. Refined understanding of movement constraints to include explicit blockage by an unknown element/boundary for ACTION5.

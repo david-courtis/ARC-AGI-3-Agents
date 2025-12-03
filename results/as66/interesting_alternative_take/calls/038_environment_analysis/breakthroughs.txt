@@ -1,0 +1,3 @@
+1. Confirmed Gravity/Movement Dynamic: Action 4 moved Shield to Right -> Gravity became Right -> Payload slid Right.
+2. Confirmed Collision Physics: The payload slid right until it hit a Green Obstacle (Color 3) at approx col 44. It did NOT wrap in this specific instance because an internal obstacle blocked the path to the edge.
+3. Level Design Pattern: 'Catcher' blocks. The Green block at (48, 44) appears placed specifically to stop the payload at the correct X-coordinate for a future vertical alignment move.

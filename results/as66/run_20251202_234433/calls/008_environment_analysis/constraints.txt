@@ -1,0 +1,4 @@
+- The multi-colored borders (aqua, blue, green, pink, yellow) likely prevent movement beyond the visible game screen.
+- The green 'landmass' blocks appear to be static obstacles, blocking movement through them.
+- The assumed 'player' block (Color 8) cannot move through the green 'landmass' blocks.
+- The assumed 'player' block changes color (from Color 14 to Color 12, or just Color 8 here) upon successful movement, implying a state change associated with movement. (UNCONFIRMED HYPOTHESIS: More observation needed to confirm the exact color change pattern of the player block, as it was described as Color 14 changing to Color 12, but is now Color 8 and moved.)

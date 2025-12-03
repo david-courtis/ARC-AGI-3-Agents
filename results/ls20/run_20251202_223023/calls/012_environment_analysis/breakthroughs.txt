@@ -1,0 +1,2 @@
+1. Confirmed that ACTION5's lack of effect implies a movement constraint. Specifically, attempting to move in the direction of ACTION5 was blocked by an obstacle or boundary, as there were no UI changes (e.g., move consumption). This suggests that movement attempts into blocked spaces do not consume a move.
+2. The absence of a move counter change when ACTION5 had no effect indicates that only successful or meaningful actions consume a move. Failed actions (blocked movements) do not cost a turn.

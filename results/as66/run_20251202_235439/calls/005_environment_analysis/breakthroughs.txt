@@ -1,0 +1,5 @@
+1. Confirmed the 4x4 black block as a movable player/game piece due to observed movement by ACTION2.
+2. Identified a 'Changing Block' (originally Color 14, now Color 12) at (4,8) which changes color as a result of ACTION2, suggesting an interactive element, switch, or counter.
+3. Discovery of a complex, multi-layered border system including Color 10 (light blue), Color 14 (dark blue), Color 3 (green), Color 13 (light pink), Color 2 (yellow), and Color 5 (magenta).
+4. Evidence that some border elements can 'appear' dynamically, specifically the Color 14 rectangular block (48x4) at (56,8) which strongly suggests the right border appeared as a consequence of ACTION2. This implies boundaries are not always static.
+5. Refined understanding of the 'bottom' area, now identifying a distinct Color 13 (light pink) bar (48x1) and a Color 3 (green) bar (48x1) likely serving as a floor or critical boundary within the playable space.

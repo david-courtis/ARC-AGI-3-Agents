@@ -1,0 +1,3 @@
+ACTION5: ACTION5 attempts to move player-controlled blocks horizontally, but was blocked by the implicit screen boundary.
+  Reason: ACTION5 had no effect, and given the spatial layout with defined top/bottom borders, it's highly probable that left/right movement is constrained by the screen edges. This suggests ACTION5 is a horizontal movement command that was blocked.
+

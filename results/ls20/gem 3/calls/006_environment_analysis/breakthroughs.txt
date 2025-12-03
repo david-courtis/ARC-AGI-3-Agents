@@ -1,0 +1,3 @@
+1. Identified a specific small object (Purple/Black debris) at grid (4,4) directly North of the player's current position. This may be an obstacle.
+2. Confirmed ACTION3 (Move Left) moves the player 8 pixels.
+3. Confirmed movement logic aligns perfectly with an 8x8 pixel grid.

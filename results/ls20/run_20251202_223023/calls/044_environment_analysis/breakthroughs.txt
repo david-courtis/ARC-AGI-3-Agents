@@ -1,0 +1,1 @@
+1. Confirmed that attempting ACTION4 had no effect, implying a movement constraint in the direction attempted by ACTION4. This also reinforces the rule that blocked movements do not consume a move, as the move counter was unaffected.

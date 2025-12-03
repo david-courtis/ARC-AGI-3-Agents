@@ -1,0 +1,2 @@
+1. Confirmed directional movement for the player block (Color 8) towards the right.
+2. The Color 14 UI element has been observed to move from the 'left' side to the 'right' side (from (8,4) to (8,56)), indicating it's a dynamic UI component that can shift position, possibly reflecting a different game state or turn.

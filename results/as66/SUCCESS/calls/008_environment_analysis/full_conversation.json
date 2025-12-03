@@ -1,0 +1,69 @@
+[
+  {
+    "role": "system",
+    "content": "You are an environment analyst studying an unknown game world.\n\nYour SOLE FOCUS is understanding the ENVIRONMENT - not the actions.\n\nCRITICAL: YOUR CURRENT UNDERSTANDING MAY BE WRONG!\n- Previous object identifications and role hypotheses are TENTATIVE and may need correction\n- If action results contradict your current understanding, UPDATE IT\n- You can and SHOULD replace incorrect objects/roles with better interpretations\n- Every analysis is an opportunity to REFINE or CORRECT the environment model\n\nYou must discover and document:\n1. BOUNDARIES/WALLS - Where can entities NOT move? What stops movement?\n2. BACKGROUND - What is the base color/pattern? What areas are \"empty\"?\n3. OBJECTS - What distinct objects exist? What are their visual properties?\n4. OBJECT ROLES - Are some objects \"players\"? \"Goals\"? \"Obstacles\"? \"Collectibles\"?\n5. SPATIAL STRUCTURE - Is there a grid? Rooms? Paths? Corridors?\n6. INTERACTABLES - What objects can be interacted with? How do you know?\n7. UI ELEMENTS - Look for move counters, score displays, progress indicators!\n\nCRITICAL: Look for WALLS and BOUNDARIES!\n- If an object tried to move but couldn't, WHY?\n- Is there a border around the play area?\n- Are there internal walls or obstacles blocking movement?\n- What color/pattern indicates a wall vs empty space?\n\nIMPORTANT: UI ELEMENTS AND MOVE COUNTERS!\n- There are likely UI elements (dots, squares, lines) that track the number of SUCCESSFUL moves\n- These counters typically decrease or change with each move that has an EFFECT\n- When the counter runs out (e.g., all dots disappear), the game will FAIL and force a RESET\n- Look for patterns at the top, bottom, or sides of the screen that seem separate from the play area\n- Red dots, grey lines, or colored squares often serve as move/turn indicators\n\nEVIDENCE-BASED ANALYSIS:\n- Only make claims you have EVIDENCE for from observed state changes\n- If you're guessing without evidence, explicitly mark it as \"UNCONFIRMED HYPOTHESIS\"\n- When an action causes a state change, that's EVIDENCE - use it to confirm or refute hypotheses\n- No-effect actions also provide evidence about boundaries and constraints\n\nBe a detective. Make BREAKTHROUGHS in understanding. Don't just describe - ANALYZE.\nWhen you notice something new, explain its SIGNIFICANCE for gameplay.\nWhen previous understanding was WRONG, explicitly note the correction."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 1]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed 'Sliding' Mechanics: The game is not step-by-step; the agent slides until collision."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 2]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Identified UI Elements: The top and bottom borders contain dynamic elements (color changing bars) that likely track game state (moves/time)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 3]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Identified Goal Candidate: The Black U-shape is the most likely objective."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Agent cannot move through Green obstacles."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Agent cannot move through Blue border walls."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Movement is 'sliding': The agent moves in a direction until it hits a wall/obstacle (based on Action 2 definition)."
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "Analyze the environment in this game frame.\n\nWHAT JUST HAPPENED:\nACTION3 had effect: The agent slid LEFT from (28, 40) across the empty floor until it collided with the left wall border\nEvidence Status: STATE CHANGE OBSERVED - Use this as evidence!\n\nRECENT CHANGES OBSERVED (THIS IS EVIDENCE!):\nTotal: 428 pixels changed. Regions affected: lower_left_playarea (192), upper_left_playarea (112), lower_right_playarea (96), upper_right_playarea (16), top_ui (12) Changes in both play area and UI elements. Change bounding box: rows [0-59], cols [4-55]\n\nObject-level changes: APPEARED: 1 objects\n  + Color 14 rectangular block (4x48) at (8, 4)\nDISAPPEARED: 1 objects\n  - Color 14 rectangular block (48x4) at (56, 8)\nMOVED: 1 objects\n  ~ Color 8 rectangular block (4x4) at (28, 40) moved left\n\n\nYOUR CURRENT ENVIRONMENT UNDERSTANDING (MAY BE WRONG - UPDATE IF NEEDED):\nBackground: Dark Red (Color 9)\nBorder: Yes (Blue (Color 12) inner rim, Green (Color 3) outer rim) - A structured frame. Outer edge is green/cyan. Inner edge surrounding the play area is a blue rectangular border. There are specific colored markers (Magenta, Yellow) embedded in the top and bottom borders.\nInternal walls/obstacles:\n  - Green (Color 3) irregular patches acting as terrain obstacles\nKnown movement constraints:\n  - Agent cannot move through Green obstacles.\n  - Agent cannot move through Blue border walls.\n  - Movement is 'sliding': The agent moves in a direction until it hits a wall/obstacle (based on Action 2 definition).\nIdentified objects:\n  - Agent: Orange (Color 8) Square (4x4 pixels) (Role: Player Character)\n  - Wall / Terrain: Green (Color 3) Irregular blobs (Role: Obstacle)\n  - Goal: Black (Color 0) U-shape / Cup (Role: Target / Goal)\n  - Top UI Bar: Blue (Color 12) Horizontal line/bar (Role: Timer / Move Counter)\n  - Bottom UI Bar: Light Pink (Color 14/11) Horizontal block (Role: Status Indicator)\nSpatial structure: Grid-based arena (approx 64x64) surrounded by walls. The interior is open 'floor' populated by scattered rocky/forest obstacles.\n\n\u26a0\ufe0f IMPORTANT: The above understanding is TENTATIVE and based on limited observations.\nIf the action results CONTRADICT this understanding, you MUST update it!\nYou can REPLACE objects_identified entirely if the current list is wrong.\n\nPREVIOUS BREAKTHROUGHS:\n- Confirmed 'Sliding' Mechanics: The game is not step-by-step; the agent slides until collision.\n- Identified UI Elements: The top and bottom borders contain dynamic elements (color changing bars) that likely track game state (moves/time).\n- Identified Goal Candidate: The Black U-shape is the most likely objective.\n\nOPEN QUESTIONS TO INVESTIGATE:\n- What specific condition triggers the 'Color 14 -> 12' change in the top bar? Is it a moves counter limiting the player?\n- Does the Black U-shape verify victory upon contact or overlap?\n\nCURRENT ACTION DEFINITIONS (ALSO TENTATIVE):\n  ACTION1: \"Move UP (Decrease Y). If the target position is occupied by a wall/obstacle, the move results in no position change.\"\n  ACTION2: \"Move DOWN. The agent slides in the downward direction until it collides with an obstacle (e.g., green wall).\"\n  ACTION3: \"Move LEFT (Slide until collision)\"\n  ACTION4: (no definition yet)\n  ACTION5: (no definition yet)\n\nCRITICAL ANALYSIS TASKS:\n1. LOOK FOR WALLS/BOUNDARIES - If movement failed, identify what blocked it!\n2. What color is the BACKGROUND (empty space)?\n3. What distinct OBJECTS exist? What might their ROLES be?\n4. Are there patterns in the spatial layout?\n5. What movement CONSTRAINTS can you infer?\n6. LOOK FOR MOVE COUNTERS/UI ELEMENTS - Are there dots, squares, or lines that track moves?\n7. UNEXPLORED ELEMENTS: Which colors or sections of the grid have NOT been thoroughly analyzed yet? List specific colors or regions that need more investigation.\n8. DOMAIN DESCRIPTION: Provide a high-level conceptual description of the game. What type of game is this (puzzle, navigation, sokoban-like, etc.)? What appears to be the goal? How do the mechanics work together at a conceptual level?\n\nEVIDENCE-BASED REASONING:\n- State changes are EVIDENCE. Use them to CONFIRM or REFUTE hypotheses.\n- No-effect actions are EVIDENCE of boundaries, walls, or constraints.\n- If you have NO EVIDENCE for a claim, mark it as \"UNCONFIRMED HYPOTHESIS\"\n- Don't make uneducated guesses - only claim what you can support with evidence\n- If previous understanding was based on guessing and now contradicted by evidence, CORRECT IT\n\nUPDATING THE ENVIRONMENT MODEL:\n- Your objects_identified list REPLACES the previous one - include all objects you're confident about\n- If you now think an object has a different role, update the role_hypothesis\n- Add evidence_for_role explaining WHY you think an object has that role\n- If you realize a previous identification was WRONG, simply don't include it (or include corrected version)\n\nMake BREAKTHROUGHS! If you discover something new and significant, list it.\nIf previous understanding was WRONG, note the CORRECTION as a breakthrough.\n\nACTION DEFINITION UPDATES (BE VERY CONSERVATIVE):\nOnly suggest updates to action definitions if you have a DRASTIC new insight that fundamentally\nchanges the understanding of what the action does. Default to NOT suggesting updates.\n\nONLY suggest an update if:\n1. The current definition is completely WRONG or MISSING critical information\n2. You discovered something that CONTRADICTS the current definition\n3. You have HIGH CONFIDENCE based on EVIDENCE (not guessing)\n\nDefault: Leave suggested_action_updates as an EMPTY array unless truly necessary."
+      },
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "[BASE64_IMAGE_DATA_OMITTED]"
+        }
+      }
+    ]
+  }
+]

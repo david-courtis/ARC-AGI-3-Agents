@@ -1,0 +1,38 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 appears to generate new blocks of pixels in the lower right play area, specifically an 8x8 block of color 9, and two 8x8 blocks of color 3. It also changes any existing color 3 pixels in the (40,40)-(41,47) region to color 12. It also changes any existing color 9 pixels in the (50,40)-(57,47) region to color 3. Additionally, it seems to affect a specific pixel in the top UI, changing it from color 15 to 3.
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 causes specific objects (8x8 blocks) and individual pixels in the play area to change to color 3. It also affects at least one pixel in the top UI but the specific effect on the UI pixel (pixel (2,4) changing from 15 to 3) needs further observation to define.
+  ACTION3: 0/3 consistent, 1/8 attempts | Def: ACTION3 changes specific pixels or 8x8 blocks of specific colors to other colors. It affects both the UI and the play area. Specifically, it can change a pixel of color 15 in the UI to color 3. In the play area, it appears to interact with 8x8 blocks of colors 3, 12, and 9, performing a color swap between 3 and 12, and changing 9 to 3.
+  ACTION4: 0/3 consistent, 1/8 attempts | Def: ACTION4 appears to involve a color swapping mechanism within the play area for specific 8x8 blocks, similar to ACTION3. It also causes a change in a UI element, specifically altering the color of a pixel within the top UI bar. Specifically, it swaps 8x8 blocks of colors 3 and 12, and potentially affects blocks of color 9 in the vicinity. The pixel at (2,8) in the UI changes from 15 to 3.
+  ACTION5: 0/3 consistent, 0/8 attempts | Def: ACTION5 appears to be an action that can sometimes have no visible effect. Further observations are needed to determine its function.
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - 8x8 block of color 9 (newly appeared): Involved in ACTION1 action
+  - 8x8 blocks of color 3 (newly appeared): Involved in ACTION1 action
+  - 8x8 blocks of color 12 (newly appeared): Involved in ACTION1 action
+  - pixel at (2,2): Involved in ACTION1 action
+  - top UI element: Involved in ACTION1 action
+  - 8x8 block of color 9: Involved in ACTION2 action
+  - 8x8 block of color 12: Involved in ACTION2 action
+  - pixel at (2,4): Involved in ACTION2 action
+  - pixel at (2,6): Involved in ACTION3 action
+  - 8x8 block of color 3 at (48,32): Involved in ACTION3 action
+  - 8x8 block of color 12 at (48,40): Involved in ACTION3 action
+  - 8x8 block of color 9 at (50,32): Involved in ACTION3 action
+  - pixel at (2,8): Involved in ACTION4 action
+  - 8x8 block of color 12 at (48,32): Involved in ACTION4 action
+  - 8x8 block of color 3 at (48,40): Involved in ACTION4 action
+
+Recent Observations:
+  - It is possible that ACTION3 performs a color swapping mechanic for specific colors (e.g., 3 and 12) between adjacent blocks.
+  - ACTION4 can change the color of a pixel in the top UI bar from 15 to 3.
+  - ACTION4 can cause an 8x8 block of color 12 in the play area to change to color 3.
+  - ACTION4 can cause an 8x8 block of color 3 in the play area to change to color 12.
+  - ACTION4 implicitly affects 8x8 blocks of color 9, either by changing their position or color as part of a larger pattern, similar to ACTION3.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

@@ -8,6 +8,8 @@ from ...structs import FrameData, GameAction
 
 class LLM(Enum):
     OPENAI_GPT_41 = "openai:gpt-4.1"
+    OPENROUTER_GEMINI_3_PRO = "openrouter:google/gemini-3-pro-preview"
+    OPENROUTER_GEMINI_25_FLASH = "openrouter:google/gemini-2.5-flash"
 
 
 class AgentState(TypedDict):

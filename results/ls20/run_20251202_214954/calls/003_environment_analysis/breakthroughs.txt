@@ -1,0 +1,4 @@
+1. Confirmed the existence of multiple moving objects controlled by an apparent 'player' or game mechanic, indicating dynamic gameplay.
+2. Identified a specific play area within the larger environment, distinguished by a darker shade of green, implying a boundary for gameplay.
+3. Identified top and bottom UI strips, marked by dotted lines, separating game information from the play area.
+4. Discovered that movement can be in discrete units (e.g., '1 unit up').

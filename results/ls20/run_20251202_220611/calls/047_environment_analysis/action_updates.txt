@@ -1,0 +1,3 @@
+ACTION5: ACTION5 attempts to move the combined player entity (Color 12 and Color 9) upwards. It has no effect if the entity is already against a hard boundary (Color 0) or the upper limit of the playable area (Color 7).
+  Reason: Repeated failure of ACTION5 to move the player entity, which is confirmed to be pressed against the top Color 0 boundary, strongly suggests ACTION5 is an upward movement command that is currently blocked rather than a 'no-op'. The previous definition was too dismissive of its potential function.
+

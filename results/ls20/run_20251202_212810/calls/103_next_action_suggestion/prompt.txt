@@ -1,0 +1,67 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 1/3 consistent, 11/8 attempts | Def: ACTION1 moves one or more selected/interactive objects one unit 'up' (decreasing its row/y coordinate). Under specific and currently unknown conditions, ACTION1 can trigger a full game reset. When a reset occurs, existing objects disappear, and a new set of objects appear, often with a changed background and UI. The objects present before the reset may reappear in a different location as part of the new game state. The disappearance of a Color 9 rectangular block (2x2) at (32,32) is a contextual side-effect that does not always occur when other blocks move up.
+  ACTION2: VERIFIED - ACTION2 causes a selected movable object (or objects) to move downwards by one unit (pixel/cell).
+  ACTION3: 1/3 consistent, 5/8 attempts | Def: ACTION3 usually moves selected blocks (or all movable blocks) one unit to the left. However, sometimes, it triggers a game reset, causing all existing objects to disappear and new ones to appear, similar to ACTION5 under certain, yet to be fully understood, conditions. When a game reset occurs, the objects that were 'selected' or 'involved' in the reset might also undergo a movement transformation as they appear in the new state.
+  ACTION4: 0/3 consistent, 7/8 attempts | Def: ACTION4 causes selected blocks to move one unit to the right (increase column/x value). Under certain, currently unknown, conditions, ACTION4 can trigger a full game reset, causing all existing objects to disappear and new ones to appear, and the two affected blocks to reappear with a movement transformation (right movement combined with an 'appearance' effect for the new board). The appearance of a Color 9 rectangular block (2x2) at (32,32) may or may not occur as a side effect, depending on unknown conditions.
+  ACTION5: 0/3 consistent, 1/8 attempts | Def: ACTION5, when no specific object is implicitly or explicitly selected, and no specific interaction point is provided (and likely also when no game reset condition is met), has no effect. The specific conditions under which it acts as a 'reset' or 'new game' action are still undefined but are more complex than simply the absence of a selected object.
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2): Involved in ACTION2 action
+  - Color 9 rectangular block (8x6): Involved in ACTION2 action
+  - Color 12 rectangular block (8x2) at (40, 24): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (42, 24): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2) at (16, 24): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (18, 24): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2) at (8, 24): Involved in ACTION4 action
+  - Color 9 rectangular block (8x6) at (10, 24): Involved in ACTION4 action
+  - Color 12 rectangular block (8x2) at (8, 32): Involved in ACTION3 action
+  - Color 9 rectangular block (8x6) at (10, 32): Involved in ACTION3 action
+  - Color 8 64x64 block: Involved in ACTION5 action
+  - Color 4 irregular shape (64x64): Involved in ACTION5 action
+  - Color 8 rectangular block (2x2): Involved in ACTION5 action
+  - Color 3 rectangular block (2x2): Involved in ACTION5 action
+  - Color 3 irregular shape (48x48): Involved in ACTION5 action
+  - Color 4 rectangular block (8x16): Involved in ACTION5 action
+  - Color 12 rectangular block (8x2) at (40, 32): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (42, 32): Involved in ACTION1 action
+  - Color 9 rectangular block (2x2) at (32, 32): Involved in ACTION1 action
+  - Color 9 rectangular block (2x2): Involved in ACTION2 action
+  - Color 12 rectangular block (8x2) at (32, 32): Involved in ACTION4 action
+  - Color 9 rectangular block (8x6) at (34, 32): Involved in ACTION4 action
+  - Color 12 rectangular block (8x2) at (24, 48): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (26, 48): Involved in ACTION1 action
+  - Color 5 8x8 shape: Involved in ACTION3 action
+  - Color 8 2x2 block: Involved in ACTION3 action
+  - Color 9 2x2 block: Involved in ACTION3 action
+  - Color 9 3x3 block: Involved in ACTION3 action
+  - Color 3 rectangular block (2x2) at (1, 56): Involved in ACTION1 action
+  - Color 3 rectangular block (2x2) at (1, 60): Involved in ACTION1 action
+  - Color 8 rectangular block (2x2) at (1, 52): Involved in ACTION4 action
+  - Color 9 rectangular block (2x2) at (18, 34): Involved in ACTION4 action
+  - Color 9 rectangular block (3x3) at (54, 1): Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 12: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 17: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 22: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 27: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 32: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 37: Involved in ACTION4 action
+  - Color 3 4x1 block at row 62, col 42: Involved in ACTION4 action
+  - Color 12 rectangular block (8x2) at (48, 48): Involved in ACTION3 action
+  - Color 9 rectangular block (8x6) at (50, 48): Involved in ACTION3 action
+
+Recent Observations:
+  - ACTION3 can move two specific blocks left without causing a game reset, reaffirming its primary move function.
+  - The conditions for ACTION3 to trigger a game reset are still unknown, but it does not always trigger a reset when multiple objects are present and it can perform its 'move left' function.
+  - The conditions for ACTION4 to trigger a full game reset are still unknown, as it did not occur in this instance.
+  - The conditions for the appearance of a Color 9 rectangular block (2x2) at (32,32) during ACTION4 are still unknown, as it did not appear in this instance.
+  - The disappearance of the Color 9 rectangular block (2x2) at (32,32) with ACTION1 is highly contextual and does not occur in all instances where other blocks move up. It appears to be linked to the background, whether it's the green or orange background, or a more precise placement and type of objects around it. Further observation will be needed.
+
+VERIFIED ACTIONS (can use for setup): ACTION2
+PENDING ACTIONS (need testing): ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

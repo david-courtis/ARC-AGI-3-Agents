@@ -1,0 +1,4 @@
+1. STAGE 2 START: New layout loaded.
+2. INITIAL STATE: Gravity corresponds to the Pink Shield position (LEFT).
+3. GOAL ORIENTATION: Goal is 'C' shaped, open to the right. This implies the winning move must be a LEFT gravity slide (Action 3) when the payload is aligned.
+4. PAYLOAD STATE: Payload starts 'resting' against an obstacle, confirming physics simulation settles before player input.

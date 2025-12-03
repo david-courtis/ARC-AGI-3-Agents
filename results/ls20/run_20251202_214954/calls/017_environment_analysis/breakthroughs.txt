@@ -1,0 +1,1 @@
+1. Confirmed that fixed objects (Block stack 1, Block stack 2, Block L-shape) are solid unpassable barriers, as an attempted movement (ACTION5) was completely blocked by them.

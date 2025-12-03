@@ -1,0 +1,4 @@
+- Player constrained to Muted Green path.
+- Cannot move into Bright Green walls.
+- Failed moves (blocked by wall) do NOT consume Move Counter resources.
+- Red Block (1,1) likely blocks movement until condition met (e.g., collecting key).

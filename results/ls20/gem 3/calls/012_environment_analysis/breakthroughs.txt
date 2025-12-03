@@ -1,0 +1,4 @@
+1. CORRECTION: Debris object precise location confirmed at Grid (4,4) (previously estimated as 4,3). It is directly to the LEFT of the Player's current position (4,5).
+2. Confirmed Move Counter functionality: Top-left UI dots update (decrement) when a successful move occurs.
+3. Confirmed 'Hole' geometry: A 2-tile high vertical void at Column 2 (Rows 2 and 3).
+4. Player Position Update: Player successfully moved from (5,5) to (4,5).

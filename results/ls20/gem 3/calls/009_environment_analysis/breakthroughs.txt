@@ -1,0 +1,3 @@
+1. Spatial mapping refined: Player is currently at grid (5,4). Debris is at (4,3). Goal is at (4,2). Hole is at column 2.
+2. Confirmed 'Move Counter' mechanism: The UI represents a finite resource (time or steps) that acts as a gameplay constraint.
+3. Internal Obstacle identified: A distinct 'Hole' (Bright Green void) exists at approx grid (2,2-3), narrowing the path on the left.

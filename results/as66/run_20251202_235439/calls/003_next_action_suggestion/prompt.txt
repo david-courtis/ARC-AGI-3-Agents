@@ -1,0 +1,16 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 seems to be an action that does not always have a visible effect. Further observations are required to determine its specific function or target.
+  ACTION2: NO OBSERVATIONS YET
+  ACTION3: NO OBSERVATIONS YET
+  ACTION4: NO OBSERVATIONS YET
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+No environment knowledge yet.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

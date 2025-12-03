@@ -1,0 +1,1 @@
+1. Identified implicit left and right boundaries as the screen edges, as ACTION5 (which likely attempts horizontal movement) had no effect, implying it was attempting to move past the screen edge.

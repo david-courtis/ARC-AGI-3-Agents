@@ -1,0 +1,2 @@
+1. Confirmed the appearance/disappearance of Color 14 dynamic boundary blocks on the sides of the play area, consistent with them acting as dynamic platforms or changeable walls. The new position (8,56) suggests they primarily interact with the left/right edges.
+2. Confirmed the Movable Cyan Block (Color 8) can move in multiple directions (down, left, and now right), reinforcing its role as a key movable game element perhaps controlled by the player.

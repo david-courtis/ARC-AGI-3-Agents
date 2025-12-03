@@ -1,0 +1,1 @@
+1. Confirmed that Color 0 (black) elements, even when part of larger objects within the Color 7 play area, likely act as walls/obstacles to player movement based on previous observations of Color 0 blocking movement at the periphery.

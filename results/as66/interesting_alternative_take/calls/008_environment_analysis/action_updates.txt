@@ -1,0 +1,12 @@
+ACTION1: Move Active Shield to Top Perimeter
+  Reason: High confidence based on directional mapping pattern. Previous state was Top, action had no effect (Top->Top).
+
+ACTION2: Move Active Shield to Bottom Perimeter
+  Reason: Confirmed by observed state change (Right -> Bottom) upon this action.
+
+ACTION3: Move Active Shield to Left Perimeter
+  Reason: Inferred from pattern: 1=Up, 2=Down, 4=Right. 3 is the missing cardinal direction (Left).
+
+ACTION4: Move Active Shield to Right Perimeter
+  Reason: Confirmed by previous observation (Top -> Right) and consistent with directional mapping.
+

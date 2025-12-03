@@ -1,0 +1,4 @@
+1. Confirmed Barrier at Grid (4,5): Despite appearing as reachable floor, the physics prevented movement East, implying an invisible barrier or specific path constraint encouraging Upward movement.
+2. Identified Map 'Quest' Flow: The layout forces the player away from the Goal initially (Up/Right towards Key) before looping back to the Gate (Top Left) and finally the Goal (Bottom Left).
+3. Verified Action Failure: Blocked moves do not consume the specialized 'Move Counter' resource (dots remain consistent).
+4. Object Role Persistence: Key and Goal objects utilize the same visual language as Stage 1, confirming consistent mechanics.

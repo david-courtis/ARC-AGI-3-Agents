@@ -1,0 +1,2 @@
+1. Confirmed that ACTION5's lack of effect (no visible changes in play area or UI) is consistent with previous understandings that blocked movements do not consume a turn.
+2. The consistent lack of effect for ACTION5, despite different potential environmental configurations, strengthens the hypothesis that it's a 'no-op' or attempts an impossible action in current contexts.

@@ -1,0 +1,2 @@
+1. Confirmed the movable black block can move two units to the right, as observed by ACTION4.
+2. Further confirmation that the Color 14 side boundaries are truly dynamic; ACTION4 explicitly showed the left dynamic boundary disappearing and a new right dynamic boundary appearing, reinforcing the idea of a shifting horizontal play area.

@@ -1,0 +1,2 @@
+1. Confirmed that ACTION3 moves the player block (Color 11) 4 units to the left. This clarifies its primary function and confirms consistent 4-unit movement for at least three actions (ACTION1, ACTION2, ACTION3).
+2. Further observed the dynamic nature of the Color 14 UI element: it transformed from a 'Right UI element' (48x4 block at (56,8)) to a 'Left UI element' (4x48 block at (8,4)), reinforcing its role as a complex, multi-state indicator that reconfigures itself across the screen.

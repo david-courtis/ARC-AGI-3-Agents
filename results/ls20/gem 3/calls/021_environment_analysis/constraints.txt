@@ -1,0 +1,3 @@
+- Player cannot move into Bright Green areas.
+- Movement consumes 1 Top-UI resource.
+- Movement is quantized to 8-pixel steps.

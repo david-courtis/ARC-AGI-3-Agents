@@ -1,0 +1,2 @@
+- Objects can move upwards.
+- The dark green area (Color 8) acts as the primary movable space.

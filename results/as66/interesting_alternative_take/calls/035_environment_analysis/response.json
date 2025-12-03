@@ -1,0 +1,81 @@
+{
+  "background_color": "Color 9 (dark red/brown)",
+  "boundaries": {
+    "has_border": true,
+    "border_color": "Color 3 (green)",
+    "border_description": "Thick Green (Color 3) outer frame (approx 4px) surrounding the play area. Just inside this frame are 4 'slots' for the perimeter walls/shields.",
+    "internal_walls": [
+      "Green (Color 3) irregular clusters acting as static terrain blocks",
+      "Blue (Color 1) inactive perimeter segments acting as solid boundaries",
+      "Green (Color 3) large central mass",
+      "Green (Color 3) small peripheral clusters (top-left, bottom-right)",
+      "Black (Color 0) Goal structure walls"
+    ]
+  },
+  "objects_identified": [
+    {
+      "name": "Grey Payload",
+      "color": "Color 11 (grey)",
+      "shape": "4x4 pixel square",
+      "role_hypothesis": "Player Character / Projectile",
+      "evidence_for_role": "Moves in response to gravity changes; interacts with walls and goals. Wrapped around screen in latest turn."
+    },
+    {
+      "name": "Active Gravity Shield",
+      "color": "Color 14 (pink)",
+      "shape": "48x4 (or 4x48) pixel bar",
+      "role_hypothesis": "Gravity Source & Portal",
+      "evidence_for_role": "Determines gravity direction. Objects pass THROUGH it to wrap to the other side of the screen (observed in Action 3)."
+    },
+    {
+      "name": "Inactive Wall",
+      "color": "Color 1 (blue)",
+      "shape": "48x4 (or 4x48) pixel bar",
+      "role_hypothesis": "Solid Boundary",
+      "evidence_for_role": "Located at perimeter slots not occupied by the shield. Prevents movement/wrapping."
+    },
+    {
+      "name": "Goal Receptacle",
+      "color": "Color 0 (black)",
+      "shape": "C-shaped cup opening Right",
+      "role_hypothesis": "Goal",
+      "evidence_for_role": "Distinct shape and color, typical of puzzle goals. Orientation suggests entry vector."
+    },
+    {
+      "name": "Internal Obstacles",
+      "color": "Color 3 (green)",
+      "shape": "Irregular blocks",
+      "role_hypothesis": "Static Terrain",
+      "evidence_for_role": "Blocks payload movement. Payload is currently resting against the right face of a green block after leftward gravity."
+    }
+  ],
+  "spatial_structure": "2D Grid with Conditional Toroidal Topology. The grid wraps locally in the direction of the Active Shield, but behaves as a bounded box in other directions.",
+  "movement_constraints": [
+    "Green (Color 3) terrain blocks movement.",
+    "Blue (Color 1) perimeter walls block movement.",
+    "Pink (Color 14) perimeter shield ALLOWS movement (wrapping).",
+    "Movement is continuous 'sliding' until collision or wrap.",
+    "Payload maintained Y-coordinate (Row 48) while wrapping horizontally."
+  ],
+  "breakthroughs": [
+    "CONFIRMED SCREEN WRAPPING: The Pink Shield allows the payload to exit the screen and re-enter from the opposite side. Evidence: Coordinate change from (48, 28) to (48, 48) under Left Gravity is only possible via a wrap."
+  ],
+  "open_questions": [
+    "Does the payload stop immediately upon entering the goal, or must it hit the back wall of the goal?",
+    "Is the goal 'solid' from the outside (e.g. hitting the top/bottom/left of the black 'C' shape)?",
+    "Does wrapping preserve exact intercept coordinates or is there a shift?"
+  ],
+  "suggested_action_updates": [
+    {
+      "action_id": "ACTION3",
+      "suggested_definition": "Gravity LEFT / Wrap Gate: Moves Shield to Left. Sets gravity LEFT. ALLOWS WRAPPING: Objects slide LEFT, pass through left edge, reappear at right edge, continue sliding.",
+      "reasoning": "Observed evidence: Payload moved from x=28 to x=48 under 'Left' gravity, confirming it passed through the left boundary and wrapped to the right."
+    }
+  ],
+  "domain_description": "A sliding-block puzzle game featuring 'Rotational Gravity' and 'Screen Wrapping'. The player moves a 'Gravity Shield' around the perimeter. This shield serves two purposes: determining the direction of gravity (pulling the payload) and acting as a portal that allows the payload to wrap around the screen. Inactive sides act as solid walls. The goal is to slide a payload block into a specific target receptacle by manipulating gravity and using obstacles to align the path.",
+  "unexplored_elements": [
+    "Properties of the Black Goal walls (are they solid?)",
+    "Exact behavior if a wrapped object reappears inside an obstacle (likely impossible by level design)"
+  ],
+  "confidence": 1.0
+}

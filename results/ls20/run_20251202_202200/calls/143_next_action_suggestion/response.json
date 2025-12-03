@@ -1,0 +1,7 @@
+{
+  "target_action": "ACTION5",
+  "setup_sequence": [],
+  "reasoning": "ACTION5 has never been observed, making it the highest priority for initial testing. All other actions have at least one attempt, so testing ACTION5 first will provide an initial observation regardless of its effect, and move all actions towards having at least one observation.",
+  "expected_information_gain": "An initial observation of ACTION5's effect, or confirmation that it has no visible effect in this state.",
+  "current_board_assessment": "The current board state is generic enough for an initial test of an unobserved action; no specific conditions are needed or suggested by the definition of ACTION5."
+}

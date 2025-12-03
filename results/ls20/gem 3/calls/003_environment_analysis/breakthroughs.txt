@@ -1,0 +1,3 @@
+1. Confirmed 'Muted Green' is the walkable floor and 'Bright Green' is the boundary/wall.
+2. identified top-left UI dots as a localized move/time counter that updates with actions.
+3. Verified player object is a composite of Purple (body) and Cyan (top edge).

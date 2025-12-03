@@ -1,0 +1,3 @@
+1. Variable Payload Color: Confirmed that the payload object changes color between stages (Stage 1 was Orange/Color 4, Stage 2 is Grey/Color 11).
+2. Goal Geometry Significance: The 'C' shape of the goal (opening to the right) dictates that the final approach vector must be LEFT (Action 3).
+3. Collision Confirmation: The payload is currently resting against the left face of the central obstacle, confirming that rightward gravity (Action 4) pushed it until it hit the solid green terrain.

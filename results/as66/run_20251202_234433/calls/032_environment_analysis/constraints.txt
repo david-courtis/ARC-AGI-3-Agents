@@ -1,0 +1,5 @@
+- The aqua, blue, green, pink, and yellow borders likely prevent movement beyond the visible game screen.
+- The green 'landmass' blocks appear to be static obstacles, likely blocking movement through them.
+- The assumed 'player' block (Color 11) cannot move through the green 'landmass' blocks.
+- Player movement appears to be constrained to 4-unit increments.
+- ACTION5 and ACTION1 (when the player block is obstructed) indicate that the player block is blocked by either game boundaries or internal obstacles when an action has no effect on its position in the play area.

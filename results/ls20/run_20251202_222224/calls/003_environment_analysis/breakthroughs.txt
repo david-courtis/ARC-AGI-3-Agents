@@ -1,0 +1,2 @@
+1. Identified the top border as a solid boundary (Color 8) for upward movement. This is a critical discovery for understanding movement constraints.
+2. Recognized the distinct Color 0 (black) and Color 7 (light green) pattern at the bottom as a probable boundary or 'ground'.

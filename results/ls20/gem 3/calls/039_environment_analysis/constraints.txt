@@ -1,0 +1,4 @@
+- Player bounded by Muted Green floor tiles.
+- Cannot enter Bright Green void.
+- Movement is grid-locked to 8x8 pixels.
+- Red Block likely acts as a solid wall until an unknown condition (Key collection) is met.

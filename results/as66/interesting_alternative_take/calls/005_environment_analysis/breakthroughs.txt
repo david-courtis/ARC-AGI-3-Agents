@@ -1,0 +1,3 @@
+1. The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system.
+2. The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1).
+3. Action 4 rotates the active shield position Clockwise (Top -> Right).

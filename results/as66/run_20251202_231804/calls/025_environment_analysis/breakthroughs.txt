@@ -1,0 +1,1 @@
+1. Confirmed that the 'Black Recess' (Color 0) is a direct impediment for movement for ACTION5, solidifying its role as an unpassable obstacle in a specific direction.

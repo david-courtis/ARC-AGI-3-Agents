@@ -1,0 +1,4 @@
+1. CONFIRMED LAYOUT: The map is a 'Spiral' requiring collection and backtracking. Player start -> Right -> Up (Key) -> Backtrack/Right -> Loop around -> Goal.
+2. OBJECT LOCATION: Key is located at Grid (4,4), exactly 2 grid steps North of the Player's current position (4,6).
+3. PATH VERIFICATION: The path to the Right (Col 5) and Up (Col 4) is clear Muted Green floor.
+4. SCORE/RESOURCE: 'Score' increased to 1, likely tracking the number of steps taken or effective moves.

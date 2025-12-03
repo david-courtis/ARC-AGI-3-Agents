@@ -1,0 +1,2 @@
+1. UI MECHANIC DISCOVERY: The inner border walls change color to Pink (Color 14) to indicate the last direction moved. (Left wall turned pink on Left move; Right wall turned off).
+2. Confirmed Movement Physics: Agent slid left and stopped at a Green obstacle, validating that internal green shapes are solid collision objects, despite the text generic description of hitting the 'wall'.

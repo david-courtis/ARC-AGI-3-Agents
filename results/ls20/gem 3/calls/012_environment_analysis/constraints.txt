@@ -1,0 +1,4 @@
+- Player cannot move into Bright Green (Color 1) areas.
+- Player movement is locked to 8-pixel grid steps.
+- Movement consumes 'Move Counter' resources.
+- Player confined to Muted Green (Color 3) regions.

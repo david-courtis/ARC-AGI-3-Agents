@@ -1,0 +1,6 @@
+- The aqua, blue, green, pink, and yellow borders likely prevent movement beyond the visible game screen.
+- The green 'landmass' blocks appear to be static obstacles, likely blocking movement through them.
+- The assumed 'player' block (Color 11) cannot move through the green 'landmass' blocks.
+- Player movement appears to be constrained to 4-unit increments.
+- ACTION5 had no effect, suggesting the player block was either at a boundary or next to an obstacle in all four cardinal directions, or the action attempts an impossible move (e.g., diagonal, or into an occupied space with no 'push' mechanic).
+- ACTION1 (and previous no effect actions) had no effect on the play area when the primary target was blocked, implying the target object was constrained by boundaries or obstacles. However, ACTION1 can still trigger UI changes regardless of play area object movement.

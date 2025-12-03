@@ -1,0 +1,3 @@
+1. Confirmed that the player entity (Color 12 and Color 9) can move horizontally (left in this instance) within the Color 7 play area.
+2. ACTION3 causes the player entity to move left, demonstrating a horizontal movement capability not previously observed due to focus on vertical immobility.
+3. The UI element (Color 13) at the very top of the screen provides visual feedback when movement occurs, even for a single pixel (e.g., ACTION3 causes a change from 4 green dots to 3 green dots and 1 red dot if it lands on a pixel of color 8 and 10 and 13 as a color 8 dot changes to a color 13 dot).

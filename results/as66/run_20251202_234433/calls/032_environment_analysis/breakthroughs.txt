@@ -1,0 +1,3 @@
+1. Confirmed that the primary Color 14 UI element is highly dynamic, not only changing orientation but also relocating entirely, in this case from a top border (48x4 at (4,8)) to a right border (48x4 at (56,8)). This reinforces its role as a complex state indicator.
+2. The player block (Color 11) successfully moved 4 units upwards, confirming that ACTION2 moves the player block upwards, despite previous semantic hints. It also confirms the player block maintained its Color 11 state after moving.
+3. Correction in previous breakthrough: The 'Top UI element' that was a 48x4 pink block at (4,8) is now identified as a 'Right UI element' which is also a 48x4 pink block but at (56,8). This shows a transformation and relocation, not just a border extension.

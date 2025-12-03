@@ -1,0 +1,3 @@
+ACTION5: ACTION5 is ineffective when no moves remain or when movement is otherwise obstructed. If no moves remain, no action is possible, regardless of potential obstructions.
+  Reason: The current frame shows all movement dots depleted (red), and ACTION5 had no effect. This confirms that 'no moves remaining' is a definitive condition for action failure, not just that movement was obstructed.
+

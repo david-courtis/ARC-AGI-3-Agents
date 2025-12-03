@@ -1,0 +1,3 @@
+ACTION5: Attempted movement in a blocked direction (upward into UI area or into an obstacle), resulting in no change to the game state or move counter.
+  Reason: ACTION5 had no effect, and the primary movable object (Block stack 1) is currently positioned such that an upward move would lead into the UI area or another object. This suggests it was an attempt at movement that was blocked by an environmental constraint, and crucially, unsucessful moves don't consume a turn.
+

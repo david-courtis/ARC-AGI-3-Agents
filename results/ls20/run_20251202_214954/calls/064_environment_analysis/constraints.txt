@@ -1,0 +1,3 @@
+- Objects are constrained by the boundaries of the darker green play area.
+- Movement appears to be in discrete units (e.g., 'moved up by one unit').
+- Internal walls/fixed objects (Block stack 1, Block stack 2, Block L-shape) impede movement, as ACTION5 had no effect when movement was attempted into them.

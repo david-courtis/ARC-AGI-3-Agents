@@ -1,0 +1,2 @@
+1. The movable player block's color changed from 'Color 8 (black)' to 'Color 11 (light gray)' and its shape changed from 'C-shaped' to 'rectangular block (4x4)' as a result of ACTION4. This strongly reinforces the idea that the player entity can dynamically change both its form and color.
+2. ACTION4 caused the previous dynamic right boundary to disappear and a new dynamic left boundary to appear at (8,56). This provides further evidence that the dynamic side boundaries effectively shift the active horizontal play area by appearing and disappearing on opposite sides.

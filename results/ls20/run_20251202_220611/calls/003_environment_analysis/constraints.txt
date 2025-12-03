@@ -1,0 +1,2 @@
+- Objects seem to move within the boundaries of the 'Color 7' play area.
+- The two moving blocks are constrained to move together in a vertical direction (up in this case).

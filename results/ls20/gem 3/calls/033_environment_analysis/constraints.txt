@@ -1,0 +1,4 @@
+- Player cannot move into Bright Green (Color 1) walls.
+- Movement blocked to the RIGHT of current position (3,5) -> (4,5) is a barrier.
+- Red Block at (1,1) potentially blocks movement until unlocked.
+- Movement is quantized to 8-pixel steps.

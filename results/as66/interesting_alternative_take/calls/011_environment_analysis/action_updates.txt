@@ -1,0 +1,9 @@
+ACTION1: Gravity UP: Move Shield to Top. Applies upward force to internal objects.
+  Reason: Confirmed gravity mechanic via Action 3 analysis. Symmetry implies Action 1 is Up.
+
+ACTION2: Gravity DOWN: Move Shield to Bottom. Applies downward force to internal objects.
+  Reason: Confirmed gravity mechanic via Action 3 analysis. Symmetry implies Action 2 is Down.
+
+ACTION4: Gravity RIGHT: Move Shield to Right. Applies rightward force to internal objects.
+  Reason: Confirmed gravity mechanic via Action 3 analysis. Symmetry implies Action 4 is Right.
+

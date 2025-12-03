@@ -1,0 +1,2 @@
+- The movable black block can move downwards (as seen with ACTION2).
+- Movement is constrained by outer borders (Color 3, 10, 14, 2, 13, 5).

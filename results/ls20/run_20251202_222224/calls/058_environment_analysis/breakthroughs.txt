@@ -1,0 +1,1 @@
+1. Refined understanding of 'ACTION3 had NO effect': The previous frame's observation of blocks moving left despite 'NO effect' from ACTION3, coupled with the current observation of them moving left with 'NO effect', confirms that 'NO effect' applies to secondary actions (like UI changes or score) and not primary object movement. Object movement still occurs.

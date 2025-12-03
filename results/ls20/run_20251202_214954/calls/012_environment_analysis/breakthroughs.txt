@@ -1,0 +1,1 @@
+1. Confirmed that fixed objects (Block stack 1, Block stack 2, Block L-shape) act as walls or obstacles, as movement (ACTION5) was blocked, reinforcing their role as environmental barriers.

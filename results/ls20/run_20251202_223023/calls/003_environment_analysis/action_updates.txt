@@ -1,0 +1,3 @@
+ACTION1: Moves specific rectangular blocks (color 12 and color 9) upwards by one row, and consumes one move.
+  Reason: The 'changes in top_ui (1)' directly corresponds to a change in the move counter, implying that ACTION1 also accounts for the consumption of a move in the UI.
+

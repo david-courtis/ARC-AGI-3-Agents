@@ -1,0 +1,1 @@
+1. Confirmed that attempting to move in a blocked direction (ACTION5) does not consume a move, reinforcing that only successful or meaningful movements use a turn.

@@ -1,0 +1,1 @@
+1. Confirmed that the failure of ACTION3 to move 'Playable Block 1' (Color 12) to the left definitively indicates the left edge of the screen acts as an impassable boundary for horizontal movement for this object.

@@ -1,0 +1,3 @@
+- Movement is constrained by the blue border.
+- ACTION1 (move up) had no effect, suggesting a boundary or an obstacle prevented upward movement. Since the player-like object is at the bottom of the visible objects, it's possible it hit the 'green terrain' or a hidden boundary when trying to move up.
+- Movement was not affected by ACTION5, implying either an immovable object or a boundary was encountered, or the action itself had no effect in the current state.

@@ -1,0 +1,27 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 moves a 'player' object or 'selected' object upwards by one unit. It appears to apply to specific blocks in the play area.
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 causes the selected (or 'active') blocks to move one unit downwards. This action appears to be the inverse of ACTION1, which caused blocks to move upwards.
+  ACTION3: 0/3 consistent, 1/8 attempts
+  ACTION4: 0/3 consistent, 1/8 attempts
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2) at (40, 40): Involved in ACTION2 action
+  - Color 9 rectangular block (8x6) at (42, 40): Involved in ACTION2 action
+  - Color 12 rectangular block (8x2) at (48, 32): Involved in ACTION4 action
+  - Color 9 rectangular block (8x6) at (50, 32): Involved in ACTION4 action
+
+Recent Observations:
+  - ACTION2 moves specific blocks downwards by one unit.
+  - The two blocks involved in ACTION1 (upward movement) are also involved in ACTION2 (downward movement), suggesting they are 'controlled' objects.
+  - ACTION4 moves the 'controlled' blocks to the right by one unit.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

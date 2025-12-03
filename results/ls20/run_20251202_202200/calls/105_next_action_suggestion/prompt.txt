@@ -1,0 +1,25 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 causes color changes in specific blocks at (42,40) -> 3 to 9, and at (40,40) -> 3 to 12. It also causes a change in a top_ui pixel, likely a score or status indicator (15 to 3).
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 appears to affect the display of pixels, specifically changing their color to a lighter green/black (color 3). The nature of the pattern created or removed is not yet clear, but it covers a significant area in the lower-right quadrant of the play area. It also changed a pixel in the top-left UI area.
+  ACTION3: 0/3 consistent, 1/8 attempts | Def: ACTION3 causes specific color swaps. Notably, it changes blocks of color 3 to color 12 and blocks of color 12 (and possibly 9) to color 3, especially in the lower-right area. It also seems to affect a UI element, changing color 15 to color 3.
+  ACTION4: 0/3 consistent, 1/8 attempts | Def: ACTION4 appears to cause a cyclical color swap for some pixels within the 'lower_right_playarea_block' (12 -> 3 and 3 -> 12), and it changes the color of the 'top_left_UI_pixel' from 15 to 3.
+  ACTION5: 0/3 consistent, 0/8 attempts | Def: ACTION5 continues to appear to be an action that causes no visible change in the game state. It either has no effect, its effect is too subtle to perceive, or it is conditional on unobserved factors.
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - lower_right_playarea_block: Involved in ACTION3 action
+  - top_left_UI_pixel: Involved in ACTION3 action
+
+Recent Observations:
+  - A single pixel of color 15 in the top-left of the UI area is replaced by color 3.
+  - A block of pixels in the lower-right playarea, previously colors 12 and 9, are now color 3.
+  - A block of pixels in the lower-right playarea, previously color 3, are now color 12.
+  - A single pixel in the top-left of the UI area, previously color 15, is now color 3.
+  - A block of pixels in the lower-right playarea, previously certain colors, undergo a color transformation. Some pixels that were color 12 are now color 3, and some pixels that were color 3 are now color 12.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

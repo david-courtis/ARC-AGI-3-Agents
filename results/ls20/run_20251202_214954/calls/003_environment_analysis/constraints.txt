@@ -1,0 +1,2 @@
+- Objects are constrained by the boundaries of the darker green play area. Although not observed stopping at the boundary, this is a strong hypothesis.
+- Movement appears to be in discrete units (e.g., 'moved up by one unit').

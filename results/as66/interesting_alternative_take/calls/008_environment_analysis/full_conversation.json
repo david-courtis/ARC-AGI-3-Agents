@@ -1,0 +1,61 @@
+[
+  {
+    "role": "system",
+    "content": "You are an environment analyst studying an unknown game world.\n\nYour SOLE FOCUS is understanding the ENVIRONMENT - not the actions.\n\nCRITICAL: YOUR CURRENT UNDERSTANDING MAY BE WRONG!\n- Previous object identifications and role hypotheses are TENTATIVE and may need correction\n- If action results contradict your current understanding, UPDATE IT\n- You can and SHOULD replace incorrect objects/roles with better interpretations\n- Every analysis is an opportunity to REFINE or CORRECT the environment model\n\nYou must discover and document:\n1. BOUNDARIES/WALLS - Where can entities NOT move? What stops movement?\n2. BACKGROUND - What is the base color/pattern? What areas are \"empty\"?\n3. OBJECTS - What distinct objects exist? What are their visual properties?\n4. OBJECT ROLES - Are some objects \"players\"? \"Goals\"? \"Obstacles\"? \"Collectibles\"?\n5. SPATIAL STRUCTURE - Is there a grid? Rooms? Paths? Corridors?\n6. INTERACTABLES - What objects can be interacted with? How do you know?\n7. UI ELEMENTS - Look for move counters, score displays, progress indicators!\n\nCRITICAL: Look for WALLS and BOUNDARIES!\n- If an object tried to move but couldn't, WHY?\n- Is there a border around the play area?\n- Are there internal walls or obstacles blocking movement?\n- What color/pattern indicates a wall vs empty space?\n\nIMPORTANT: UI ELEMENTS AND MOVE COUNTERS!\n- There are likely UI elements (dots, squares, lines) that track the number of SUCCESSFUL moves\n- These counters typically decrease or change with each move that has an EFFECT\n- When the counter runs out (e.g., all dots disappear), the game will FAIL and force a RESET\n- Look for patterns at the top, bottom, or sides of the screen that seem separate from the play area\n- Red dots, grey lines, or colored squares often serve as move/turn indicators\n\nEVIDENCE-BASED ANALYSIS:\n- Only make claims you have EVIDENCE for from observed state changes\n- If you're guessing without evidence, explicitly mark it as \"UNCONFIRMED HYPOTHESIS\"\n- When an action causes a state change, that's EVIDENCE - use it to confirm or refute hypotheses\n- No-effect actions also provide evidence about boundaries and constraints\n\nBe a detective. Make BREAKTHROUGHS in understanding. Don't just describe - ANALYZE.\nWhen you notice something new, explain its SIGNIFICANCE for gameplay.\nWhen previous understanding was WRONG, explicitly note the correction."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 1]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 2]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 3]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Action 4 rotates the active shield position Clockwise (Top -> Right)."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left)."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Shield rotates between these 4 fixed positions rather than moving continuously."
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "Analyze the environment in this game frame.\n\n=== STAGE/LEVEL INFO ===\nCurrent Stage: 1 (score: 0/254)\nActions in this stage: 4\n\n\nWHAT JUST HAPPENED:\nACTION2 had effect: The visible Pink Shield (Player) moved from the Right edge of the arena to the Bottom edge. An inter\nEvidence Status: STATE CHANGE OBSERVED - Use this as evidence!\n\nRECENT CHANGES OBSERVED (THIS IS EVIDENCE!):\nTotal: 428 pixels changed. Regions affected: lower_right_playarea (192), upper_right_playarea (128), lower_left_playarea (96), top_ui (12) Changes in both play area and UI elements. Change bounding box: rows [0-59], cols [8-59]\n\nObject-level changes: APPEARED: 1 objects\n  + Color 14 rectangular block (48x4) at (56, 8)\nDISAPPEARED: 1 objects\n  - Color 14 rectangular block (4x48) at (8, 56)\nMOVED: 1 objects\n  ~ Color 8 rectangular block (4x4) at (16, 40) moved down\n\n\n=== ACTION ANALYSIS INSIGHTS (from previous LLM analysis of this action) ===\nFull Interpretation: The visible Pink Shield (Player) moved from the Right edge of the arena to the Bottom edge. An internal Grey Block (Color 8) moved downwards by 12 pixels. The Action counter/UI at the top updated.\nWhy This Outcome: The Player Control (Pink Shield) was positioned on the Right edge. The 'Down' input (ACTION2) caused the shield to move to the Bottom edge, consistent with a directional control scheme where inputs map to the corresponding perimeter interaction slot. The previous location (Right) reverted to an Inactive Wall (Blue).\nUpdated Action Definition: Move Active Shield to Bottom Perimeter\nEnvironment Updates Discovered:\n  - The generic control scheme appears to be 'Direct Directional Mapping' (Up=Top, Right=Right, Down=Bottom, Left=Left).\n  - Evidence: Shield started at Top. ACTION1 (Up?) had no effect (already at Top). ACTION4 (Right) moved Top->Right. ACTION2 (Down) moved Right->Bottom.\n  - Internal objects (like the Grey Block) are dynamic and move during the action step (turn-based or time-step update).\nObjects Involved: Pink Active Shield (Color 14), Blue Inactive Wall (Color 1), Grey Block (Color 8), Top UI Indicator (Color 13)\n\n\u26a0\ufe0f IMPORTANT: The above insights were discovered by analyzing the action's effect.\nUse these insights to UPDATE your environment understanding!\n\n\nYOUR CURRENT ENVIRONMENT UNDERSTANDING (MAY BE WRONG - UPDATE IF NEEDED):\nBackground: Color 9 (dark red/brown)\nBorder: Yes (Color 3 (green)) - The playfield is a central square surrounded by a thick frame. The frame consists of specific wall slots on the four cardinal directions (Top, Left, Right, Bottom) and corner blocks.\nInternal walls/obstacles:\n  - Green (Color 3) clusters act as internal terrain/obstacles\nKnown movement constraints:\n  - Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left).\n  - Shield rotates between these 4 fixed positions rather than moving continuously.\nIdentified objects:\n  - Active Shield / Paddle: Color 14 (pink) Vertical Rectangular Bar (4x48 pixels) (Role: player)\n  - Inactive Wall Segments: Color 1 (blue) Rectangular Bars (Role: wall)\n  - Base / Structure: Color 0 (black) U-shape (Role: goal)\n  - Terrain Clusters: Color 3 (green) Irregular blobs (Role: obstacle)\n  - Orange Spec: Color 4 (orange) Single pixel/small dot (Role: collectible)\n  - Turn/Move Indicator: Color 13 (pink) Small dash (13x1 pixels) (Role: UI Element)\nSpatial structure: Enclosed square arena with a perimeter control system (4 directional slots for the shield).\n\n\u26a0\ufe0f IMPORTANT: The above understanding is TENTATIVE and based on limited observations.\nIf the action results CONTRADICT this understanding, you MUST update it!\nYou can REPLACE objects_identified entirely if the current list is wrong.\n\nPREVIOUS BREAKTHROUGHS:\n- The game mechanic is a 'Perimeter Defense' or 'Rotational Shield' system.\n- The player controls which of the 4 walls is 'Active' (Pink/Color 14). The other walls remain 'Inactive' (Blue/Color 1).\n- Action 4 rotates the active shield position Clockwise (Top -> Right).\n\nOPEN QUESTIONS TO INVESTIGATE:\n- What happens if an entity inside the arena hits the Pink Active Shield vs the Blue Inactive Walls?\n- Does the Orange spec (Color 4) have a function?\n- Do the Green clusters block internal moving objects?\n- What is the significance of the Pink UI dash at the top?\n\nCURRENT ACTION DEFINITIONS (ALSO TENTATIVE):\n  ACTION1: \"Move UP (No Effect)\"\n  ACTION2: \"Move Active Shield to Bottom Perimeter\"\n  ACTION3: (no definition yet)\n  ACTION4: \"Move/Rotate the active Pink Bar (Paddle/Shield) clockwise around the perimeter (e.g., Top -> Right).\"\n\nCRITICAL ANALYSIS TASKS:\n1. LOOK FOR WALLS/BOUNDARIES - If movement failed, identify what blocked it!\n2. What color is the BACKGROUND (empty space)?\n3. What distinct OBJECTS exist? What might their ROLES be?\n4. Are there patterns in the spatial layout?\n5. What movement CONSTRAINTS can you infer?\n6. LOOK FOR MOVE COUNTERS/UI ELEMENTS - Are there dots, squares, or lines that track moves?\n7. UNEXPLORED ELEMENTS: Which colors or sections of the grid have NOT been thoroughly analyzed yet? List specific colors or regions that need more investigation.\n8. DOMAIN DESCRIPTION: Provide a high-level conceptual description of the game. What type of game is this (puzzle, navigation, sokoban-like, etc.)? What appears to be the goal? How do the mechanics work together at a conceptual level?\n\nEVIDENCE-BASED REASONING:\n- State changes are EVIDENCE. Use them to CONFIRM or REFUTE hypotheses.\n- No-effect actions are EVIDENCE of boundaries, walls, or constraints.\n- If you have NO EVIDENCE for a claim, mark it as \"UNCONFIRMED HYPOTHESIS\"\n- Don't make uneducated guesses - only claim what you can support with evidence\n- If previous understanding was based on guessing and now contradicted by evidence, CORRECT IT\n\nUPDATING THE ENVIRONMENT MODEL:\n- Your objects_identified list REPLACES the previous one - include all objects you're confident about\n- If you now think an object has a different role, update the role_hypothesis\n- Add evidence_for_role explaining WHY you think an object has that role\n- If you realize a previous identification was WRONG, simply don't include it (or include corrected version)\n\nMake BREAKTHROUGHS! If you discover something new and significant, list it.\nIf previous understanding was WRONG, note the CORRECTION as a breakthrough.\n\nACTION DEFINITION UPDATES (BE VERY CONSERVATIVE):\nOnly suggest updates to action definitions if you have a DRASTIC new insight that fundamentally\nchanges the understanding of what the action does. Default to NOT suggesting updates.\n\nONLY suggest an update if:\n1. The current definition is completely WRONG or MISSING critical information\n2. You discovered something that CONTRADICTS the current definition\n3. You have HIGH CONFIDENCE based on EVIDENCE (not guessing)\n\nDefault: Leave suggested_action_updates as an EMPTY array unless truly necessary."
+      },
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "[BASE64_IMAGE_DATA_OMITTED]"
+        }
+      }
+    ]
+  }
+]

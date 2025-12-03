@@ -1,0 +1,1 @@
+1. Confirmed that 'Playable Block 1' (Color 12) and 'Playable Block 2' (Color 9) successfully moved one unit left, despite the 'NO effect' message for ACTION3. This further refines understanding that 'NO effect' only applies to secondary (e.g. UI/score) changes, not primary object movement.

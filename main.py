@@ -1,4 +1,5 @@
 # ruff: noqa: E402
+# ruff: noqa: E402
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env.example")
@@ -107,6 +108,19 @@ def main() -> None:
         help="Comma-separated list of tags for the scorecard (e.g., 'experiment,v1.0')",
         default=None,
     )
+    parser.add_argument(
+        "-m",
+        "--model",
+        type=str,
+        help="LLM model to use (e.g., 'google/gemini-2.5-pro-preview', 'anthropic/claude-3.5-sonnet')",
+        default=None,
+    )
+    parser.add_argument(
+        "--reasoning",
+        action="store_true",
+        help="Enable extended thinking/reasoning for supported models",
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -184,6 +198,8 @@ def main() -> None:
         ROOT_URL,
         games,
         tags=tags,  # Pass tags as keyword argument
+        llm_model=args.model,
+        reasoning=args.reasoning,
     )
     agent_thread = threading.Thread(target=partial(run_agent, swarm))
     agent_thread.daemon = True  # die when the main thread dies

@@ -1,0 +1,7 @@
+{
+  "target_action": "ACTION2",
+  "setup_sequence": [],
+  "reasoning": "ACTION2 has not been observed at all, making it the highest priority. There's no need for a setup sequence as the current state is as good as any to get an initial observation for a new action.",
+  "expected_information_gain": "Discover the effect of ACTION2, or confirm if it has no effect in this state.",
+  "current_board_assessment": "The current board state is neutral for testing a new action. We have no prior knowledge of ACTION2's effects, so any position is suitable to begin observations."
+}

@@ -1,0 +1,1 @@
+1. The consistent lack of effect for ACTION5, despite the player entity being positioned near potential movement areas, strongly suggests ACTION5 is either a 'no-op' action, conditional on an unobserved state, or attempts to move in a direction that is currently and always blocked (e.g., trying to move into a wall or out of bounds).

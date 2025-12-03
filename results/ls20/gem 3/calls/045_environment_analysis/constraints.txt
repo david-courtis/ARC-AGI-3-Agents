@@ -1,0 +1,5 @@
+- Player movement quantized to 8 pixels.
+- Player cannot enter Bright Green (Color 1) areas.
+- Detailed Layout: Start (4,6) -> Wall (4,5) blocks North. Valid path is West to (3,6).
+- Goal (1,5) is partially isolated by voids in Column 1.
+- Key (4,3) is likely accessed from the West (Column 3) due to obstacles.

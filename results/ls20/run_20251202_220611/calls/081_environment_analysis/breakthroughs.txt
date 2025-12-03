@@ -1,0 +1,1 @@
+1. Continued observation of ACTION5 having no visible effect further solidifies its classification as a 'no-op' action, regardless of the player's position near a boundary or not, as it attempts to move in a direction that is consistently blocked or simply isn't programmed for movement.

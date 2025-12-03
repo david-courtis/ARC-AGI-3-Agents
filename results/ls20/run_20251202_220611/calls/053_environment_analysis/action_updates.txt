@@ -1,0 +1,3 @@
+ACTION5: ACTION5 is a no-op action. It consistently has no visible effect, regardless of the position of the movable blocks or whether they are at boundaries. There are no observed conditions under which it produces a change. It is not an 'INTERACT/SELECT/ROTATE at current position' action as previously hypothesized, because no such interaction/selection/rotation has ever been observed.
+  Reason: Repeated observations confirm ACTION5 has no effect. The player entity is pressed against the upper boundary, yet ACTION5 still doesn't register movement or any other environmental change. This strongly suggests it's truly a null operation.
+

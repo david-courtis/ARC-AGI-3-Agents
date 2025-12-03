@@ -1,0 +1,4 @@
+1. Confirmed Level Design Logic: Obstacles are placed specifically to act as 'alignment stops'. The green block the payload landed on is perfectly positioned to align the payload's Y-coordinate with the Goal's Y-coordinate.
+2. Confirmed 'Falling' Physics: Changing gravity to Down caused the payload to fall through empty space (Color 9) until collision, validating the 'slide until stop' mechanic in vertical directions as well.
+3. Confirmed Stage 2 Payload: The active object is definitely the Grey Block (Color 11), distinct from Stage 1's Orange Block.
+4. Goal Approach Vector: The payload is now vertically aligned with the goal. The goal opens to the Right, which implies the next required gravity vector is LEFT (Action 3) to slide the payload into the cup.

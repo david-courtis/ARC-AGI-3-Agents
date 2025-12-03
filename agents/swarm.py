@@ -31,6 +31,8 @@ class Swarm:
     headers: dict[str, str]
     card_id: Optional[str]
     _session: requests.Session
+    llm_model: Optional[str]
+    reasoning: bool
 
     def __init__(
         self,
@@ -38,6 +40,8 @@ class Swarm:
         ROOT_URL: str,
         games: list[str],
         tags: list[str] = [],
+        llm_model: Optional[str] = None,
+        reasoning: bool = False,
     ) -> None:
         from . import AVAILABLE_AGENTS
 
@@ -55,6 +59,8 @@ class Swarm:
         self._session = requests.Session()
         self._session.headers.update(self.headers)
         self.tags = tags.copy() if tags else []
+        self.llm_model = llm_model
+        self.reasoning = reasoning
 
         # Set up base tags for tracing
         if self.agent_name.endswith(".recording.jsonl"):
@@ -75,15 +81,21 @@ class Swarm:
         # create all the agents
         for i in range(len(self.GAMES)):
             g = self.GAMES[i % len(self.GAMES)]
-            a = self.agent_class(
-                card_id=self.card_id,
-                game_id=g,
-                agent_name=self.agent_name,
-                ROOT_URL=self.ROOT_URL,
-                record=True,
-                cookies=self._session.cookies,
-                tags=self.tags,
-            )
+            # Build kwargs for agent - include LLM config if specified
+            agent_kwargs = {
+                "card_id": self.card_id,
+                "game_id": g,
+                "agent_name": self.agent_name,
+                "ROOT_URL": self.ROOT_URL,
+                "record": True,
+                "cookies": self._session.cookies,
+                "tags": self.tags,
+            }
+            if self.llm_model:
+                agent_kwargs["llm_model"] = self.llm_model
+            if self.reasoning:
+                agent_kwargs["reasoning"] = self.reasoning
+            a = self.agent_class(**agent_kwargs)
             self.agents.append(a)
 
         # create all the threads

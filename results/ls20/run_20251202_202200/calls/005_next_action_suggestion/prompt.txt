@@ -1,0 +1,18 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 1/8 attempts | Def: ACTION1 causes color changes in specific blocks at (42,40) -> 3 to 9, and at (40,40) -> 3 to 12. It also causes a change in a top_ui pixel, likely a score or status indicator (15 to 3).
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 appears to affect the display of pixels, specifically changing their color to a lighter green/black (color 3). The nature of the pattern created or removed is not yet clear, but it covers a significant area in the lower-right quadrant of the play area. It also changed a pixel in the top-left UI area.
+  ACTION3: NO OBSERVATIONS YET
+  ACTION4: NO OBSERVATIONS YET
+  ACTION5: NO OBSERVATIONS YET
+
+ENVIRONMENT UNDERSTANDING:
+Recent Observations:
+  - Pixels of color 12 and 9 in a block in the lower-right of the playarea are replaced by color 3.
+  - A single pixel of color 15 in the top-left of the UI area is replaced by color 3.
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

@@ -1,0 +1,2 @@
+1. Confirmed that ACTION2 successfully moves the 'Moving Block' (Color 8) one unit downwards.
+2. Clarified the dynamic behavior of 'Dynamic Bottom Bar/Fill' (Color 14) for ACTION2: it consistently moves from (8,56) to (56,8) after a downward movement of the 'Moving Block' (Color 8). This confirms specific spatial shifts for each action's trigger.

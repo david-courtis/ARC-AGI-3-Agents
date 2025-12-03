@@ -1,0 +1,2 @@
+1. Confirmed that 'no effect' actions (specifically ACTION5 in this observation) are strong evidence for movement constraints, indicating the player block was blocked in the attempted direction(s) of the action.
+2. Further reinforced the understanding that ACTION5 (and by extension, any 'no effect' action in the future) is evidence of surrounding boundaries or obstacles.

@@ -1,0 +1,3 @@
+1. CORRECTION: The dynamic payload is the ORANGE Block (Color 4), not a Grey Block (Color 8). The previous hypothesis of a 'hidden' grey block was likely incorrect; the visible visual evidence shows the Orange block in the exact position described as 'blocked'.
+2. Physics Confirmation: The payload did not move UP because it is physically trapped/blocked by the green terrain immediately above it (an overhang).
+3. Goal Identification: The Black U-shape is confirmed as the destination.

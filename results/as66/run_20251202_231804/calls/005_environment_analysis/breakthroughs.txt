@@ -1,0 +1,7 @@
+1. Confirmed the existence and function of the primary blue boundaries (Color 12) surrounding the play area.
+2. Identified a clear top UI region (row 0) where 'move counter' elements appear.
+3. Identified a robust bottom UI/boundary structure composed of pink (Color 10), green (Color 3), and yellow (Color 4) lines.
+4. Discovery of a new object (Color 13 rectangular block) appearing in the top UI confirms the presence of dynamic UI elements, possibly a move counter or status indicator, which is affected by successful actions.
+5. Discovery of a second new object (Color 14 rectangular block) at the very bottom of the screen, which suggests a new boundary or a 'fill' mechanic at the bottom of the play area.
+6. Identified a specific dynamic element at (4,8) (a single pixel that changed from Color 14 to Color 12), suggesting either a dynamic boundary corner or another type of counter/status indicator tied to specific locations.
+7. Established with high confidence that the orange block (Color 8) is an active, player-controlled, or game-controlled object due to its movement via ACTION2.

@@ -1,0 +1,3 @@
+ACTION5: ACTION5 attempts to move the 'player_like_object' to an unknown direction. If the 'player_like_object' is blocked, the 'movable_marker' (Color 11) moves up by one unit.
+  Reason: The 'player_like_object' remained stationary while the 'movable_marker' moved up, indicating ACTION5 has a primary target (player) and a secondary, conditional effect on the movable marker when the primary is blocked or inactive.
+

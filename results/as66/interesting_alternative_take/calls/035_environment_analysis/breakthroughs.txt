@@ -1,0 +1,1 @@
+1. CONFIRMED SCREEN WRAPPING: The Pink Shield allows the payload to exit the screen and re-enter from the opposite side. Evidence: Coordinate change from (48, 28) to (48, 48) under Left Gravity is only possible via a wrap.

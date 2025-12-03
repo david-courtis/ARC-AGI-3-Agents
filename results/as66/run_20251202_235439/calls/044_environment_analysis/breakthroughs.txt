@@ -1,0 +1,1 @@
+1. Confirmed the movable block can move two units downwards as demonstrated by ACTION2.

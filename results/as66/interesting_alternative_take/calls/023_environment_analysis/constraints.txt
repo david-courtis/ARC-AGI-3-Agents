@@ -1,0 +1,3 @@
+- Payload blocked by Green obstacles.
+- Payload currently pinned against the right side of the central obstacle due to Leftward gravity.
+- Perimeter walls block exit.

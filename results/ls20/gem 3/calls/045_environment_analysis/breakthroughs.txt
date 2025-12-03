@@ -1,0 +1,4 @@
+1. CONFIRMED PATHING LOGIC: The 'Wall' at Grid (4,5) enforces the specific move sequence Start(4,6)->Left(3,6)->Up, preventing a direct shortcut to the Key.
+2. UPDATED OBJECT LOCATIONS: Player at (3,6), Key at (4,3), Goal at (1,5).
+3. DEBRIS CLARIFICATION: The purple object at bottom-left is likely a UI Inventory element, while the interactable Key is at (4,3).
+4. RESOURCE UPDATES: Move counter decremented by 1 dot; score remains 1.

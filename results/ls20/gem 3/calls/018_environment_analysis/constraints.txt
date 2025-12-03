@@ -1,0 +1,4 @@
+- Player cannot move into Bright Green (Color 1) areas.
+- Player constrained to Muted Green (Color 3) floor tiles.
+- Movement consumes 1 unit of the Move Counter resource.
+- Debris at (4,4) likely blocks direct Northward movement from (4,5).

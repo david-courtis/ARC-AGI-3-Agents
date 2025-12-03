@@ -1,0 +1,157 @@
+[
+  {
+    "role": "system",
+    "content": "You are an environment analyst studying an unknown game world.\n\nYour SOLE FOCUS is understanding the ENVIRONMENT - not the actions.\n\nCRITICAL: YOUR CURRENT UNDERSTANDING MAY BE WRONG!\n- Previous object identifications and role hypotheses are TENTATIVE and may need correction\n- If action results contradict your current understanding, UPDATE IT\n- You can and SHOULD replace incorrect objects/roles with better interpretations\n- Every analysis is an opportunity to REFINE or CORRECT the environment model\n\nYou must discover and document:\n1. BOUNDARIES/WALLS - Where can entities NOT move? What stops movement?\n2. BACKGROUND - What is the base color/pattern? What areas are \"empty\"?\n3. OBJECTS - What distinct objects exist? What are their visual properties?\n4. OBJECT ROLES - Are some objects \"players\"? \"Goals\"? \"Obstacles\"? \"Collectibles\"?\n5. SPATIAL STRUCTURE - Is there a grid? Rooms? Paths? Corridors?\n6. INTERACTABLES - What objects can be interacted with? How do you know?\n7. UI ELEMENTS - Look for move counters, score displays, progress indicators!\n\nCRITICAL: Look for WALLS and BOUNDARIES!\n- If an object tried to move but couldn't, WHY?\n- Are there internal walls or obstacles blocking change?\n- What color/pattern indicates a boundary vs empty space?\n\nIMPORTANT: UI ELEMENTS AND MOVE COUNTERS!\n- There are likely UI elements (dots, squares, lines) that track the number of SUCCESSFUL moves\n- These counters typically decrease or change with each move that has an EFFECT\n- When the counter runs out (e.g., all dots disappear), the game will FAIL and force a RESET\n- Look for patterns at the top, bottom, or sides of the screen that seem separate from the play area\n- Red dots, grey lines, or colored squares often serve as move/turn indicators\n\nEVIDENCE-BASED ANALYSIS:\n- Only make claims you have EVIDENCE for from observed state changes\n- If you're guessing without evidence, explicitly mark it as \"UNCONFIRMED HYPOTHESIS\"\n- When an action causes a state change, that's EVIDENCE - use it to confirm or refute hypotheses\n- No-effect actions also provide evidence about boundaries and constraints\n\nBe a detective. Make BREAKTHROUGHS in understanding. Don't just describe - ANALYZE.\nWhen you notice something new, explain its SIGNIFICANCE for gameplay.\nWhen previous understanding was WRONG, explicitly note the correction."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 1]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed 'Muted Green' is the walkable floor and 'Bright Green' is the boundary/wall."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 2]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: identified top-left UI dots as a localized move/time counter that updates with actions."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 3]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Verified player object is a composite of Purple (body) and Cyan (top edge)."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 4]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Identified a specific small object (Purple/Black debris) at grid (4,4) directly North of the player's current position. This may be an obstacle."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 5]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed ACTION3 (Move Left) moves the player 8 pixels."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 6]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed movement logic aligns perfectly with an 8x8 pixel grid."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 7]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Spatial mapping refined: Player is currently at grid (5,4). Debris is at (4,3). Goal is at (4,2). Hole is at column 2."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 8]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Confirmed 'Move Counter' mechanism: The UI represents a finite resource (time or steps) that acts as a gameplay constraint."
+  },
+  {
+    "role": "user",
+    "content": "[Previous Environment Analysis 9]"
+  },
+  {
+    "role": "assistant",
+    "content": "BREAKTHROUGH: Internal Obstacle identified: A distinct 'Hole' (Bright Green void) exists at approx grid (2,2-3), narrowing the path on the left."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player cannot move into Bright Green areas (walls/void)."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player stays within the Muted Green floor area."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Player moves 8 pixels (1 grid unit) per step."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Cannot move into Bright Green (void/wall) areas."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Must remain on Muted Green (floor) tiles."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Cannot move into Bright Green (Void/Wall) areas."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Movement is quantized to 8-pixel increments (grid-aligned)."
+  },
+  {
+    "role": "user",
+    "content": "[Environment observation]"
+  },
+  {
+    "role": "assistant",
+    "content": "Movement constraint discovered: Play area is bounded rows ~2-6 and cols ~2-6."
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "Analyze the environment in this game frame.\n\n=== STAGE/LEVEL INFO ===\nCurrent Stage: 1 (score: 0/254)\nActions in this stage: 5\n\n\nWHAT JUST HAPPENED:\nACTION1 had effect: The action caused the Player Character to move UP by 1 grid unit (8 pixels). The movement was execut\nEvidence Status: STATE CHANGE OBSERVED - Use this as evidence!\n\nRECENT CHANGES OBSERVED (THIS IS EVIDENCE!):\nTotal: 129 pixels changed. Regions affected: lower_right_playarea (128), top_ui (1) Changes in both play area and UI elements. Change bounding box: rows [2-47], cols [8-47]\n\nObject-level changes: MOVED: 2 objects\n  ~ Color 12 rectangular block (8x2) at (40, 40) moved up\n  ~ Color 9 rectangular block (8x6) at (42, 40) moved up\n\n\n=== ACTION ANALYSIS INSIGHTS (from previous LLM analysis of this action) ===\nFull Interpretation: The action caused the Player Character to move UP by 1 grid unit (8 pixels). The movement was executed cleanly, consuming one 'move' resource from the UI counter.\nWhy This Outcome: The 8x8 grid cell immediately North of the player (rows 32-39, columns 40-47) was valid, empty Muted Green floor (Color 3). The Debris object located at (4,4) was adjacent to the path but did not obstruct it.\nEnvironment Updates Discovered:\n  - Confirmed Player moves 8 pixels UP in response to ACTION1.\n  - Reconfirmed Debris location at grid (4,4), adjacent to the player's new position.\n  - Verified movement affects exactly 128 pixels in the play area (swapping one 8x8 tile for another) plus 1 pixel in the UI.\nObjects Involved: Player Character, Move Counter\n\n\u26a0\ufe0f IMPORTANT: The above insights were discovered by analyzing the action's effect.\nUse these insights to UPDATE your environment understanding!\n\n\nYOUR CURRENT ENVIRONMENT UNDERSTANDING (MAY BE WRONG - UPDATE IF NEEDED):\nBackground: Muted Green (Color 3)\nBorder: Yes (Bright Green (Color 0/1)) - Solid contiguous block of Bright Green surrounding the playable Muted Green area, acting as a void/wall.\nInternal walls/obstacles:\n  - Rectangular hole (Bright Green) inside the play area (approx grid x:2, y:2)\n  - Rectangular void (Bright Green) at grid relative x:2, y:2\n  - Possible small obstacle (Purple/Black debris) at grid relative x:4, y:4\n  - Rectangular void (Bright Green) approx 2x4 blocks on the left side (approx grid x:2, y:2-3)\n  - Solid Bright Green border blocking all movement outside the central room area\nKnown movement constraints:\n  - Player cannot move into Bright Green areas (walls/void).\n  - Player stays within the Muted Green floor area.\n  - Player moves 8 pixels (1 grid unit) per step.\n  - Cannot move into Bright Green (void/wall) areas.\n  - Must remain on Muted Green (floor) tiles.\n  - Cannot move into Bright Green (Void/Wall) areas.\n  - Movement is quantized to 8-pixel increments (grid-aligned).\n  - Play area is bounded rows ~2-6 and cols ~2-6.\nIdentified objects:\n  - Player Character: Purple body with Cyan top strip 8x8 Square Block (Role: player)\n  - Goal/NPC: Yellow with Black/Purple face pattern 8x8 Square Block (Role: goal)\n  - Small Debris: Purple and Black Small irregular 'heart' or 'V' shape (approx 4x4 pixels centered in 8x8 tile) (Role: collectible_or_obstacle)\n  - Move Counter: Red/Grey/Green sequence Row of small squares (Role: resource_limit)\n  - Lives/Status: Orange Three squares in top right (Role: lives_indicator)\nSpatial structure: Strict 8x8 pixel grid. Playable area is an irregular room of Muted Green floor tiles surrounded by Bright Green walls. Grid coordinates (0,0) top-left to (7,7) bottom-right align with 64x64 resolution.\n\n\u26a0\ufe0f IMPORTANT: The above understanding is TENTATIVE and based on limited observations.\nIf the action results CONTRADICT this understanding, you MUST update it!\nYou can REPLACE objects_identified entirely if the current list is wrong.\n\nPREVIOUS BREAKTHROUGHS:\n- Confirmed 'Muted Green' is the walkable floor and 'Bright Green' is the boundary/wall.\n- identified top-left UI dots as a localized move/time counter that updates with actions.\n- Verified player object is a composite of Purple (body) and Cyan (top edge).\n- Identified a specific small object (Purple/Black debris) at grid (4,4) directly North of the player's current position. This may be an obstacle.\n- Confirmed ACTION3 (Move Left) moves the player 8 pixels.\n- Confirmed movement logic aligns perfectly with an 8x8 pixel grid.\n- Spatial mapping refined: Player is currently at grid (5,4). Debris is at (4,3). Goal is at (4,2). Hole is at column 2.\n- Confirmed 'Move Counter' mechanism: The UI represents a finite resource (time or steps) that acts as a gameplay constraint.\n- Internal Obstacle identified: A distinct 'Hole' (Bright Green void) exists at approx grid (2,2-3), narrowing the path on the left.\n\nOPEN QUESTIONS TO INVESTIGATE:\n- What happens if the player touches the Debris? Is it collected or does it block?\n- What is the function of the 'L' shape in the bottom left corner?\n- Does the 'Hole' cause death/reset if stepped into, or is it just a solid wall?\n\nCURRENT ACTION DEFINITIONS (ALSO TENTATIVE):\n  ACTION1: \"Moves the player object (8x8 purple block with cyan top) UP by 1 grid unit (8 pixels), provided the target space is empty (floor color 3).\"\n  ACTION2: (no definition yet)\n  ACTION3: \"Move the player object 8 pixels (1 grid unit) to the Left.\"\n  ACTION4: \"Move the player object 8 pixels (1 grid unit) to the RIGHT (Positive X direction). Requires open floor (Color 3) in the target space.\"\n\nCRITICAL ANALYSIS TASKS:\n1. LOOK FOR WALLS/BOUNDARIES - If movement failed, identify what blocked it!\n2. What color is the BACKGROUND (empty space)?\n3. What distinct OBJECTS exist? What might their ROLES be?\n4. Are there patterns in the spatial layout?\n5. What movement CONSTRAINTS can you infer?\n6. LOOK FOR MOVE COUNTERS/UI ELEMENTS - Are there dots, squares, or lines that track moves?\n7. UNEXPLORED ELEMENTS: Which colors or sections of the grid have NOT been thoroughly analyzed yet? List specific colors or regions that need more investigation.\n8. DOMAIN DESCRIPTION: Provide a high-level conceptual description of the game. What type of game is this (puzzle, navigation, sokoban-like, etc.)? What appears to be the goal? How do the mechanics work together at a conceptual level?\n\nEVIDENCE-BASED REASONING:\n- State changes are EVIDENCE. Use them to CONFIRM or REFUTE hypotheses.\n- No-effect actions are EVIDENCE of boundaries, walls, or constraints.\n- If you have NO EVIDENCE for a claim, mark it as \"UNCONFIRMED HYPOTHESIS\"\n- Don't make uneducated guesses - only claim what you can support with evidence\n- If previous understanding was based on guessing and now contradicted by evidence, CORRECT IT\n\nUPDATING THE ENVIRONMENT MODEL:\n- Your objects_identified list REPLACES the previous one - include all objects you're confident about\n- If you now think an object has a different role, update the role_hypothesis\n- Add evidence_for_role explaining WHY you think an object has that role\n- If you realize a previous identification was WRONG, simply don't include it (or include corrected version)\n\nMake BREAKTHROUGHS! If you discover something new and significant, list it.\nIf previous understanding was WRONG, note the CORRECTION as a breakthrough.\n\nACTION DEFINITION UPDATES (BE VERY CONSERVATIVE):\nOnly suggest updates to action definitions if you have a DRASTIC new insight that fundamentally\nchanges the understanding of what the action does. Default to NOT suggesting updates.\n\nONLY suggest an update if:\n1. The current definition is completely WRONG or MISSING critical information\n2. You discovered something that CONTRADICTS the current definition\n3. You have HIGH CONFIDENCE based on EVIDENCE (not guessing)\n\nDefault: Leave suggested_action_updates as an EMPTY array unless truly necessary."
+      },
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "[BASE64_IMAGE_DATA_OMITTED]"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,2 @@
+1. Confirmed the consistent behavior of the 'Dynamic Bottom Bar/Fill' (Color 14) after ACTION2: it consistently appears as a 4x48 block at (56,8) after a downward movement of the 'Moving Block' (Color 8), confirming specific spatial shifts for each action's trigger.
+2. The orange (Color 8) 'Moving Block' successfully moved one unit downwards with ACTION2, providing a specific instance of unblocked downward movement, which helps in understanding conditions under which previous ACTION2 attempts were blocked.

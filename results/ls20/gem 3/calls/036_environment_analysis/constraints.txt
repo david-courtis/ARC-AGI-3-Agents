@@ -1,0 +1,5 @@
+- Player constrained to Muted Green floor tiles.
+- Cannot move into Bright Green walls/voids.
+- Movement is grid-based (8 pixels).
+- Previous move Right failed at (3,5), indicating (4,5) is a wall.
+- Current position (3,6) has a clear path to the East (Right).

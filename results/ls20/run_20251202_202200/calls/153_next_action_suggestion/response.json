@@ -1,0 +1,7 @@
+{
+  "target_action": "ACTION5",
+  "setup_sequence": [],
+  "reasoning": "ACTION5 has not been attempted at all, so it has the highest priority for initial testing. Observing no change (or any other change) will provide the first data point for this action.",
+  "expected_information_gain": "We will get our first observation for ACTION5, moving it from 0/8 attempts to 1/8. This will reduce our uncertainty about what ACTION5 does, even if it confirms it has no visible effect in this state.",
+  "current_board_assessment": "The current board state is suitable for testing ACTION5. Since its effect is unknown, and potentially nil, there's no specific state that would be 'bad' for testing it globally at this stage of exploration."
+}

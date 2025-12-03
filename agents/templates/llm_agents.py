@@ -606,6 +606,163 @@ Call exactly one action.
         )
 
 
+class OpenRouterLLM(LLM, Agent):
+    """An LLM agent that uses OpenRouter API with JSON structured outputs.
+
+    Uses response_format with json_schema instead of tool calling,
+    which works with Gemini and other models on OpenRouter.
+    """
+
+    MAX_ACTIONS = 80
+    DO_OBSERVATION = True
+    MODEL_REQUIRES_TOOLS = False  # We use JSON schema, not tools
+    MODEL = "google/gemini-3-pro-preview"
+
+    # JSON schema for action selection
+    ACTION_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "reasoning": {
+                "type": "string",
+                "description": "Brief reasoning about the current state and why this action was chosen",
+            },
+            "action": {
+                "type": "string",
+                "enum": ["RESET", "ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6", "ACTION7"],
+                "description": "The action to take",
+            },
+            "x": {
+                "type": ["string", "null"],
+                "description": "X coordinate for ACTION6 (0-63), null for other actions",
+            },
+            "y": {
+                "type": ["string", "null"],
+                "description": "Y coordinate for ACTION6 (0-63), null for other actions",
+            },
+        },
+        "required": ["reasoning", "action"],
+        "additionalProperties": False,
+    }
+
+    def choose_action(
+        self, frames: list[FrameData], latest_frame: FrameData
+    ) -> GameAction:
+        """Choose action using OpenRouter API with JSON structured output."""
+
+        logging.getLogger("openai").setLevel(logging.CRITICAL)
+        logging.getLogger("httpx").setLevel(logging.CRITICAL)
+
+        # Use OpenRouter's OpenAI-compatible endpoint
+        client = OpenAIClient(
+            api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+            base_url="https://openrouter.ai/api/v1",
+        )
+
+        # First action is always RESET
+        if len(self.messages) == 0:
+            user_prompt = self.build_user_prompt(latest_frame)
+            message0 = {"role": "user", "content": user_prompt}
+            self.push_message(message0)
+            message1 = {"role": "assistant", "content": '{"reasoning": "Starting the game", "action": "RESET"}'}
+            self.push_message(message1)
+            return GameAction.RESET
+
+        # Add frame response as user message
+        function_response = self.build_func_resp_prompt(latest_frame)
+        message2 = {"role": "user", "content": str(function_response)}
+        self.push_message(message2)
+
+        if self.DO_OBSERVATION:
+            logger.info("Sending to OpenRouter for observation...")
+            try:
+                response = client.chat.completions.create(
+                    model=self.MODEL,
+                    messages=self.messages,
+                )
+            except openai.BadRequestError as e:
+                logger.info(f"Message dump: {self.messages}")
+                raise e
+            self.track_tokens(
+                response.usage.total_tokens, response.choices[0].message.content
+            )
+            message3 = {
+                "role": "assistant",
+                "content": response.choices[0].message.content,
+            }
+            logger.info(f"Assistant: {response.choices[0].message.content}")
+            self.push_message(message3)
+
+        # Ask for next action with structured output
+        action_prompt = self.build_action_prompt()
+        message4 = {"role": "user", "content": action_prompt}
+        self.push_message(message4)
+
+        logger.info("Sending to OpenRouter for action...")
+        try:
+            response = client.chat.completions.create(
+                model=self.MODEL,
+                messages=self.messages,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "game_action",
+                        "strict": True,
+                        "schema": self.ACTION_SCHEMA,
+                    },
+                },
+            )
+        except openai.BadRequestError as e:
+            logger.info(f"Message dump: {self.messages}")
+            raise e
+
+        self.track_tokens(response.usage.total_tokens)
+        content = response.choices[0].message.content
+        logger.debug(f"... got response {content}")
+
+        # Store assistant response in messages
+        message5 = {"role": "assistant", "content": content}
+        self.push_message(message5)
+
+        # Parse the JSON response
+        try:
+            data = json.loads(content)
+            action_name = data.get("action", "ACTION5")
+            logger.info(f"Assistant chose: {action_name} - {data.get('reasoning', '')[:100]}")
+        except Exception as e:
+            logger.warning(f"JSON parsing error: {e}")
+            action_name = "ACTION5"
+            data = {}
+
+        action = GameAction.from_name(action_name)
+
+        # Handle ACTION6 coordinates
+        if action_name == "ACTION6" and data.get("x") and data.get("y"):
+            action.set_data({"x": data["x"], "y": data["y"]})
+
+        return action
+
+    def build_action_prompt(self) -> str:
+        """Build prompt asking for the next action."""
+        return textwrap.dedent(
+            """
+Now choose your next action. Respond with a JSON object containing:
+- "reasoning": Brief explanation of your strategy
+- "action": One of RESET, ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, ACTION7
+- "x" and "y": Only needed for ACTION6 (coordinates 0-63)
+
+Available actions:
+- RESET: Start or restart the game
+- ACTION1: Up/W
+- ACTION2: Down/S
+- ACTION3: Left/A
+- ACTION4: Right/D
+- ACTION5: Enter/Spacebar/Delete
+- ACTION6: Click at coordinates (x, y)
+- ACTION7: Alternative action
+        """
+        )
+
+
 # Example of a custom LLM agent
 class MyCustomLLM(LLM):
     """Template for creating your own custom LLM agent."""

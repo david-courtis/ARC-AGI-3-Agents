@@ -1,0 +1,3 @@
+1. STRATEGIC ALIGNMENT CONFIRMED: The Level Design uses internal obstacles as 'stops' to align the payload. The payload just moved UP and stopped against a Green block at row 36. This specific row appears to align perfectly with the 'opening' of the Black Goal.
+2. GRAVITY UP DYNAMICS: Confirmed that setting Gravity UP (Action 1) causes the payload to 'fall' upwards until it hits a ceiling (Green obstacle in this case).
+3. PUZZLE LOGIC: The solution path appears to be: 1. Slide Right (align X against wall), 2. Slide Up (align Y against ceiling), 3. Slide Left (enter Goal).

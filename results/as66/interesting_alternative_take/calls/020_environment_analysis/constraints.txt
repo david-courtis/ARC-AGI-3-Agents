@@ -1,0 +1,4 @@
+- Payload slides continuously in the cardinal direction of the Active Pink Shield.
+- Payload stops only when hitting a Green Obstacle or the Perimeter Wall.
+- Active Shield is restricted to the 4 cardinal perimeter slots.
+- Diagonal movement is not observed.

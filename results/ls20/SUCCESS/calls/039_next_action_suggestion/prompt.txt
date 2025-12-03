@@ -1,0 +1,93 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 2/3 consistent, 3/8 attempts | Def: ACTION1 moves some rectangular blocks upwards by one row, and consumes one move counter dot (Color 9) from the top UI.
+  ACTION2: 2/3 consistent, 3/8 attempts | Def: ACTION2 moves the selected/active block(s) downwards by one row, provided there is nothing blocking the movement (e.g., another block, a boundary, or the edge of the play area). Movement consumes one turn, indicated by a change in the top UI dots.
+  ACTION3: 2/3 consistent, 3/8 attempts | Def: ACTION3 moves all movable objects (specifically rectangular blocks) that are not obstructed to the left by one column.
+  ACTION4: 2/3 consistent, 3/8 attempts | Def: ACTION4 moves selected objects one step to the RIGHT.
+  ACTION5: VERIFIED - ACTION5 is ineffective when no moves remain or when movement is otherwise obstructed. If no moves remain, no action is possible, regardless of potential obstructions.
+
+ENVIRONMENT UNDERSTANDING:
+BACKGROUND: Color 3 (green)
+
+BORDER: Yes (Color 3 (green))
+  Description: The outermost border encompassing the grid is Color 3 (green). The inner play area is defined by Color 8 (light green).
+
+SPATIAL STRUCTURE:
+  The game appears to be played on a grid within a larger square area defined by 'Color 8 (light green)'. The 'Color 3 (green)' background surrounds this area. The UI elements are clearly separated at the top and bottom. The play area itself has indentations and varying depths, suggesting a non-uniform structure for movement. The objects are scattered, indicating a non-linear path or open-ended movement within the play area.
+
+KEY BREAKTHROUGHS:
+  - Identified a 'Move Indicator Dots' UI element (Color 9 dots at the top) which decreased by one, indicating a move counter. This is critical for understanding game progression and failure conditions.
+  - Identified 'Goal Indicators' (Color 12 squares at the top right UI) and a 'Bottom UI line' (Color 7 squares) that are separate from the main play area and likely track progress or different states.
+  - Confirmed that 'Color 8 (light green)' defines the main playable area where objects move, contrasting with the 'Color 3 (green)' background.
+  - The game has distinct UI elements for score/progress/moves at the top and bottom, separate from the primary play area.
+  - Discovered 'Depleted Move Indicator Dots' (Color 5, red), confirming the move counter mechanism tracks consumed moves by changing their color.
+  - Identified a new object type: 'Yellow Block' (Color 11), a composite object containing Color 0 and Color 9 pixels, suggesting objects can combine or carry others.
+  - The previous 'Purple Block' and 'Cyan Block' have drastically reduced in size (to 1x2 and 1x2 pixels respectively), indicating they are either broken down, transformed, or represent a different state of the original blocks. This suggests blocks are not static in their initial forms and can be manipulated or consumed.
+  - The L-shaped blocks (Color 0) appear to be breaking down or fragmenting into smaller black pixels, suggesting they might be destroyable or can change shape over time/interaction.
+  - Confirmed that an unsuccessful action (ACTION5) results in no visual change, reinforcing the idea that blocked movement is a key constraint.
+  - The 'Small Purple Pixel' (Color 9) is now isolated, further supporting its role as a fragmented piece of the larger 'Purple Block'.
+  - Confirmed 'Depleted Move Indicator Dots' (Color 5, red) represent zero remaining moves, indicating the game state is now critical or failed. This solidifies the game's turn-based or move-limited nature.
+  - The 'Small Purple Pixel' (Color 9) is now on top of the 'Yellow Block' (Color 11), suggesting the Yellow Block can interact with, pick up, or carry other objects/fragments.
+  - Confirmed that ACTION5's ineffectiveness in this frame is due to the complete depletion of move indicator dots (all red Color 5), explicitly linking action failure to game state rather than just physical obstruction.
+  - Identified two new large rectangular block objects (Color 9 and Color 12) that are movable. These moved downwards and are distinct from the 'Purple Block Fragment' and 'Cyan Block Fragment' previously observed, suggesting different states or types of blocks exist.
+  - Clarified that 'Color 12' represents a movable block in the play area, which introduces a potential conflict with 'Goal Indicators' being Color 12 (orange) in the UI. This requires further investigation.
+
+MOVEMENT CONSTRAINTS:
+  - Objects can move upwards.
+  - The dark green area (Color 8) acts as the primary movable space.
+  - L-shaped Black Blocks (Color 0) act as fixed obstacles / boundaries.
+  - The edges of the 'Light green play area' likely constrain movement.
+  - Movement was blocked by some element, as ACTION5 had no effect.
+  - Movement was blocked by a boundary, obstacle, or another object, causing ACTION5 to have no effect.
+  - The L-shaped block at the bottom left is a fixed obstacle.
+  - The fragmented L-shaped pixels (Color 0) in the top center may also act as obstacles or be destroyable.
+  - ACTION5 had no effect because all move indicator dots are depleted (red), indicating a game state where actions are no longer possible.
+
+INTERNAL WALLS/OBSTACLES:
+  - L-shaped Block (Color 0)
+  - L-shaped Block (bottom left, Color 0)
+  - L-shaped Block (fragmented top center, Color 0)
+
+IDENTIFIED OBJECTS:
+  - Move Indicator Dots: Color 9 (purple) Small, single-pixel dots in a horizontal line (Role: Move/Turn counter)
+  - Depleted Move Indicator Dots: Color 5 (red) Small, single-pixel dots in a horizontal line (Role: Used move counter / Game state indicator)
+  - Goal Indicators: Color 12 (orange) Small squares (Role: Progress or goal indicators)
+  - Bottom UI line: Color 7 (light grey) Horizontal line of small squares (Role: Another type of progress or state indicator)
+  - Light green play area: Color 8 (light green) Large rectangular area with some internal indentations (Role: Main playable area)
+  - Purple Block Fragment: Color 9 (purple) 1x1 pixel (Role: Part of a larger object or collectible)
+  - Cyan Block Fragment: Color 10 (cyan) 1x2 rectangle (Role: Small collectible or interactive element / transformed block)
+  - Yellow Block: Color 11 (yellow) 3x2 pixels with a single black pixel below and a purple pixel on top (Role: Movable game piece / container / composite object)
+  - L-shaped Block (bottom left): Color 0 (black) L-shaped block (Role: Fixed obstacle / boundary)
+  - L-shaped Block (fragmented top center): Color 0 (black) Smaller single black pixels (Role: Potentially destroyable obstacles / boundaries that fragment)
+  - New Purple Rectangular Block: Color 9 (purple) 8x6 pixels rectangular block (Role: Movable object)
+  - New Cyan Rectangular Block: Color 12 (cyan) 8x2 pixels rectangular block (Role: Movable object)
+
+OPEN QUESTIONS:
+  - What triggers the transformation/fragmentation of L-shaped blocks (Color 0)?
+  - What causes objects to move? Is it player control, or an automated process? (i.e. if it is player control, what are the player boundaries or avatars?)
+  - What are the victory conditions and precise failure conditions for the game beyond running out of moves?
+  - What is the ultimate purpose of the 'Goal Indicators' (Color 12 squares) in the UI and the 'Bottom UI line' (Color 7 squares)? How do they change with game progress?
+  - Do any colors represent 'null' or empty cells in the context of movable objects?
+  - How does the 'Yellow Block' (Color 11) interact with or collect the 'Small Purple Pixel' (Color 9)? Is it a collection mechanism or just a visual placement?
+  - Is 'Color 12' used for both 'Goal Indicators' (orange) and a type of movable block (cyan)? If so, how are they disambiguated? Are they related or just a color coincidence?
+
+Legacy Objects:
+  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2): Involved in ACTION2 action
+  - Color 9 rectangular block (8x6): Involved in ACTION2 action
+  - Move Indicator Dots (Color 9): Involved in ACTION1 action
+  - Depleted Move Indicator Dots (Color 5): Involved in ACTION1 action
+  - Move Indicator Dots: Involved in ACTION4 action
+  - Depleted Move Indicator Dots: Involved in ACTION4 action
+
+Recent Observations:
+  - ACTION4 appears to be the 'move right' action, moving blocks one cell right.
+  - The move counter decreases with each successful action, indicated by a Color 9 dot turning into a Color 5 dot.
+  - ACTION1 moves both the cyan and purple blocks together.
+
+VERIFIED ACTIONS (can use for setup): ACTION5
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4
+
+Suggest what action to test next and any setup sequence needed.

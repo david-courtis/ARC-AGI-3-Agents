@@ -1,0 +1,1 @@
+1. Confirmed that the 'Block stack 1', 'Block stack 2', and 'Block L-shape' objects function as solid, impassable walls/obstacles, as a movement attempt (ACTION5) was completely blocked by them.

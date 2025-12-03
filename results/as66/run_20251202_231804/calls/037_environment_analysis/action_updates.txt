@@ -1,0 +1,3 @@
+ACTION2: ACTION2 moves the 'Moving Block' (Color 8) one unit downwards. This action also causes the previous 'Dynamic Bottom Bar/Fill' (Color 14) at (8,56) to disappear and a new Color 14 block to appear at (56,8).
+  Reason: The recent observation clearly showed the 'Moving Block' moving downwards via ACTION2, and a consistent shift of the Color 14 block from (8,56) to (56,8) was observed, clarifying the dynamic bottom fill's response to this action.
+

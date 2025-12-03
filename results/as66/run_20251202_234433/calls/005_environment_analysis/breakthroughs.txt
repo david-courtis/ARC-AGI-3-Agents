@@ -1,0 +1,2 @@
+1. Identified clear UI elements (Color 13 and Color 14 blocks) that reliably appear or change with actions, separate from the main play area. This suggests an independent UI layer.
+2. Confirmed the 'player' block changes color (from 14 to 12) upon successful movement, suggesting a 'charged' or 'active' state indicated by color.

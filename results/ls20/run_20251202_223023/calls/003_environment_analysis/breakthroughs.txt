@@ -1,0 +1,5 @@
+1. Identified a clear top UI section with move counters (red/green dots) and potentially a score/progress indicator (orange squares).
+2. Discovered a bottom boundary marked by a line of light green (Color 6) rectangular blocks.
+3. The background consists of at least two shades of green: Color 3 (main play area) and Color 6 (outer edges and bottom boundary). This suggests Color 6 serves as a wall/boundary color.
+4. The change in the UI (1 pixel change) at the top strongly suggests one of the red dots has changed, confirming its role as a move/turn indicator. A red dot turned green, indicating a used move or current turn.
+5. Confirmed specific objects (color 12 and color 9 blocks) are movable.

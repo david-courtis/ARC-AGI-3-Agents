@@ -1,0 +1,2 @@
+1. Confirmed that an unsuccessful action (ACTION5) results in no visual change, reinforcing the idea that blocked movement is a key constraint.
+2. The 'Small Purple Pixel' (Color 9) is now isolated, further supporting its role as a fragmented piece of the larger 'Purple Block'.

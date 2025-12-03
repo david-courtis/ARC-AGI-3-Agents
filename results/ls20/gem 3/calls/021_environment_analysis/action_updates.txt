@@ -1,0 +1,3 @@
+ACTION1: Move UP 8 pixels. If target tile contains a Collectible (Color 9/Purple Debris), collect it (remove from map, update inventory) and move into the space.
+  Reason: The previous execution proved that moving onto the 'Debris' collects it rather than being blocked or pushing it.
+

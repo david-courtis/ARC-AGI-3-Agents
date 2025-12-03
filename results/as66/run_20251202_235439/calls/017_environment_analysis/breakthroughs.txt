@@ -1,0 +1,1 @@
+1. ACTION1 not having a visible effect suggests it is either blocked, has a subtle effect not yet observed, or is simply a null action. The total number of pixels changed (397) and affected regions in both play area and UI suggest something did change, but perhaps not directly related to a 'move' of the main game piece, or it's a UI update.

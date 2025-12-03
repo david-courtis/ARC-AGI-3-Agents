@@ -1,0 +1,4 @@
+- Payload slides continuously in the direction of the Pink Shield.
+- Green (Color 3) and Blue (Color 1) objects are SOLID and block movement.
+- Pink (Color 14) Shield is PERMEABLE and allows SCREEN WRAPPING.
+- Wrapping preserves momentum: exiting Top -> entering Bottom -> continuing Up.

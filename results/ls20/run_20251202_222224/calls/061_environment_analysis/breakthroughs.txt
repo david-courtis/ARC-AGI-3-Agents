@@ -1,0 +1,1 @@
+1. The current observation reinforces the distinction between 'primary' object movement and 'secondary' game state changes when an action is executed. 'ACTION3 had NO effect' is confirmed to mean no secondary effect, even when the objects themselves move.

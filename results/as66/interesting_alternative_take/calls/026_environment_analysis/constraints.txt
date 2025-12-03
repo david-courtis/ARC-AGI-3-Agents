@@ -1,0 +1,5 @@
+- Payload slides continuously in the cardinal direction of the Active Pink Shield.
+- Payload physics are 'slide until collision' (ice physics).
+- Green (Color 3) internal terrain blocks movement.
+- Perimeter walls (Blue/Green) block movement.
+- Goal walls (Black) likely block movement from the wrong direction (must enter open side).

@@ -1,0 +1,4 @@
+1. CRITICAL: The 'Debris' object is a COLLECTIBLE Item (Key/Fragment) that is added to the inventory upon entry.
+2. Interaction mechanic identified: Moving into occupied tile (Rule: Consumable items) -> Item removed from map -> Inventory updated.
+3. The symbol on the collected item matches the symbol on the Goal tile, implying a 'Lock and Key' mechanic.
+4. Player path to goal is now unobstructed.

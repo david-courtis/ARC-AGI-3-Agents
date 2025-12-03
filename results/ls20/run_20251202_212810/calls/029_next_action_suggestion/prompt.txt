@@ -1,0 +1,26 @@
+Decide what action to test next.
+
+CURRENT ACTION KNOWLEDGE STATUS:
+  ACTION1: 0/3 consistent, 3/8 attempts | Def: ACTION1 appears to move a selected object one unit 'up' (decreasing its row/y coordinate). However, in certain contexts, it can also cause other adjacent objects to disappear or be 'destroyed'.
+  ACTION2: 0/3 consistent, 1/8 attempts | Def: ACTION2 causes a selected movable object (or objects) to move downwards by one unit (pixel/cell).
+  ACTION3: 0/3 consistent, 1/8 attempts
+  ACTION4: 1/3 consistent, 2/8 attempts | Def: ACTION4 causes selected blocks to move one unit to the right (increase column/x value).
+  ACTION5: 0/3 consistent, 0/8 attempts | Def: ACTION5, when no specific object is selected or at a current interaction position, has no visible effect. It is hypothesized that ACTION5 requires a 'selected' object or a 'current position' to perform an 'INTERACT/SELECT/ROTATE' action.
+
+ENVIRONMENT UNDERSTANDING:
+Objects:
+  - Color 12 rectangular block (8x2) at (48, 40): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (50, 40): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2): Involved in ACTION2 action
+  - Color 9 rectangular block (8x6): Involved in ACTION2 action
+  - Color 12 rectangular block (8x2) at (40, 24): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (42, 24): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2) at (16, 24): Involved in ACTION1 action
+  - Color 9 rectangular block (8x6) at (18, 24): Involved in ACTION1 action
+  - Color 12 rectangular block (8x2) at (8, 24): Involved in ACTION4 action
+  - Color 9 rectangular block (8x6) at (10, 24): Involved in ACTION4 action
+
+VERIFIED ACTIONS (can use for setup): None
+PENDING ACTIONS (need testing): ACTION1, ACTION2, ACTION3, ACTION4, ACTION5
+
+Suggest what action to test next and any setup sequence needed.

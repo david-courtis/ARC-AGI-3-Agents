@@ -1,0 +1,2 @@
+- Player (Shield) constrained to the perimeter slots (Top, Right, Down, Left).
+- Shield rotates between these 4 fixed positions rather than moving continuously.

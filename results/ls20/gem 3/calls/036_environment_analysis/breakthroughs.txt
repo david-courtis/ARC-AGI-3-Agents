@@ -1,0 +1,3 @@
+1. PATH CONFIRMATION: The Player's start position (3,5) is effectively a dead-end in 3 directions (Left, Right, Up-backtrack). The only forward path is DOWN to (3,6) then RIGHT to (4,6).
+2. GEOMETRY REFINED: A wall exists at Grid (4,5) which forces the player to take a 'U-turn' at the bottom of the map (Down->Right) to access the vertical corridor on the right side.
+3. DEAD END CLARIFICATION: The 'Red Block' at (1,1) and 'Goal' at (1,5) are separated by a vertical void (rows 2-4 in column 1), implying a mechanic (teleport/bridge) is needed to traverse from top-left to bottom-left.

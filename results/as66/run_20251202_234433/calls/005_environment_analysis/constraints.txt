@@ -1,0 +1,3 @@
+- The aqua, blue, green, pink, and yellow borders likely prevent movement beyond the visible game screen.
+- The green 'landmass' blocks appear to be static obstacles, likely blocking movement through them.
+- The black 'player' block changes color (color 14 to 12) upon moving, implying a state change associated with movement.

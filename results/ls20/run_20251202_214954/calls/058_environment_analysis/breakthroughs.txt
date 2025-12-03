@@ -1,0 +1,1 @@
+1. Confirmed that ACTION2 also has no effect on visible objects or the environment, similar to previous observations of unimplemented or blocked actions.

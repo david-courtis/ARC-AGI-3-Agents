@@ -1,0 +1,3 @@
+ACTION3: ACTION3 causes a Color 8 block to move left, and may cause existing Color 14 blocks to disappear and new Color 14 blocks to appear in a different location/orientation.
+  Reason: The action directly resulted in the Color 8 block moving left, and a Color 14 block disappearing at (56,8) and reappearing at (8,4) with a different shape.
+
