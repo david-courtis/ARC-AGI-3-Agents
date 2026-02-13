@@ -1,0 +1,1 @@
+"""Empty games init file."""
