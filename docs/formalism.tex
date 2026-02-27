@@ -1,0 +1,555 @@
+\documentclass{article}
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2024
+
+% ready for submission
+\usepackage{neurips_2024}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2024}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}        % math environments
+\usepackage{amssymb}        % additional math symbols
+\usepackage{amsthm}         % theorem environments
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Theorem environments
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+% Operator shortcuts
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\ind}{\mathbb{1}}
+
+\title{Title}
+
+\author{}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% PROBLEM SETTING (Pre-Methodology)
+% ============================================================================
+
+\section{Problem Setting}
+\label{sec:problem}
+
+We formalize the task of learning an environment's dynamics from scratch as an instance of \emph{online model acquisition} in a structured, deterministic domain.  The agent has no prior knowledge of the state space, action semantics, or transition function; its objective is to construct an accurate world model purely from interaction.
+
+\subsection{Formal Environment}
+\label{sec:env}
+
+\begin{definition}[Grid Environment]
+\label{def:env}
+An \textbf{interactive grid environment} is a deterministic MDP without reward, specified by the tuple
+\begin{equation}
+\label{eq:env}
+\calM = (\calS, \calA, T, s_0),
+\end{equation}
+where:
+\begin{itemize}
+    \item $\calS \subseteq \bbZ_K^{H \times W}$ is the set of reachable \textbf{states}. Each state $s \in \calS$ is an integer-valued grid of height $H$ and width $W$ with $K$ possible cell values (colors), i.e.\ $s_{ij} \in \{0, 1, \ldots, K-1\}$ for all $(i,j) \in [H] \times [W]$.
+
+    \item $\calA = \{a_1, a_2, \ldots, a_N\}$ is a finite set of $N$ \textbf{actions}. The agent knows $|\calA|$ but not the semantics of any $a \in \calA$.
+
+    \item $T : \calS \times \calA \to \calS$ is a deterministic \textbf{transition function}. The function $T$ is unknown to the agent.
+
+    \item $s_0 \in \calS$ is the \textbf{initial state}, observed by the agent at the start of interaction.
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+We deliberately exclude a reward function from the formalization. The agent's objective in this work is \emph{model acquisition}---learning an accurate approximation $\hat{T}$ of $T$---rather than policy optimization. This separates the model-learning phase from any downstream planning or solving, and is appropriate when the agent does not know the goal condition of the domain a priori.
+\end{remark}
+
+\subsection{Object-Centric State Representation}
+\label{sec:objects}
+
+Raw grid states are high-dimensional ($H \times W$ cells) and unstructured. We introduce an \emph{object-centric decomposition} that lifts a raw state into a structured representation.
+
+\begin{definition}[Object]
+\label{def:object}
+An \textbf{object} $o$ is a tuple
+\begin{equation}
+o = (c, P, \phi),
+\end{equation}
+where $c \in \{0, \ldots, K-1\}$ is the object's \textbf{color}, $P \subseteq [H] \times [W]$ is a connected\footnote{Connected under 8-connectivity on the integer lattice $\bbZ^2$.} set of \textbf{occupied cells}, and $\phi \in \calP$ is a vector of derived \textbf{properties} (bounding box, center, area, shape descriptor, etc.).
+\end{definition}
+
+\begin{definition}[Object Detection Function]
+\label{def:detect}
+An \textbf{object detection function} is a mapping
+\begin{equation}
+\label{eq:detect}
+\Omega : \calS \to 2^{\calO},
+\end{equation}
+where $\calO$ is the universe of possible objects. For a state $s$, $\Omega(s) = \{o_1, \ldots, o_M\}$ returns the set of $M$ objects present in $s$, obtained via connected-component analysis with 8-connectivity on the integer grid.
+\end{definition}
+
+The detection function $\Omega$ is deterministic and domain-agnostic; it applies Gestalt grouping principles (proximity, similarity) without any learned parameters.
+
+\begin{definition}[Structured State]
+\label{def:structured_state}
+The \textbf{structured state} corresponding to a raw grid $s$ is the pair
+\begin{equation}
+\bar{s} = \bigl(s, \; \Omega(s)\bigr) = \bigl(s, \; \{o_1, \ldots, o_M\}\bigr).
+\end{equation}
+The structured state preserves the full grid $s$ while augmenting it with explicitly segmented objects.
+\end{definition}
+
+\subsection{Interaction Protocol}
+\label{sec:protocol}
+
+The agent interacts with $\calM$ in discrete timesteps $t = 0, 1, 2, \ldots$ according to the following protocol:
+
+\begin{enumerate}
+    \item \textbf{Observe}: The agent observes the current state $s_t \in \calS$.
+    \item \textbf{Act}: The agent selects an action $a_t \in \calA$.
+    \item \textbf{Transition}: The environment transitions to $s_{t+1} = T(s_t, a_t)$.
+    \item \textbf{Observe}: The agent observes the successor state $s_{t+1}$.
+\end{enumerate}
+
+After $t$ interactions, the agent has collected a \emph{trajectory}:
+\begin{equation}
+\label{eq:trajectory}
+\tau_t = \bigl\{(s_0, a_0, s_1),\; (s_1, a_1, s_2),\; \ldots,\; (s_{t-1}, a_{t-1}, s_t)\bigr\}.
+\end{equation}
+
+Each tuple $(s, a, s') \in \tau_t$ is a \emph{transition sample}. The agent's exploration budget is finite: the total number of interactions is bounded by $B \in \bbN$.
+
+\subsection{The Model Acquisition Objective}
+\label{sec:objective}
+
+The agent seeks to learn a \textbf{world model} $\hat{T}$ that approximates the true transition function $T$. We formalize the quality of a learned model as follows.
+
+\begin{definition}[Transition Prediction Error]
+\label{def:error}
+Given a learned model $\hat{T} : \calS \times \calA \to \calS$ and a transition sample $(s, a, s')$ where $s' = T(s, a)$, the \textbf{cell-level prediction error} is
+\begin{equation}
+\label{eq:cell_error}
+\epsilon(s, a; \hat{T}) = \frac{1}{HW} \sum_{i=1}^{H} \sum_{j=1}^{W} \ind\!\bigl[\hat{T}(s, a)_{ij} \neq s'_{ij}\bigr],
+\end{equation}
+where $\ind[\cdot]$ is the indicator function. A prediction is \textbf{correct} if $\epsilon(s, a; \hat{T}) = 0$.
+\end{definition}
+
+\begin{definition}[Model Accuracy]
+\label{def:accuracy}
+The \textbf{model accuracy} over a set of transition samples $\calD = \{(s^{(k)}, a^{(k)}, s'^{(k)})\}_{k=1}^{n}$ is
+\begin{equation}
+\label{eq:accuracy}
+\text{Acc}(\hat{T}; \calD) = \frac{1}{n} \sum_{k=1}^{n} \ind\!\bigl[\epsilon(s^{(k)}, a^{(k)}; \hat{T}) = 0\bigr].
+\end{equation}
+\end{definition}
+
+The agent's objective is to maximize $\text{Acc}(\hat{T}; \tau_B)$ subject to the interaction budget $B$. In contrast to standard model-based RL, where the model serves as an intermediate representation for policy learning, here the model itself is the primary output.
+
+\subsection{Key Challenges}
+\label{sec:challenges}
+
+This setting introduces three challenges that distinguish it from standard model learning:
+
+\begin{enumerate}
+    \item \textbf{Tabula rasa semantics.} The agent does not know what any action does or what any grid color represents. Formally, there is no bijection between $\calA$ and a set of semantic labels known a priori; the mapping $a \mapsto \text{``meaning''}$ must be discovered from transitions.
+
+    \item \textbf{Co-dependent representations.} Understanding what an action does (e.g., ``moves the player up'') requires identifying objects (``the player''), but identifying objects (``the red block is the player'') requires observing how they respond to actions. Formally, the object role assignment function $\rho : \calO \to \calR$ (where $\calR$ is the set of roles such as \texttt{player}, \texttt{wall}, \texttt{goal}) depends on the transition function $T$, while expressing $T$ in compact form requires $\rho$.
+
+    \item \textbf{Test-time budget.} The model must be learned online, within a limited interaction budget $B$, precluding methods that require thousands of environment interactions or gradient-based optimization during test time.
+\end{enumerate}
+
+
+% ============================================================================
+% METHODOLOGY
+% ============================================================================
+
+\section{Methodology}
+\label{sec:method}
+
+Our approach decomposes the model acquisition problem into three iterated sub-problems: (i) \emph{transition analysis}, which processes each $(s, a, s')$ sample into a structured interpretation; (ii) \emph{knowledge accumulation}, which maintains and refines a structured knowledge base from all past transitions; and (iii) \emph{active exploration}, which selects the next action to maximize information gain. We describe each component formally.
+
+\subsection{Dual Knowledge Representation}
+\label{sec:knowledge}
+
+The agent maintains a \emph{knowledge state} $\calK_t$ at each timestep $t$, consisting of two complementary representations:
+
+\begin{definition}[Action Knowledge Base]
+\label{def:action_kb}
+The \textbf{action knowledge base} is a collection $\calK^{\calA}_t = \{k_a\}_{a \in \calA}$, where each entry $k_a$ consists of:
+\begin{equation}
+k_a = \bigl(d_a,\; \calH_a,\; v_a,\; \sigma_a\bigr),
+\end{equation}
+with components:
+\begin{itemize}
+    \item $d_a \in \Sigma^*$: A natural language \textbf{definition} of the action's behavior, expressed over the object vocabulary (e.g., ``moves the player up by one tile; blocked by walls'').
+    \item $\calH_a = \bigl\{(s^{(i)}, s'^{(i)}, \delta^{(i)}, \iota^{(i)})\bigr\}_{i=1}^{n_a}$: The \textbf{observation history} for action $a$, where $\delta^{(i)}$ is the cell-level diff and $\iota^{(i)} \in \Sigma^*$ is the natural language interpretation of the $i$-th transition.
+    \item $v_a \in \{0, 1\}$: A \textbf{verification flag} indicating whether $d_a$ has been confirmed by $\kappa$ consecutive consistent observations (default $\kappa = 3$).
+    \item $\sigma_a \in \bbN_0$: A \textbf{consistency counter} tracking the number of recent consecutive observations consistent with $d_a$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Environment Knowledge Base]
+\label{def:env_kb}
+The \textbf{environment knowledge base} $\calK^{\calM}_t$ is a tuple
+\begin{equation}
+\calK^{\calM}_t = \bigl(\calO_t,\; \rho_t,\; \calC_t,\; \xi_t,\; \beta_t\bigr),
+\end{equation}
+with components:
+\begin{itemize}
+    \item $\calO_t = \{o_1, \ldots, o_{M_t}\}$: The current set of \textbf{identified objects} (Definition~\ref{def:object}), augmented with an inferred \emph{type} label $\ell_j \in \Sigma^*$ for each $o_j$ (e.g., ``player'', ``wall'', ``pushable box'').
+    \item $\rho_t : \calO_t \to \calR$: The current \textbf{role assignment} mapping objects to semantic roles $\calR = \{\texttt{agent}, \texttt{obstacle}, \texttt{pushable}, \texttt{goal}, \texttt{decoration}, \ldots\}$.
+    \item $\calC_t \subset \Sigma^*$: A set of natural language \textbf{movement constraints} (e.g., ``the player cannot pass through grey cells'').
+    \item $\xi_t \in \Sigma^*$: A \textbf{spatial structure} description of the environment layout (grid dimensions, border structure, internal walls).
+    \item $\beta_t \subset \Sigma^*$: A set of \textbf{breakthrough discoveries}---key mechanistic insights that fundamentally revise the agent's model (e.g., ``unsupported objects fall due to gravity'').
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Full Knowledge State]
+\label{def:full_knowledge}
+The agent's complete \textbf{knowledge state} at time $t$ is
+\begin{equation}
+\calK_t = \bigl(\calK^{\calA}_t, \; \calK^{\calM}_t\bigr).
+\end{equation}
+The initial knowledge state $\calK_0$ contains empty definitions, empty observation histories, and no identified objects or constraints: $d_a = \varnothing$, $\calH_a = \varnothing$, $\calO_0 = \varnothing$, $\calC_0 = \varnothing$.
+\end{definition}
+
+
+\subsection{Transition Analysis via VLM Oracle}
+\label{sec:analysis}
+
+The transition analysis phase processes each new transition sample $(s_t, a_t, s_{t+1})$ to update the knowledge state $\calK_t \to \calK_{t+1}$. This is realized through calls to a \emph{vision-language model} (VLM) oracle, which we formalize as a family of functions parameterized by the current knowledge state.
+
+\subsubsection{Diff Computation}
+\label{sec:diff}
+
+Before invoking the VLM, the agent computes a structured diff between the before and after states.
+
+\begin{definition}[State Diff]
+\label{def:diff}
+The \textbf{state diff} between $s_t$ and $s_{t+1}$ is the tuple
+\begin{equation}
+\label{eq:diff}
+\Delta_t = \bigl(\calX_t,\; \calX^{\text{obj}}_t,\; r_t\bigr),
+\end{equation}
+where:
+\begin{itemize}
+    \item $\calX_t = \{(i, j, s_t[i,j], s_{t+1}[i,j]) : s_t[i,j] \neq s_{t+1}[i,j]\}$ is the set of \textbf{changed cells}.
+    \item $\calX^{\text{obj}}_t$ is the set of \textbf{object-level changes}, computed by comparing $\Omega(s_t)$ and $\Omega(s_{t+1})$ and classifying each object as \texttt{appeared}, \texttt{disappeared}, \texttt{moved}$\,(+\text{displacement vector})$, \texttt{reshaped}, or \texttt{recolored}.
+    \item $r_t \in \Sigma^*$ is a text \textbf{summary} of the changes (e.g., ``Color 2 block moved from $(24,12)$ to $(20,12)$'').
+\end{itemize}
+\end{definition}
+
+\subsubsection{Action Analysis (VLM Call 1)}
+\label{sec:action_analysis}
+
+The first VLM call interprets the observed transition with respect to the current definition of the action.
+
+\begin{definition}[Action Analysis Function]
+\label{def:action_analysis}
+The \textbf{action analysis function} is a mapping
+\begin{equation}
+\label{eq:action_analysis}
+f_{\text{act}} : \underbrace{\calS \times \calS}_{\text{before/after}} \times \underbrace{\calA}_{\text{action}} \times \underbrace{\Delta}_{\text{diff}} \times \underbrace{\calK^{\calA}_t \times \calK^{\calM}_t}_{\text{current knowledge}} \longrightarrow \underbrace{(\iota,\; d'_a,\; \gamma,\; \eta)}_{\text{analysis result}},
+\end{equation}
+where:
+\begin{itemize}
+    \item $\iota \in \Sigma^*$: A natural language \textbf{interpretation} of the transition.
+    \item $d'_a \in \Sigma^* \cup \{\bot\}$: An \textbf{updated definition} for the action, or $\bot$ if no update is warranted.
+    \item $\gamma \in \{\texttt{true}, \texttt{false}, \bot\}$: A \textbf{consistency judgment}---whether this observation is consistent with $d_a$ ($\bot$ if this is the first observation).
+    \item $\eta \in \{0, 1\}$: A binary \textbf{effect flag} indicating whether the action produced a state change ($s_{t+1} \neq s_t$).
+\end{itemize}
+\end{definition}
+
+\subsubsection{Environment Analysis (VLM Call 2)}
+\label{sec:env_analysis}
+
+The second VLM call refines the agent's understanding of the environment structure, conditioned on the latest observation evidence.
+
+\begin{definition}[Environment Analysis Function]
+\label{def:env_analysis}
+The \textbf{environment analysis function} is a mapping
+\begin{equation}
+\label{eq:env_analysis}
+f_{\text{env}} : \calS \times \Delta \times \calK^{\calA}_t \times \calK^{\calM}_t \longrightarrow \bigl(\calO'_t,\; \rho'_t,\; \calC'_t,\; \xi'_t,\; \beta'_t\bigr),
+\end{equation}
+where the outputs are updated versions of the corresponding components of $\calK^{\calM}_t$ (Definition~\ref{def:env_kb}).
+\end{definition}
+
+\subsubsection{Knowledge Update Rule}
+\label{sec:update}
+
+Given the outputs of both analysis functions, the knowledge state is updated as follows:
+
+\begin{equation}
+\label{eq:update}
+\calK_{t+1} = \textsc{Update}\bigl(\calK_t,\; a_t,\; f_{\text{act}}(\cdot),\; f_{\text{env}}(\cdot)\bigr),
+\end{equation}
+
+where the update rule applies the following operations:
+
+\paragraph{Action knowledge update.}
+For the action $a_t$:
+\begin{align}
+d_{a_t} &\leftarrow \begin{cases} d'_{a_t} & \text{if } d'_{a_t} \neq \bot \\ d_{a_t} & \text{otherwise} \end{cases} \label{eq:def_update} \\
+\calH_{a_t} &\leftarrow \calH_{a_t} \cup \{(s_t, s_{t+1}, \delta_t, \iota_t)\} \label{eq:history_update} \\
+\sigma_{a_t} &\leftarrow \begin{cases} \sigma_{a_t} + 1 & \text{if } \gamma = \texttt{true} \\ 0 & \text{if } \gamma = \texttt{false} \end{cases} \label{eq:consistency_update} \\
+v_{a_t} &\leftarrow \ind[\sigma_{a_t} \geq \kappa] \label{eq:verify_update}
+\end{align}
+
+\paragraph{Environment knowledge update.}
+
+The environment components are updated by \emph{merging} the analysis outputs with the existing knowledge:
+\begin{align}
+\calO_{t+1} &\leftarrow \textsc{Merge}(\calO_t, \calO'_t) \label{eq:obj_merge} \\
+\calC_{t+1} &\leftarrow \calC_t \cup \calC'_t \label{eq:constraint_merge} \\
+\beta_{t+1} &\leftarrow \beta_t \cup \beta'_t \label{eq:breakthrough_merge}
+\end{align}
+
+where $\textsc{Merge}$ resolves duplicates by name, updating properties of existing objects and adding new ones.
+
+\subsection{Verification via Executable World Model}
+\label{sec:verification}
+
+Natural language descriptions $\{d_a\}$ are inherently \emph{non-executable}: they cannot be used to predict the outcome of an action in a given state without re-invoking the VLM. To enable autonomous verification, we introduce a second, executable representation of the world model.
+
+\begin{definition}[Executable World Model]
+\label{def:exec_model}
+An \textbf{executable world model} is a deterministic function
+\begin{equation}
+\hat{T}_\theta : \calS \times \calA \to \calS,
+\end{equation}
+parameterized by a Python program $\theta \in \Sigma^*$, that maps a state-action pair to a predicted successor state. The program $\theta$ is structured as a composition of four components:
+\begin{equation}
+\label{eq:model_structure}
+\hat{T}_\theta(s, a) = \bigl(\calC_\theta \circ \calP_\theta \circ \calT_{a,\theta} \circ \calC_\theta\bigr)(s),
+\end{equation}
+where:
+\begin{itemize}
+    \item $\calC_\theta : \calS \to \calS \cup \{s\}$ applies pre- and post-transition \textbf{constraints} (e.g., boundary enforcement, move budget checks). Returns an unchanged state to block the action.
+    \item $\calT_{a,\theta} : \calS \to \calS$ is the \textbf{action-specific transition} implementing the semantics of action $a$ (e.g., ``move the player object one tile up unless a wall is in the way'').
+    \item $\calP_\theta : \calS \to \calS$ applies \textbf{physics rules} that are action-independent (e.g., gravity causing unsupported objects to fall).
+\end{itemize}
+\end{definition}
+
+\subsubsection{Compilation: NL-JSON $\to$ Executable Model}
+\label{sec:compilation}
+
+The executable model $\hat{T}_\theta$ is synthesized from the knowledge state $\calK_t$ via a third VLM call.
+
+\begin{definition}[Model Compilation Function]
+\label{def:compile}
+The \textbf{compilation function} is a mapping
+\begin{equation}
+\label{eq:compile}
+f_{\text{compile}} : \calK^{\calA}_t \times \calK^{\calM}_t \times \Sigma^* \times \Sigma^* \longrightarrow \theta \in \Sigma^*,
+\end{equation}
+where the inputs are: the current action and environment knowledge bases, a reference specification of the target API (base classes, method signatures), and optionally the previous program $\theta_{t-1}$ together with its error report.
+\end{definition}
+
+The compilation is triggered when the knowledge state has been updated and either (i) no executable model exists yet and $|\tau_t| \geq n_{\min}$, (ii) the previous prediction was incorrect, or (iii) at least $\Delta_{\text{compile}}$ actions have elapsed since the last compilation.
+
+\subsubsection{Prediction and Verification}
+\label{sec:predict_verify}
+
+Given an executable model $\hat{T}_\theta$, each new transition sample $(s_t, a_t, s_{t+1})$ is independently verified:
+
+\begin{equation}
+\label{eq:predict}
+\hat{s}_{t+1} = \hat{T}_\theta(s_t, a_t), \qquad \epsilon_t = \epsilon(s_t, a_t; \hat{T}_\theta).
+\end{equation}
+
+The prediction is correct if and only if $\hat{s}_{t+1} = s_{t+1}$ (equivalently, $\epsilon_t = 0$).
+
+\subsubsection{Regression Testing}
+\label{sec:regression}
+
+After each recompilation $\theta \to \theta'$, the agent performs \textbf{regression testing} by verifying the new model against the \emph{entire} observation history:
+
+\begin{equation}
+\label{eq:regression}
+\text{Acc}(\hat{T}_{\theta'}; \tau_t) = \frac{1}{t} \sum_{k=0}^{t-1} \ind\!\bigl[\hat{T}_{\theta'}(s_k, a_k) = s_{k+1}\bigr].
+\end{equation}
+
+A transition that was correctly predicted by $\theta$ but is incorrectly predicted by $\theta'$ is a \emph{regression}:
+\begin{equation}
+\label{eq:regression_set}
+\calR_{\theta \to \theta'} = \bigl\{k : \hat{T}_\theta(s_k, a_k) = s_{k+1} \;\wedge\; \hat{T}_{\theta'}(s_k, a_k) \neq s_{k+1}\bigr\}.
+\end{equation}
+
+Regressions are highlighted in the error signal fed back to the compilation function, closing the refinement loop.
+
+\subsubsection{Error Signal and Diagnosis}
+\label{sec:diagnosis}
+
+When a prediction fails ($\epsilon_t > 0$), the agent constructs a structured \textbf{error signal} that is incorporated into the next compilation prompt:
+
+\begin{equation}
+\label{eq:error_signal}
+E_t = \bigl(\calX^{\text{err}}_t,\; \ell_t,\; d_{a_t},\; \calC_t\bigr),
+\end{equation}
+
+where $\calX^{\text{err}}_t = \{(i, j, \hat{s}_{t+1}[i,j], s_{t+1}[i,j]) : \hat{s}_{t+1}[i,j] \neq s_{t+1}[i,j]\}$ is the set of cells where the prediction disagrees with reality, $\ell_t \in \Sigma^*$ is the transition log recording which model components fired during prediction (constraints, transitions, physics), $d_{a_t}$ is the current NL definition, and $\calC_t$ are the known constraints. This provides a cell-level, mechanistically attributed error signal far richer than the binary consistency judgments of the NL-only model.
+
+
+\subsection{Active Exploration Policy}
+\label{sec:exploration}
+
+The agent must choose actions to maximize information gain about the transition function $T$ within its budget $B$.
+
+\begin{definition}[Exploration Policy]
+\label{def:policy}
+The \textbf{exploration policy} is a mapping
+\begin{equation}
+\label{eq:policy}
+\pi_{\text{explore}} : \calS \times \calK_t \longrightarrow (a_{\text{target}},\; \mathbf{a}_{\text{setup}}),
+\end{equation}
+where $a_{\text{target}} \in \calA$ is the action whose semantics the agent wants to investigate next, and $\mathbf{a}_{\text{setup}} = (a'_1, \ldots, a'_m) \in \calA^m$ is a \textbf{setup sequence}---a sequence of verified actions executed beforehand to move the environment into a state where $a_{\text{target}}$ is informative.
+\end{definition}
+
+The exploration policy is implemented as a third VLM call (distinct from action analysis and environment analysis) and follows a priority ordering:
+
+\begin{enumerate}
+    \item \textbf{Untested actions}: actions $a$ with $|\calH_a| = 0$ are prioritized.
+    \item \textbf{Unverified actions}: actions $a$ with $v_a = 0$ and $\sigma_a < \kappa$.
+    \item \textbf{Context diversity}: for verified actions, seek states $s$ not yet observed in $\calH_a$ to test generalization.
+\end{enumerate}
+
+\paragraph{Hard guard.}
+A deterministic \textbf{guard mechanism} prevents degenerate exploration. If action $a$ produced no state change ($\eta = 0$) in the previous step, it is blocked from re-execution in the same state:
+\begin{equation}
+\label{eq:guard}
+a \notin \calA_{\text{allowed}}(s_t) \quad \text{if} \quad s_t = s_{t-1} \;\wedge\; a = a_{t-1} \;\wedge\; \eta_{t-1} = 0.
+\end{equation}
+
+The guard is lifted when a different action changes the state, ensuring $\calA_{\text{allowed}}(s_t) \neq \varnothing$ as long as at least one action produces an effect.
+
+
+\subsection{Overall Algorithm}
+\label{sec:algorithm}
+
+The complete model acquisition procedure is given in Algorithm~\ref{alg:main}.
+
+\begin{algorithm}[t]
+\caption{World Model Acquisition via Co-Evolving Analysis}
+\label{alg:main}
+\begin{algorithmic}[1]
+\REQUIRE Environment $\calM = (\calS, \calA, T, s_0)$, budget $B$, verification threshold $\kappa$
+\ENSURE Learned world model $\hat{T}_\theta$, knowledge state $\calK_B$
+
+\STATE $\calK_0 \leftarrow \textsc{InitKnowledge}(\calA)$ \COMMENT{Empty knowledge for all actions}
+\STATE $s_0 \leftarrow \textsc{Observe}(\calM)$
+\STATE $\theta \leftarrow \bot$ \COMMENT{No executable model yet}
+\STATE $\tau \leftarrow \varnothing$ \COMMENT{Empty trajectory}
+
+\FOR{$t = 0, 1, \ldots, B-1$}
+    \STATE \textbf{// Phase 1: Analyze previous transition (if $t > 0$)}
+    \IF{$t > 0$}
+        \STATE $\Delta_{t-1} \leftarrow \textsc{Diff}(s_{t-1}, s_t)$ \COMMENT{Compute structured diff}
+        \STATE $(\iota, d'_a, \gamma, \eta) \leftarrow f_{\text{act}}(s_{t-1}, s_t, a_{t-1}, \Delta_{t-1}, \calK_t)$ \COMMENT{VLM Call 1}
+    \ENDIF
+
+    \STATE \textbf{// Phase 1.5: Analyze environment}
+    \STATE $(\calO', \rho', \calC', \xi', \beta') \leftarrow f_{\text{env}}(s_t, \Delta_{t-1}, \calK_t)$ \COMMENT{VLM Call 2}
+
+    \STATE \textbf{// Update knowledge state}
+    \STATE $\calK_{t+1} \leftarrow \textsc{Update}(\calK_t, a_{t-1}, f_{\text{act}}, f_{\text{env}})$ \hfill \text{(Eqs.~\ref{eq:def_update}--\ref{eq:breakthrough_merge})}
+
+    \STATE \textbf{// Phase 1.7: Predict and verify (if model exists)}
+    \IF{$\theta \neq \bot$}
+        \STATE $\hat{s}_t \leftarrow \hat{T}_\theta(s_{t-1}, a_{t-1})$
+        \STATE $\epsilon_t \leftarrow \epsilon(s_{t-1}, a_{t-1}; \hat{T}_\theta)$ \COMMENT{Compute prediction error}
+        \IF{$\epsilon_t > 0$}
+            \STATE $E_t \leftarrow \textsc{DiagnoseError}(\hat{s}_t, s_t, \hat{T}_\theta)$ \COMMENT{Structured error signal}
+        \ENDIF
+    \ENDIF
+
+    \STATE \textbf{// Phase 1.9: Recompile model (if triggered)}
+    \IF{$\textsc{ShouldCompile}(\calK_{t+1}, \theta, \epsilon_t, t)$}
+        \STATE $\theta \leftarrow f_{\text{compile}}(\calK^{\calA}_{t+1}, \calK^{\calM}_{t+1}, \text{API ref}, (\theta, E_t))$ \COMMENT{VLM Call 3}
+        \STATE $\textsc{RegressionTest}(\hat{T}_\theta, \tau)$ \COMMENT{Verify against history}
+    \ENDIF
+
+    \STATE \textbf{// Phase 3: Select next action}
+    \STATE $(a_{\text{target}}, \mathbf{a}_{\text{setup}}) \leftarrow \pi_{\text{explore}}(s_t, \calK_{t+1})$ \COMMENT{VLM Call 4}
+    \STATE Execute setup sequence $\mathbf{a}_{\text{setup}}$ (using verified actions only)
+    \STATE $a_t \leftarrow a_{\text{target}}$ (subject to guard, Eq.~\ref{eq:guard})
+    \STATE $s_{t+1} \leftarrow T(s_t, a_t)$ \COMMENT{Environment step}
+    \STATE $\tau \leftarrow \tau \cup \{(s_t, a_t, s_{t+1})\}$
+\ENDFOR
+
+\RETURN $\hat{T}_\theta$, $\calK_B$
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Co-Evolution of Object and Action Knowledge}
+\label{sec:coevolution}
+
+A defining feature of the approach is that the object representations $\calO_t$ and action definitions $\{d_a\}$ are \emph{mutually dependent} and evolve together. We formalize this co-evolution.
+
+At each timestep, the environment analysis function $f_{\text{env}}$ refines object identities and roles $(\calO_t, \rho_t)$ based on evidence from action transitions. Simultaneously, the action analysis function $f_{\text{act}}$ refines action definitions $\{d_a\}$ using the current object vocabulary. This creates a \emph{coupled} update dynamic:
+
+\begin{align}
+\calO_{t+1}, \rho_{t+1} &= g_{\calO}\bigl(\calO_t, \rho_t, \{(s_k, a_k, s_{k+1})\}_{k \leq t}\bigr) \label{eq:obj_update} \\
+d_{a, t+1} &= g_d\bigl(d_{a,t}, \calO_{t+1}, \rho_{t+1}, \calH_{a, \leq t}\bigr) \label{eq:def_update_coupled}
+\end{align}
+
+where the updated object model $(\calO_{t+1}, \rho_{t+1})$ feeds into the action definition update (Eq.~\ref{eq:def_update_coupled}), and the updated action definition feeds into future environment analysis through the knowledge state.
+
+\begin{proposition}[Convergence under determinism]
+\label{prop:convergence}
+In a deterministic environment $\calM$ with a finite state space $|\calS| < \infty$ and finite action set $|\calA| = N$, if the VLM oracle $f_{\text{act}}$ and $f_{\text{env}}$ are consistent\footnote{A VLM call is \emph{consistent} if, given the same observable evidence and knowledge state, it produces the same output. This is a simplifying assumption; in practice, temperature-0 decoding approximates this.}, then the knowledge state $\calK_t$ converges: there exists $t^* \leq N \cdot |\calS|$ such that $\calK_t = \calK_{t^*}$ for all $t \geq t^*$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Each action has finitely many distinct observable behaviors (bounded by $|\calS|$ distinct before-states). The consistency counter $\sigma_a$ is monotonically non-decreasing between redefinitions, and each redefinition is triggered by an inconsistency, which can occur at most $|\calS|$ times per action before all behaviors are observed. Since both $|\calA|$ and $|\calS|$ are finite, the number of knowledge state changes is bounded, and the knowledge state must eventually stabilize.
+\end{proof}
+
+\subsection{Relationship to Model-Based RL}
+\label{sec:mbrl}
+
+Our approach can be situated within the model-based RL framework by noting the following correspondences and departures:
+
+\begin{enumerate}
+    \item \textbf{Model class.} Standard model-based RL learns $\hat{T}$ as a parametric model (e.g., neural network) trained via gradient descent on the supervised loss $\calL(\theta) = \mathbb{E}_{(s,a,s') \sim \calD}\bigl[\|f_\theta(s,a) - s'\|^2\bigr]$. Our approach instead uses the VLM as a ``compiler'' that synthesizes $\hat{T}$ as a \emph{symbolic program} from natural language specifications, bypassing gradient-based optimization entirely.
+
+    \item \textbf{Learning signal.} Rather than minimizing a continuous loss, the agent receives a \emph{binary} per-transition signal (correct/incorrect prediction) augmented with a \emph{structured} diagnostic (which cells failed, which model components fired). This cell-level error attribution replaces the undifferentiated gradient signal of standard approaches.
+
+    \item \textbf{Exploration.} Standard model-based RL uses the learned model for planning (e.g., MPC, Dyna). In our setting, the model is used purely for verification; exploration is driven by a VLM-guided policy that prioritizes untested and unverified actions, analogous to count-based exploration bonuses but at the semantic level.
+\end{enumerate}
+
+
+\end{document}
