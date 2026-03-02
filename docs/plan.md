@@ -484,7 +484,7 @@ class VerificationHarness:
 ### 5.3 Per-Game Subgame Module Structure
 
 Each game's subgame module is a Python file with four sections, all generated and iteratively refined by the LLM from the NL-JSON state. The structure maps directly onto the existing `EnvironmentKnowledge` and `ActionKnowledge` representations.
-
+#################Derived predicates
 #### 5.3.1 Section 1: Object Encoding
 
 Maps directly from `EnvironmentKnowledge.identified_objects`:
