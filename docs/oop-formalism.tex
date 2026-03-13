@@ -1,0 +1,951 @@
+\documentclass{article}
+\usepackage{neurips_2024}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{stmaryrd}
+
+% Theorem environments
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+% Operator shortcuts
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\pre}{pre}
+\DeclareMathOperator{\eff}{eff}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\img}{img}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calI}{\mathcal{I}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calW}{\mathcal{W}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\ind}{\mathbb{1}}
+\newcommand{\Obj}{\mathsf{Obj}}
+\newcommand{\Pred}{\mathsf{Pred}}
+\newcommand{\strips}{\textsc{Strips}}
+\newcommand{\pddl}{\textsc{Pddl}}
+\newcommand{\vlm}{\textsc{Vlm}}
+
+\title{Object-Oriented World Model Learning from Raw Observations:\\A Formal Framework}
+
+\author{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We formalize object-oriented world model learning for interactive environments
+observed as raw integer grids.  The agent must simultaneously discover a state
+representation (object types, predicates, roles) and learn a transition model
+(how the world changes under actions), starting from nothing.  We structure
+both the representation and the model as an OOP class hierarchy: objects are
+instances of learned classes with polymorphic update methods, and actions are
+classes with polymorphic precondition and effect methods.  The class hierarchy
+serves as the hypothesis space.  We extend WorldCoder's sample complexity
+bound to this joint setting and show that the OOP factorization yields a
+tighter bound than monolithic program synthesis.
+\end{abstract}
+
+
+% ============================================================================
+% SECTION 1: ENVIRONMENT
+% ============================================================================
+
+\section{Environment}
+\label{sec:environment}
+
+\begin{definition}[Interactive Grid Environment]
+\label{def:env}
+An \textbf{interactive grid environment} is a deterministic MDP without reward:
+\begin{equation}
+\calM = (\calS, \calA, T, s_0),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\calS \subseteq \bbZ_K^{H \times W}$ is the set of reachable states.
+          Each state $s \in \calS$ is an integer grid with $K$ colors:
+          $s_{ij} \in \{0, \ldots, K{-}1\}$.
+    \item $\calA = \{a_1, \ldots, a_N\}$ is a finite action set.  The agent
+          knows $|\calA|$ but not the semantics of any action.
+    \item $T : \calS \times \calA \to \calS$ is the true (unknown) deterministic
+          transition function.
+    \item $s_0 \in \calS$ is the initial state.
+\end{itemize}
+The agent observes $s_0$ and interacts by selecting actions, receiving the
+resulting state after each action.  There is no reward signal during
+exploration; the objective is model acquisition.
+\end{definition}
+
+\begin{definition}[Replay Buffer]
+\label{def:replay}
+After $t$ interactions, the agent's \textbf{replay buffer} is:
+\begin{equation}
+\calD_t = \{(s_0, a_0, s_1), (s_1, a_1, s_2), \ldots, (s_{t-1}, a_{t-1}, s_t)\}.
+\end{equation}
+\end{definition}
+
+\begin{definition}[Environment Diameter]
+\label{def:diameter}
+The \textbf{diameter} of $\calM$ is the maximum over all pairs of reachable
+states of the shortest action sequence connecting them:
+\begin{equation}
+D_{\calS,\calA,T} = \max_{s, s' \in \calS_{\text{reach}}}
+    \min_{p \text{ a path from } s \text{ to } s'} \text{len}(p).
+\end{equation}
+\end{definition}
+
+
+% ============================================================================
+% SECTION 2: OOP STATE REPRESENTATION
+% ============================================================================
+
+\section{Object-Oriented State Representation}
+\label{sec:oop_state}
+
+The key departure from WorldCoder is that we structure both state and
+transitions using object-oriented programming.  The world is composed of
+typed objects.  Each object type is a class in a hierarchy.  Transition
+logic is distributed across objects via polymorphic methods.
+
+\subsection{Object Detection}
+\label{sec:detection}
+
+\begin{definition}[Raw Object]
+\label{def:raw_object}
+A \textbf{raw object} extracted from grid state $s$ is a tuple $o = (c, P)$,
+where $c \in \{1, \ldots, K{-}1\}$ is the color (excluding background color 0)
+and $P \subseteq [H] \times [W]$ is a connected set of cells under
+8-connectivity.
+\end{definition}
+
+\begin{definition}[Object Detection Function]
+\label{def:detection}
+The \textbf{object detection function} $\Omega : \calS \to 2^{\calO_{\text{raw}}}$
+extracts raw objects via connected-component labeling on each non-background
+color channel:
+\begin{equation}
+\Omega(s) = \bigsqcup_{c=1}^{K-1} \textsc{CC}_8(\{(i,j) : s_{ij} = c\}).
+\end{equation}
+This function is deterministic, parameter-free, and domain-agnostic.
+\end{definition}
+
+\subsection{Object Type Hierarchy}
+\label{sec:type_hierarchy}
+
+Each raw object is an instance of some \emph{object type} (class) in a
+hierarchy rooted at a generic base class.
+
+\begin{definition}[Object Type]
+\label{def:object_type}
+An \textbf{object type} (class) $\tau$ is a tuple:
+\begin{equation}
+\tau = (\text{name}, \; \tau_{\text{parent}}, \; \calP_\tau^{\text{atomic}},
+       \; \calP_\tau^{\text{derived}}, \; f_\tau^{\text{respond}}),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\text{name} \in \Sigma^*$ is the class name
+          (e.g., \texttt{Wall}, \texttt{Player}, \texttt{PushableBlock}).
+    \item $\tau_{\text{parent}}$ is the parent type (or $\bot$ for the root
+          class \texttt{GameObject}).
+    \item $\calP_\tau^{\text{atomic}}$ is the set of \textbf{atomic predicates}
+          (fluent properties stored explicitly as mutable state):
+          e.g., $\mathsf{position}$, $\mathsf{color}$, $\mathsf{alive}$.
+    \item $\calP_\tau^{\text{derived}}$ is the set of \textbf{derived predicates}
+          (computed from atomic predicates via Python functions, never stored):
+          e.g., $\mathsf{can\_move}()$, $\mathsf{is\_blocked}()$,
+          $\mathsf{is\_adjacent}(o')$.
+    \item $f_\tau^{\text{respond}} : (\text{self}, \text{action}, \text{state})
+          \to \text{self}'$ is the \textbf{response method}: given an action and
+          the current world state, compute this object's updated state.  This
+          is the polymorphic method that subclasses override.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Type Hierarchy]
+\label{def:type_tree}
+The \textbf{type hierarchy} $\calH_\tau = (\calV, E)$ is a rooted tree where:
+\begin{itemize}[nosep]
+    \item $\calV$ is the set of all object types (classes).
+    \item $E = \{(\tau, \tau_{\text{parent}}) : \tau \in \calV,\;
+          \tau_{\text{parent}} \neq \bot\}$ are directed edges from child to
+          parent.
+    \item The root is \texttt{GameObject}, the abstract base class.
+    \item Inheritance: a child type $\tau_c$ inherits all atomic predicates,
+          derived predicates, and methods from its parent $\tau_p$, and may
+          override any of them.
+\end{itemize}
+\end{definition}
+
+\begin{example}[Sokoban-like hierarchy]
+\label{ex:hierarchy}
+\begin{verbatim}
+GameObject (root)
+  +-- StaticObject
+  |     +-- Wall
+  |     +-- Goal
+  +-- DynamicObject
+        +-- Player
+        +-- PushableBlock
+              +-- HeavyBlock (override: requires two pushes)
+\end{verbatim}
+\texttt{StaticObject} overrides $f^{\text{respond}}$ to be a no-op (static
+objects do not change).  \texttt{PushableBlock} overrides
+$f^{\text{respond}}$ to move in the push direction if unblocked.
+\texttt{HeavyBlock} further overrides to require a second push.
+\end{example}
+
+\subsection{Atomic vs.\ Derived Predicates}
+\label{sec:atomic_derived}
+
+\begin{definition}[Atomic Predicate]
+\label{def:atomic}
+An \textbf{atomic predicate} is a property of an object (or pair of objects)
+that is stored explicitly as part of the mutable state.  Only atomic predicates
+are modified by action effects.  Examples: $\mathsf{position}(o)$,
+$\mathsf{color}(o)$, $\mathsf{alive}(o)$, $\mathsf{connected}(o_1, o_2)$.
+\end{definition}
+
+\begin{definition}[Derived Predicate]
+\label{def:derived}
+A \textbf{derived predicate} is a property computed from atomic predicates
+via a deterministic function.  Derived predicates are never stored; they are
+recomputed on demand.  Examples:
+\begin{align}
+\mathsf{can\_move}(o) &= \neg \exists o' \in \text{state} :
+    \mathsf{is\_blocking}(o', o), \\
+\mathsf{can\_reach}(o_1, o_2) &= \text{transitive closure of }
+    \mathsf{connected}, \\
+\mathsf{is\_isolated}(o) &= \neg \exists o' \neq o :
+    \mathsf{adjacent}(o, o').
+\end{align}
+In Python, derived predicates are implemented as methods or properties on the
+object class.
+\end{definition}
+
+\begin{remark}[Why the distinction matters]
+\label{rem:atomic_derived}
+Only atomic predicates appear in the state representation.  This keeps the
+state minimal and avoids redundancy: after an action updates atomic predicates,
+all derived predicates are automatically consistent (they are recomputed from
+the updated atomic state).  This eliminates the ``frame problem'' for derived
+predicates.  It is analogous to the distinction between fluents and derived
+predicates in PDDL, and between base and view tables in databases.
+\end{remark}
+
+\subsection{Typed Object Instance and Structured State}
+\label{sec:structured_state}
+
+\begin{definition}[Typed Object Instance]
+\label{def:typed_instance}
+A \textbf{typed object instance} is a pair $(o, \tau)$ where $o$ is a raw
+object and $\tau \in \calV$ is its assigned type.  The instance carries:
+\begin{itemize}[nosep]
+    \item A unique identifier (track ID) $\text{id}(o)$ for cross-timestep
+          tracking.
+    \item Atomic predicate values: the current value of each predicate in
+          $\calP_\tau^{\text{atomic}}$.
+    \item Access to all derived predicates and the response method via
+          the class $\tau$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Structured State]
+\label{def:structured_state}
+The \textbf{structured state} at time $t$ is:
+\begin{equation}
+\bar{s}_t = (s_t, \; \{(o_i, \tau_i, \mathbf{p}_i)\}_{i=1}^{M_t}),
+\end{equation}
+where $s_t$ is the raw grid, $\{o_i\}$ are the detected objects,
+$\{\tau_i\}$ are their assigned types, and $\{\mathbf{p}_i\}$ are
+their atomic predicate values.  The structured state is computed from the
+raw state by the \textbf{perception function}:
+\begin{equation}
+\text{Perceive}(s_t) = \text{TypeAssign}(\text{Track}(\Omega(s_t), \bar{s}_{t-1})),
+\end{equation}
+where $\text{Track}$ matches objects across frames (by color, position overlap,
+and nearest-neighbor) and $\text{TypeAssign}$ assigns types from the current
+hierarchy $\calH_\tau$.
+\end{definition}
+
+\subsection{Binary Relations and Ownership}
+\label{sec:relations}
+
+\begin{definition}[Relation Ownership]
+\label{def:relation_ownership}
+Each atomic binary relation $R(o_1, o_2)$ is \textbf{owned by} both
+participating objects.  For symmetric relations (e.g., $\mathsf{connected}$),
+the relation is stored once and both objects have read access.  For asymmetric
+relations (e.g., $\mathsf{pushing}(o_1, o_2)$), the source object owns the
+relation.  When object $o_1$ updates in response to an action, it may create,
+modify, or remove relations it owns.
+\end{definition}
+
+
+% ============================================================================
+% SECTION 3: OOP ACTION REPRESENTATION
+% ============================================================================
+
+\section{Object-Oriented Action Representation}
+\label{sec:oop_actions}
+
+Actions are also organized as a class hierarchy.
+
+\begin{definition}[Action Type]
+\label{def:action_type}
+An \textbf{action type} (class) $\alpha$ is a tuple:
+\begin{equation}
+\alpha = (\text{name}, \; \alpha_{\text{parent}}, \;
+          f_\alpha^{\text{pre}}, \; f_\alpha^{\text{apply}}),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\text{name} \in \Sigma^*$ is the action class name
+          (e.g., \texttt{MoveUp}, \texttt{Push}, \texttt{Rotate}).
+    \item $\alpha_{\text{parent}}$ is the parent action type (or $\bot$ for
+          the root class \texttt{Action}).
+    \item $f_\alpha^{\text{pre}} : \bar{s} \to \{0, 1\}$ is the
+          \textbf{precondition method}: returns whether this action is
+          applicable in structured state $\bar{s}$.
+    \item $f_\alpha^{\text{apply}} : \bar{s} \to \bar{s}'$ is the
+          \textbf{apply method}: computes the next structured state by
+          invoking $f_\tau^{\text{respond}}$ on each affected object.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Object-Centric Transition]
+\label{def:oop_transition}
+The \textbf{object-centric transition} for action $\alpha$ in structured state
+$\bar{s} = (s, \{(o_i, \tau_i, \mathbf{p}_i)\})$ proceeds as follows:
+\begin{enumerate}[nosep]
+    \item \textbf{Precondition check}: if $f_\alpha^{\text{pre}}(\bar{s}) = 0$,
+          return $\bar{s}$ (no-op).
+    \item \textbf{Object response}: for each object $o_i$ in causal order,
+          compute:
+          \begin{equation}
+          \mathbf{p}'_i = f_{\tau_i}^{\text{respond}}(o_i, \alpha, \bar{s}).
+          \end{equation}
+    \item \textbf{Physics}: apply action-independent effects (gravity,
+          cascading) to all objects.
+    \item \textbf{Render}: reconstruct the raw grid $s'$ from the updated
+          objects.
+\end{enumerate}
+The ordering in step 2 follows causal dependency: the action's direct target
+updates first, then objects affected by that update, and so on.  For
+deterministic sequential domains (including ARC-AGI-3), this ordering is
+well-defined.
+\end{definition}
+
+\begin{remark}[Connection to STRIPS]
+\label{rem:strips_connection}
+This object-centric transition subsumes STRIPS.  The precondition method
+$f_\alpha^{\text{pre}}$ encodes $\pre(\alpha)$.  Each object's response method
+$f_{\tau_i}^{\text{respond}}$ encodes the conditional effects of $\alpha$ on
+object $o_i$.  The add and delete lists are implicit in the difference between
+$\mathbf{p}_i$ and $\mathbf{p}'_i$.  The advantage over STRIPS is that
+conditional effects are factored by object type (via polymorphism) rather
+than enumerated in a flat list.
+\end{remark}
+
+\begin{remark}[Why not a monolithic transition function]
+\label{rem:not_monolithic}
+WorldCoder synthesizes a single function
+$\hat{T}(s, a) \to s'$ with an if-elif chain dispatching on $a$.  This has
+three problems: (1) it does not factor by object, so fixing one object's
+behavior risks breaking others; (2) it does not support transfer, since
+the entire function is domain-specific; (3) it grows linearly in the number
+of object types and action types.  The OOP factorization addresses all three:
+each class is an independent unit of synthesis, testing, and transfer.
+\end{remark}
+
+
+% ============================================================================
+% SECTION 4: HYPOTHESIS SPACE
+% ============================================================================
+
+\section{The OOP Hierarchy as Hypothesis Space}
+\label{sec:hypothesis_space}
+
+The class hierarchy $\calH_\tau$ defines a structured hypothesis space for the
+world model.  This is where we make our main technical contribution.
+
+\subsection{World Model as Class Library}
+\label{sec:class_library}
+
+\begin{definition}[OOP World Model]
+\label{def:oop_world_model}
+An \textbf{OOP world model} is a tuple:
+\begin{equation}
+\hat{W} = (\calH_\tau, \; \calH_\alpha, \; f_{\text{perceive}}, \;
+           f_{\text{render}}),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\calH_\tau$ is the object type hierarchy (Definition~\ref{def:type_tree}).
+    \item $\calH_\alpha$ is the action type hierarchy.
+    \item $f_{\text{perceive}} : \calS \to \bar{\calS}$ is the perception
+          function (Definition~\ref{def:structured_state}).
+    \item $f_{\text{render}} : \bar{\calS} \to \calS$ reconstructs a raw grid
+          from a structured state.
+\end{itemize}
+The world model induces a transition function:
+\begin{equation}
+\hat{T}_{\hat{W}}(s, a) = f_{\text{render}}\bigl(
+    f_a^{\text{apply}}(f_{\text{perceive}}(s))\bigr).
+\end{equation}
+\end{definition}
+
+\subsection{Factored Model Class}
+\label{sec:factored}
+
+\begin{definition}[Factored Model Class]
+\label{def:factored_class}
+Let $\calV = \{\tau_1, \ldots, \tau_n\}$ be the object types and
+$\calA_\alpha = \{\alpha_1, \ldots, \alpha_m\}$ be the action types.  The
+\textbf{factored model class} is:
+\begin{equation}
+\calW = \calW_{\text{perceive}} \times
+        \prod_{i=1}^{n} \calW_{\tau_i} \times
+        \prod_{j=1}^{m} \calW_{\alpha_j} \times
+        \calW_{\text{render}},
+\end{equation}
+where $\calW_{\tau_i}$ is the set of possible implementations of object type
+$\tau_i$ (its response method and derived predicates) and $\calW_{\alpha_j}$
+is the set of possible implementations of action type $\alpha_j$ (its
+precondition and apply methods).
+\end{definition}
+
+\begin{proposition}[Factored Logical Dimensionality]
+\label{prop:factored_dim}
+The logical dimensionality of the factored model class satisfies:
+\begin{equation}
+K_{\bot\!\!\bot}(\calW) \leq \sum_{i=1}^{n} K_{\bot\!\!\bot}(\calW_{\tau_i})
+    + \sum_{j=1}^{m} K_{\bot\!\!\bot}(\calW_{\alpha_j})
+    + K_{\bot\!\!\bot}(\calW_{\text{perceive}}).
+\end{equation}
+That is, the total number of counterexamples needed is at most the sum of
+counterexamples needed per component, rather than the product (which is what
+a monolithic model class would give in the worst case).
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+A counterexample $(s, a, s')$ where $\hat{T}(s,a) \neq s'$ must be
+attributable to an error in at least one component: either a specific object
+type's response method produced the wrong output, or a specific action type's
+precondition or apply method was wrong, or the perception function
+misidentified an object.  Since errors are localized to specific components,
+each counterexample eliminates at least one candidate implementation from one
+component's hypothesis space.  The total number of such eliminations is bounded
+by the sum of per-component logical dimensionalities.
+\end{proof}
+
+\subsection{Monotonic Pruning}
+\label{sec:pruning}
+
+The tree structure of the type hierarchy enables efficient pruning.
+
+\begin{proposition}[Monotonic Pruning]
+\label{prop:pruning}
+If an object type $\tau$'s behavior (response method) is inconsistent with a
+set of observations $\calD$, then all subtypes $\tau'$ that inherit $\tau$'s
+response method without override are also inconsistent with $\calD$.
+\end{proposition}
+
+\begin{proof}
+If $\tau'$ inherits $f_\tau^{\text{respond}}$ without override, then
+$f_{\tau'}^{\text{respond}} = f_\tau^{\text{respond}}$, and so any observation
+that falsifies $f_\tau^{\text{respond}}$ also falsifies
+$f_{\tau'}^{\text{respond}}$.
+\end{proof}
+
+This means that when a parent class's behavior is shown wrong, we can prune
+the entire subtree of children that inherit that behavior.  Children that
+\emph{override} the relevant method are not pruned and must be tested
+independently.
+
+\subsection{Transfer via Inheritance}
+\label{sec:transfer}
+
+\begin{definition}[Minimal Subclass Specialization]
+\label{def:minimal_spec}
+When moving to a new domain, the agent attempts to reuse existing object types.
+If type $\tau$ from a previous domain does not match the observations in the new
+domain, the agent derives a subclass $\tau'$ with $\tau_{\text{parent}}' = \tau$
+that overrides the minimal set of methods needed to explain the new observations.
+\end{definition}
+
+\begin{example}[Movable walls]
+\label{ex:movable_wall}
+In domain A, \texttt{Wall} has $f^{\text{respond}}$ that returns self unchanged
+(walls are static).  In domain B, some walls can be pushed.  The agent derives
+\texttt{MovableWall} from \texttt{Wall}, overriding only
+$f^{\text{respond}}$ to handle push actions while inheriting all other
+properties (color, blocking behavior, rendering).
+\end{example}
+
+\begin{proposition}[Transfer Sample Complexity]
+\label{prop:transfer}
+Let $\hat{W}$ be a correct OOP world model for domain A, and let
+$\hat{W}'$ be the correct model for domain B.  If $\hat{W}'$ can be obtained
+from $\hat{W}$ by adding $k$ new subclasses and overriding $r$ methods total,
+then the sample complexity for learning $\hat{W}'$ given $\hat{W}$ is:
+\begin{equation}
+D_{\calS',\calA',T'} \times \left(\sum_{i=1}^{k}
+    K_{\bot\!\!\bot}(\calW_{\tau'_i}) + r + 1\right),
+\end{equation}
+compared to $D_{\calS',\calA',T'} \times (K_{\bot\!\!\bot}(\calW') + 1)$ for
+learning from scratch.
+\end{proposition}
+
+
+% ============================================================================
+% SECTION 5: JOINT LEARNING PROBLEM
+% ============================================================================
+
+\section{Joint Learning: Representation and Model}
+\label{sec:joint}
+
+The agent must simultaneously learn the type hierarchy (what object types
+exist, what properties they have) and the transition logic (how each type
+responds to each action).  This extends the problem formulated in our
+previous work.
+
+\subsection{The Predicate Grammar}
+\label{sec:grammar}
+
+\begin{definition}[Predicate Grammar]
+\label{def:grammar}
+The \textbf{predicate grammar} $\Psi_t$ at time $t$ is the current set of
+candidate predicates (both atomic and derived) the agent could use.  $\Psi_t$
+evolves over time as the agent encounters new phenomena.
+
+The grammar contains:
+\begin{itemize}[nosep]
+    \item Atomic predicates: $\Psi_t^{\text{atomic}} =
+          \bigcup_{\tau \in \calV_t} \calP_\tau^{\text{atomic}}$.
+    \item Derived predicates: $\Psi_t^{\text{derived}} =
+          \bigcup_{\tau \in \calV_t} \calP_\tau^{\text{derived}}$.
+\end{itemize}
+Growing $\Psi_t$ corresponds to adding new object types or adding new
+predicates to existing types.
+\end{definition}
+
+\begin{definition}[Adequate Type Hierarchy]
+\label{def:adequate}
+A type hierarchy $\calH_\tau$ is \textbf{adequate} for environment $\calM$
+if there exists an assignment of types to objects and an implementation of
+all response methods such that the induced transition function $\hat{T}$
+correctly predicts all transitions in $\calM$.
+
+Formally: $\calH_\tau$ is adequate iff $T^* \in \calW(\calH_\tau)$, where
+$\calW(\calH_\tau)$ is the factored model class induced by $\calH_\tau$.
+\end{definition}
+
+\subsection{Two Types of Counterexamples}
+\label{sec:counterexamples}
+
+\begin{definition}[Counterexample Types]
+\label{def:cx_types}
+A counterexample is a transition $(s, a, s')$ where $\hat{T}(s, a) \neq s'$.
+We distinguish:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Model counterexample}: the type hierarchy $\calH_\tau$ is
+          adequate, but the current method implementations are wrong.  There
+          exists a better implementation within $\calW(\calH_\tau)$ that
+          resolves the counterexample.  Fix: re-synthesize the relevant
+          response or apply method.
+
+    \item \textbf{Representation counterexample}: the type hierarchy
+          $\calH_\tau$ is inadequate.  No implementation within
+          $\calW(\calH_\tau)$ can explain the observation.  Fix: grow the
+          hierarchy by adding new types, new predicates, or new subclass
+          specializations.
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Distinguishing Counterexample Types]
+\label{prop:distinguish}
+Model counterexamples are resolvable by re-synthesis: after $k$ synthesis
+attempts (for bounded $k$), a correct implementation is found.
+Representation counterexamples persist across synthesis attempts: no
+implementation within the current model class resolves them.
+
+Operationally: if synthesis fails to resolve a counterexample after $k_{\max}$
+attempts, declare it a representation counterexample and trigger hierarchy
+refinement.
+\end{proposition}
+
+\subsection{The Learning Algorithm}
+\label{sec:algorithm}
+
+The agent runs two nested loops.
+
+\begin{algorithm}[h]
+\caption{OOP World Model Learning}
+\label{alg:main}
+\begin{algorithmic}[1]
+\STATE \textbf{Initialize:} $\calH_\tau \leftarrow \{\texttt{GameObject}\}$,
+       $\calH_\alpha \leftarrow \{\texttt{Action}\}$, $\calD \leftarrow \emptyset$
+\REPEAT
+    \STATE \textbf{// Inner loop: WorldCoder-style exploration + synthesis}
+    \REPEAT
+        \STATE Select action $a_t$ via exploration policy (Section~\ref{sec:exploration})
+        \STATE Observe transition $(s_t, a_t, s_{t+1})$;
+               add to $\calD$
+        \STATE Compute structured diff between
+               $\text{Perceive}(s_t)$ and $\text{Perceive}(s_{t+1})$
+        \STATE Check $\hat{T}(s_t, a_t)$ against $s_{t+1}$
+        \IF{prediction incorrect}
+            \STATE Diagnose: which object type or action type is wrong?
+            \STATE Attempt re-synthesis of the faulty component
+            \STATE Regression-test against $\calD$; accept if no regressions
+        \ENDIF
+        \STATE Track persistent counterexamples (not resolved after
+               $k_{\max}$ synthesis attempts)
+    \UNTIL{all counterexamples resolved \textbf{or}
+           persistent counterexamples detected}
+    \STATE \textbf{// Outer loop: hierarchy refinement}
+    \IF{persistent (representation) counterexamples exist}
+        \STATE Propose new object types or predicates based on the nature of
+               the unresolved counterexamples
+        \STATE Grow $\calH_\tau$ by adding subclasses or new branches
+        \STATE Re-assign object types using the expanded hierarchy
+    \ENDIF
+\UNTIL{model is correct on all of $\calD$}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Sample Complexity}
+\label{sec:sample_complexity}
+
+\begin{theorem}[Joint Learning Bound]
+\label{thm:joint}
+Let $\calH_\tau^*$ be the true adequate type hierarchy and $\hat{W}^*$ be
+the true world model.  Suppose the agent uses optimistic exploration
+(WorldCoder's $\phi_2$) and the synthesis oracle succeeds within $k_{\max}$
+attempts for model counterexamples.  Then the total number of environment
+interactions to learn a correct world model is at most:
+\begin{equation}
+D_{\calS,\calA,T} \times \left(
+    \underbrace{|\Psi_{\text{total}}|}_{\text{representation cost}}
+    + \underbrace{\sum_{\tau \in \calH_\tau^*}
+    K_{\bot\!\!\bot}(\calW_\tau)
+    + \sum_{\alpha \in \calH_\alpha^*}
+    K_{\bot\!\!\bot}(\calW_\alpha)}_{\text{model cost}}
+    + 1
+\right),
+\end{equation}
+where $|\Psi_{\text{total}}| = |\Psi_0 \cup \Psi_1 \cup \cdots \cup \Psi_T|$
+is the total number of distinct predicates ever considered across all outer
+loop iterations.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The outer loop iterates at most $|\Psi_{\text{total}}|$ times, since each
+iteration either adds a new predicate/type (drawn from the finite cumulative
+grammar) or the hierarchy is already adequate.  Each outer loop iteration
+runs the inner loop, which by WorldCoder's Theorem~2.4 requires at most
+$D \times (K_{\bot\!\!\bot}(\calW(\calH_\tau^{(i)})) + 1)$ interactions,
+where $\calH_\tau^{(i)}$ is the hierarchy at outer iteration $i$.  By
+Proposition~\ref{prop:factored_dim}, the factored logical dimensionality is
+at most the sum of per-component dimensionalities.  Summing across outer
+iterations and noting that each component's counterexamples are cumulative
+(they carry over and don't need to be re-discovered) gives the bound.
+\end{proof}
+
+\begin{corollary}[Advantage of OOP Factorization]
+\label{cor:advantage}
+For a monolithic model class $\calW_{\text{mono}}$ with
+$K_{\bot\!\!\bot}(\calW_{\text{mono}})$ logical dimensionality, the
+OOP-factored bound replaces $K_{\bot\!\!\bot}(\calW_{\text{mono}})$ with
+$\sum_i K_{\bot\!\!\bot}(\calW_{\tau_i}) + \sum_j K_{\bot\!\!\bot}(\calW_{\alpha_j})$.
+Since each component's hypothesis space is strictly smaller than the monolithic
+space, and logical dimensionality is subadditive under Cartesian product, the
+factored bound is tighter.
+\end{corollary}
+
+
+% ============================================================================
+% SECTION 6: PERCEPTION PIPELINE
+% ============================================================================
+
+\section{Perception Pipeline}
+\label{sec:perception}
+
+The perception pipeline bridges raw grid observations to the structured OOP
+state.
+
+\subsection{Object Detection and Tracking}
+\label{sec:tracking}
+
+Object detection uses connected-component labeling
+(Definition~\ref{def:detection}).  Object \textbf{tracking} across frames
+uses a three-pass matching algorithm:
+\begin{enumerate}[nosep]
+    \item \textbf{Color match}: objects with the same color.
+    \item \textbf{Spatial overlap}: among same-color objects, match by
+          maximum pixel overlap between frames.
+    \item \textbf{Nearest neighbor}: unmatched objects are assigned to the
+          nearest same-color object by centroid distance.
+\end{enumerate}
+Objects that appear in $s_{t+1}$ but not $s_t$ are new (appeared); objects
+in $s_t$ but not $s_{t+1}$ have disappeared.
+
+\subsection{Type Assignment}
+\label{sec:type_assignment}
+
+Given detected and tracked objects, the agent assigns types from the current
+hierarchy.  The VLM proposes type assignments based on visual appearance,
+behavior under actions, and context.  Type assignment is revisable: if an
+object's behavior contradicts its assigned type, the assignment is updated.
+
+\begin{definition}[Type Assignment Function]
+\label{def:type_assign}
+The \textbf{type assignment function} at time $t$ is:
+\begin{equation}
+\text{TypeAssign}_t : \calO_{\text{raw}} \times \calD_t \times \calH_\tau
+\to \calV,
+\end{equation}
+mapping each raw object to a type in the current hierarchy, conditioned on
+the replay buffer (which reveals how objects have behaved under actions).
+\end{definition}
+
+
+% ============================================================================
+% SECTION 7: PROGRAM SYNTHESIS
+% ============================================================================
+
+\section{Program Synthesis via LLM}
+\label{sec:synthesis}
+
+The LLM synthesizes Python code for each component of the OOP world model.
+
+\subsection{What the LLM Synthesizes}
+\label{sec:what_synth}
+
+The LLM is asked to produce:
+\begin{enumerate}[nosep]
+    \item \textbf{Object type classes}: for each identified object type,
+          a Python class inheriting from \texttt{GameObject} (or a more
+          specific parent), with:
+          \begin{itemize}[nosep]
+              \item Atomic predicate declarations (instance variables).
+              \item Derived predicate implementations (methods/properties).
+              \item The \texttt{respond\_to\_action} method.
+          \end{itemize}
+    \item \textbf{Action type classes}: for each identified action, a Python
+          class inheriting from \texttt{Action}, with:
+          \begin{itemize}[nosep]
+              \item The \texttt{preconditions\_met} method.
+              \item The \texttt{apply} method, which calls
+                    \texttt{respond\_to\_action} on affected objects.
+          \end{itemize}
+    \item \textbf{Physics rules}: an optional \texttt{apply\_physics} function
+          for action-independent effects (gravity, cascading).
+    \item \textbf{Observation function}: a \texttt{perceive} function that
+          extracts typed objects from a raw grid state.
+\end{enumerate}
+
+\subsection{Abstract Base Classes}
+\label{sec:abc}
+
+The agent provides domain-generic abstract base classes that define the
+interface contract.  The LLM fills in domain-specific implementations.
+
+\begin{verbatim}
+class GameObject(ABC):
+    """Abstract base class for all game objects."""
+    id: str
+    position: tuple[int, int]
+    color: int
+    pixels: set[tuple[int, int]]
+
+    @abstractmethod
+    def respond_to_action(self, action: 'Action',
+                          state: 'WorldState') -> None:
+        """Update self in response to the given action."""
+
+    # Derived predicates (override in subclasses)
+    def can_move(self) -> bool: return True
+    def is_blocking(self, other: 'GameObject') -> bool: return False
+
+class Action(ABC):
+    """Abstract base class for all actions."""
+    name: str
+
+    @abstractmethod
+    def preconditions_met(self, state: 'WorldState') -> bool: ...
+
+    @abstractmethod
+    def apply(self, state: 'WorldState') -> 'WorldState':
+        """Apply action: calls respond_to_action on each affected
+        object in causal order."""
+
+class WorldState:
+    """The structured world state."""
+    objects: list[GameObject]
+    grid: np.ndarray  # raw grid for rendering
+
+    def get_objects_of_type(self, cls: type) -> list[GameObject]: ...
+    def get_object_at(self, pos: tuple[int, int]) -> GameObject | None: ...
+    def get_adjacent(self, obj: GameObject) -> list[GameObject]: ...
+\end{verbatim}
+
+\subsection{Counterexample-Guided Refinement}
+\label{sec:cegis}
+
+Synthesis follows a counterexample-guided inductive synthesis (CEGIS) loop:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Synthesize}: LLM produces class implementations given
+          the current counterexamples, the abstract base classes, and the
+          current NL descriptions of object/action behavior.
+    \item \textbf{Verify}: run the synthesized model against the entire
+          replay buffer $\calD$.  Collect mismatches.
+    \item \textbf{Refine}: if mismatches exist, present them to the LLM
+          along with the faulty code.  The LLM produces a corrected version.
+    \item \textbf{Regression gate}: accept the new version only if it does
+          not regress on previously correct predictions.
+\end{enumerate}
+
+The error signal is structured: for each mismatch, the agent reports which
+object(s) predicted incorrectly, what the predicted vs.\ actual state was,
+and which method was responsible.  This per-object, per-method attribution
+enables targeted fixes rather than wholesale rewrites.
+
+
+% ============================================================================
+% SECTION 8: EXPLORATION
+% ============================================================================
+
+\section{Active Exploration}
+\label{sec:exploration}
+
+\subsection{Exploration Policy}
+\label{sec:explore_policy}
+
+The exploration policy selects actions to maximize information gain about the
+world model.  Following WorldCoder, the agent maintains an optimism constraint
+($\phi_2$): the current model must be consistent with some path from the
+current state to positive reward (or, in our reward-free setting, to unvisited
+state regions).
+
+The policy prioritizes:
+\begin{enumerate}[nosep]
+    \item \textbf{Untested action-object combinations}: actions that have not
+          been observed to affect a particular object type.
+    \item \textbf{Unverified object behaviors}: object types whose response
+          methods have fewer than $\kappa$ consistent confirmations.
+    \item \textbf{State diversity}: reaching states where objects are in
+          novel configurations (different relative positions, different
+          adjacency patterns).
+    \item \textbf{Hypothesis testing}: targeted actions designed to
+          distinguish between competing type assignments or method
+          implementations.
+\end{enumerate}
+
+\subsection{Setup Sequences}
+\label{sec:setup}
+
+To reach informative states, the agent constructs \textbf{setup sequences}
+of verified actions.  Only actions whose behavior has been confirmed by
+$\kappa$ consecutive consistent observations are used in setup sequences,
+providing a safety guarantee analogous to the safe action models of
+Juba et al.
+
+\subsection{Data Consistency and Optimism}
+\label{sec:phi}
+
+Following WorldCoder, the learned model $\hat{W}$ must satisfy:
+\begin{align}
+\phi_1(\calD, \hat{W}) &= \forall (s, a, s') \in \calD :
+    \hat{T}_{\hat{W}}(s, a) = s'
+    \tag{data consistency} \\
+\phi_2(s_0, \hat{W}) &= \exists a_1, \ldots, a_\ell :
+    \text{the trajectory under } \hat{T}_{\hat{W}} \text{ from } s_0
+    \text{ reaches an unvisited region}
+    \tag{optimism}
+\end{align}
+The agent plans over $\hat{T}_{\hat{W}}$ satisfying $\phi_1 \wedge \phi_2$,
+using MCTS with the synthesized Python model as the simulator.
+
+
+% ============================================================================
+% SECTION 9: CONTINUAL LEARNING / TRANSFER
+% ============================================================================
+
+\section{Continual Learning and Cross-Domain Transfer}
+\label{sec:continual}
+
+The OOP structure naturally supports continual learning.  When moving to a
+new domain:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Reuse}: attempt to reuse the existing type hierarchy.
+          Apply the current perception and transition model to the new domain.
+    \item \textbf{Diagnose}: if counterexamples arise, determine which
+          object types need modification.
+    \item \textbf{Specialize}: derive new subclasses that override only
+          the behavior that differs.
+    \item \textbf{Generalize}: if a pattern recurs across domains, refactor
+          common behavior into a shared parent class.
+\end{enumerate}
+
+This is a tree-structured version space: we start generic and specialize
+as needed.  If an existing subclass matches, we reuse it.  If not, we
+derive a new one.  Inconsistent subclasses (whose behavior contradicts
+observations) are pruned along with their subtrees
+(Proposition~\ref{prop:pruning}).
+
+The concrete deliverable for the paper: design the abstract base classes
+for \texttt{GameObject}, \texttt{Action}, \texttt{WorldState},
+\texttt{ObservationFunction} in a domain-generic way.  Show they are
+sufficient for a range of grid-world domains.  Show that new domains only
+require subclass specializations.  Prove sample complexity bounds extending
+WorldCoder's theorem to this structured OOP setting
+(Theorem~\ref{thm:joint}).
+
+\end{document}

@@ -14,6 +14,7 @@ from .templates.reasoning_agent import ReasoningAgent
 from .templates.smolagents import SmolCodingAgent, SmolVisionAgent
 from .templates.action_agent import Action
 from .templates.learning_agent import LearningAgent
+from .templates.oop_agent import OOPAgent
 
 load_dotenv()
 
@@ -35,6 +36,7 @@ __all__ = [
     "Random",
     "Action",
     "LearningAgent",
+    "OOPAgent",
     "LangGraphFunc",
     "LangGraphTextOnly",
     "LangGraphThinking",
