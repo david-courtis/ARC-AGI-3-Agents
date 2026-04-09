@@ -1,0 +1,9 @@
+[submodule "vendor/arc"]
+	path = vendor/arc
+	url = https://github.com/arcprize/ARC-AGI-3-Agents.git
+[submodule "vendor/WorldCoder"]
+	path = vendor/WorldCoder
+	url = git@github.com:haotang1995/WorldCoder.git
+[submodule "vendor/poe-world"]
+	path = vendor/poe-world
+	url = git@github.com:topwasu/poe-world.git
