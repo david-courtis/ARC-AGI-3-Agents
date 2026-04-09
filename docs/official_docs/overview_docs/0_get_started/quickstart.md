@@ -1,0 +1,103 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.arcprize.org/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# ARC-AGI-3 Quickstart
+
+> ARC-AGI-3 is an Interactive Reasoning Benchmark designed to measure an AI Agent's ability to generalize in novel, unseen environments.
+
+<div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+  <div style={{ flex: 1 }}>
+    <p>
+      Traditionally, to measure AI, static benchmarks have been the yardstick.
+      These work well for evaluating LLMs and AI reasoning systems. However, to evaluate frontier AI agent systems, we
+      need new tools that measure:
+    </p>
+
+    <ul>
+      <li>Exploration</li>
+      <li>Percept → Plan → Action</li>
+      <li>Memory</li>
+      <li>Goal Acquisition</li>
+      <li>Alignment</li>
+    </ul>
+
+    <p>
+      By building agents that can play ARC-AGI-3, you're directly contributing
+      to the frontier of AI research. <br /><br /> Learn more about{' '}
+      <a href="https://arcprize.org/arc-agi/3">ARC-AGI-3</a>.
+    </p>
+  </div>
+
+  <div style={{ flex: 1, textAlign: 'center' }}>
+    <img src="https://mintcdn.com/arcprizefoundation/sx3SsV7kmM_q56IF/images/Ls20Human.gif?s=61025c7aeb245af080aba9e735a6f1cf" alt="Human playing LS20" width="512" height="512" data-path="images/Ls20Human.gif" />
+
+    <p>
+      Can you build an agent to beat{' '}
+      <a href="https://arcprize.org/tasks/ls20">this game</a>?
+    </p>
+  </div>
+</div>
+
+## Play your first ARC-AGI-3 environment
+
+### 1. Install the [ARC-AGI Toolkit](https://github.com/arcprize/arc-agi)
+
+```bash  theme={null}
+uv init
+uv add arc-agi
+# or
+pip install arc-agi
+```
+
+### 2. Set your `ARC_API_KEY`
+
+Optionally set your `ARC_API_KEY`. If no key is provided, an anonymous key will be used. However, registering for an API key will give you access to public games at release. [Get an ARC\_API\_KEY](/api-keys)
+
+```bash  theme={null}
+export ARC_API_KEY="your-api-key-here"
+# or
+echo 'ARC_API_KEY=your-api-key-here' > .env
+```
+
+### 3. Play your first game
+
+Create a file called `my-play.py`:
+
+```python  theme={null}
+import arc_agi
+from arcengine import GameAction
+
+arc = arc_agi.Arcade()
+env = arc.make("ls20", render_mode="terminal")
+
+# Take a few actions
+for _ in range(10):
+    env.step(GameAction.ACTION1)
+
+print(arc.get_scorecard())
+```
+
+Run it:
+
+```bash  theme={null}
+python play.py
+```
+
+You should see the game render in your terminal and a scorecard with your results.
+
+🎉 Congratulations! You just played your first ARC-AGI-3 environment programatically.
+
+Do you feel the AGI yet?
+
+## Next Steps
+
+After running your first environment:
+
+1. **Make it fast** - Use `env = arc.make("ls20")` without `render_mode` to hit +2K FPS
+2. **Try a different game** - Run `env = arc.make("ft09", render_mode="terminal")` to play a another game. See a list of games available at [arcprize.org/tasks](https://arcprize.org/tasks) or via the [ARC-AGI Toolkit](/toolkit/list-games)
+3. **Use an agent** - Explore [agent templates](/llm_agents) or [create your own agent](/agents-quickstart).
+4. **Explore the ARC-AGI Toolkit** - [The ARC-AGI Toolkit](./toolkit/overview) allows quick and easy integration with ARC-AGI Environments.
+
+
+Built with [Mintlify](https://mintlify.com).

@@ -1,0 +1,82 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.arcprize.org/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# ARC-AGI-3 Scoring Methodology
+
+> How ARC-AGI-3 scoring works
+
+ARC-AGI-3 uses **Relative Human Action Efficiency** (RHAE, pronounced "ray") to score AI systems.
+
+RHAE measures per-level action efficiency compared to a human baseline, normalized per game, across all games.
+
+## What Gets Measured
+
+AI is scored on two criteria:
+
+1. **Completion** — How many levels did the AI complete in each game?
+2. **Efficiency** — How many actions did the AI take compared to humans?
+
+## What Counts as an Action
+
+An *action* is a discrete interaction with the environment. Each turn where the agent submits a command, move, or input that affects the game state counts as an action.
+
+Internal operations that do not alter the environment (tool calls, reasoning steps, retries) are **not counted** as actions.
+
+## Human Baseline
+
+Human baselines are established through controlled testing where participants play each ARC-AGI-3 game for the first time (having never seen the game before). For each game, multiple first-time players are observed, and the **2nd best human** (fewest actions) per game is recorded as the baseline.
+
+Using the 2nd best human:
+
+* Removes outlier winners while still representing proficient human performance
+* Avoids penalizing for early misclicks
+* Keeps the baseline grounded in real play, not theoretical speed-runs
+
+## How Scoring Works
+
+### Per-Level Scoring
+
+For each level the AI completes, calculate:
+
+```
+level_score = (human_baseline_actions / ai_actions) ^ 2
+```
+
+* If human baseline is 10 actions and AI takes 10 → level score is 1.0 (100%)
+* If human baseline is 10 actions and AI takes 20 → level score is 0.25 (50%)
+* If human baseline is 10 actions and AI takes 1,00 → level score is 0.01 (1%)
+
+### Per-Level Score Cap
+
+The maximum score per level is capped at **1.0x** human baseline. If an AI discovers a shortcut and completes a level faster than humans, it still only receives 1.0.
+
+This encourages building AI that **generalizes across games** rather than exploiting individual levels.
+
+### Per-Game Aggregation
+
+The game score is the **weighted average** of all per-level scores, using a 1 index of the level as the weight, for that game.
+
+**Example:** A game has 7 levels. The AI scores:
+
+* Levels 1-3: 0.25 each (took twice as many actions as human)
+* Levels 4-7: 0 each (did not complete the level)
+
+Game score = (0.25x1 + 0.25x2 + 0.5x3 + 0x4 + 0x5 + 0x6 + 0x7) / (1+2+3+4+5+6+7) = **0.01289 (1.29%)**
+
+Per-level weighted average underweights the starting levels which are tutorial/easy levels and overweights the more difficult levels where mastery must be demonstrated.
+
+### Total Score
+
+Total score is the **average of all game scores**, resulting in a final score between 0% and 100%.
+
+## Score Interpretation
+
+| Score | Interpretation                                                                |
+| ----- | ----------------------------------------------------------------------------- |
+| 100%  | AI completes all games/levels while matching or surpassing human efficiency   |
+| 1-99% | A mixture of level completion rates and efficiency relative to human baseline |
+| 0%    | AI never completes a level across any game                                    |
+
+
+Built with [Mintlify](https://mintlify.com).

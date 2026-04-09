@@ -1,9 +1,10 @@
 import os
 import shutil
 
+import numpy as np
 import pytest
 
-from agents.structs import FrameData, GameState
+from arcengine import FrameDataRaw, GameState
 
 
 def get_test_recordings_dir():
@@ -43,12 +44,18 @@ def temp_recordings_dir(clean_test_recordings):
 
 @pytest.fixture
 def sample_frame():
-    return FrameData(
+    """Create a sample FrameDataRaw for testing."""
+    obs = FrameDataRaw(
         game_id="test-game",
-        frame=[[[1, 2], [3, 4]]],
         state=GameState.NOT_FINISHED,
-        score=5,
+        levels_completed=0,
+        available_actions=[1, 2, 3, 4, 5],
     )
+    # Set frame data (palette-indexed 2D grid)
+    grid = np.zeros((64, 64), dtype=np.uint8)
+    grid[10:20, 10:20] = 2  # Red block
+    obs.frame = [grid]
+    return obs
 
 
 @pytest.fixture
@@ -64,9 +71,3 @@ def use_env_vars(monkeypatch):
         monkeypatch.setenv("ARC_API_KEY", "test-key")
     if not os.environ.get("OPENAI_API_KEY"):
         monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
-    if not os.environ.get("SCHEME"):
-        monkeypatch.setenv("SCHEME", "https")
-    if not os.environ.get("HOST"):
-        monkeypatch.setenv("HOST", "three.arcprize.org")
-    if not os.environ.get("PORT"):
-        monkeypatch.setenv("PORT", "443")

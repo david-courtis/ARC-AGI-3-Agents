@@ -1,0 +1,5 @@
+{
+    "game_id": "test_push-v1",
+    "default_fps": 5,
+    "local_dir": "environment_files/test_push/v1"
+}

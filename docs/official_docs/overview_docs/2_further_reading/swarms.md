@@ -1,0 +1,59 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.arcprize.org/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Swarms
+
+> Orchestrate agents across multiple games.
+
+Swarms are used to orchestrate your agent across multiple games simultaneously.
+
+```bash  theme={null}
+git clone https://github.com/arcprize/ARC-AGI-3-Agents.git
+cd ARC-AGI-3-Agents
+```
+
+Each `swarm`:
+
+* Creates one agent instance per [game](/games)
+* Runs all agents concurrently using threads
+* Automatically manages [scorecard](/scorecards) opening and closing
+* Handles cleanup when all agents complete
+* Provides a link to view [replay](/recordings) online
+
+### Running the Agent Swarm
+
+The agent swarm is executed through `main.py`, which manages agent execution across multiple games with automatic scorecard tracking.
+
+### Swarm Command
+
+```bash  theme={null}
+uv run main.py --agent <agent_name> [--game <game_filter>] [--tags <tag_list>]
+```
+
+### CLI Arguments
+
+| Argument  | Short | Required | Description                                                                                                                                                                                                                                |
+| --------- | ----- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--agent` | `-a`  | Yes      | Choose which agent to run. Available agents can be found in the `agents/` directory.                                                                                                                                                       |
+| `--game`  | `-g`  | No       | Filter [games](/games) by ID prefix. Can be comma-separated for multiple filters (e.g., `ls20,ft09`). If not specified, the agent plays all available games.                                                                               |
+| `--tags`  | `-t`  | No       | Comma-separated list of tags for the scorecard (e.g., `experiment,v1.0`). Tags help categorize and track different agent runs. Helpful when you want to compare different agents. Tags will be recorded on your [scorecards](/scorecards). |
+
+### Examples
+
+```bash  theme={null}
+# Run the random agent on all games
+uv run main.py --agent=random
+
+# Run an LLM agent on only the ls20 game
+uv run main.py --agent=llm --game=ls20
+
+# Run with custom tags for tracking
+uv run main.py --agent=llm --tags="experiment,gpt-4,baseline"
+
+# Run against an explicit list of games
+uv run main.py --agent=random --game="ls20,ft09"
+```
+
+
+Built with [Mintlify](https://mintlify.com).

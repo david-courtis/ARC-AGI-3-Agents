@@ -1,0 +1,5 @@
+{
+    "game_id": "pushbox-v1",
+    "default_fps": 5,
+    "local_dir": "environment_files/pushbox/v1"
+}

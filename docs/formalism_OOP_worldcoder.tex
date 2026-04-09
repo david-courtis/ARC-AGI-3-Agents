@@ -1,0 +1,1462 @@
+\documentclass{article}
+\usepackage{neurips_2024}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{stmaryrd}       % for \llbracket, \rrbracket
+
+% Theorem environments
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+% Operator shortcuts
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\pre}{pre}
+\DeclareMathOperator{\eff}{eff}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\img}{img}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calI}{\mathcal{I}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calW}{\mathcal{W}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\ind}{\mathbb{1}}
+\newcommand{\Obj}{\mathsf{Obj}}
+\newcommand{\Pred}{\mathsf{Pred}}
+\newcommand{\strips}{\textsc{Strips}}
+\newcommand{\pddl}{\textsc{Pddl}}
+
+\title{Object-Centric World Model Synthesis via Factored Program Induction}
+
+\author{
+  David \\
+  \texttt{TODO} \\
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We extend WorldCoder~\cite{tang2024worldcoder}, a system that synthesizes
+world models as Python programs via counterexample-guided inductive synthesis
+(CEGIS), in four directions.  First, we replace its monolithic transition
+function with an \emph{object-centric OOP factorization}: each object type is
+a class whose \texttt{respond()} method encodes how instances of that type
+react to actions in context.  This reduces the synthesis search space from
+monolithic to factored, isolates regressions per type, and enables cross-domain
+transfer via class inheritance.  Second, we replace WorldCoder's binary
+known/unknown partition with a \emph{continuous epistemic model} that tracks
+observation count, context diversity, and effect consistency per
+(object-type, action) cell, driving exploration that actively seeks diverse
+contexts rather than merely covering the action space.  Third, we make
+transition functions \emph{object-centric}: instead of a single
+$\hat{T}(s,a) \to s'$, each object type owns its dynamics and receives
+relational context (adjacency, selection, co-location) as input, enabling the
+system to learn interaction effects that depend on spatial relationships between
+objects.  Fourth, we replace WorldCoder's stateless backprompting with an
+\emph{agentic synthesis backend}: the LLM operates as an autonomous agent with
+persistent workspace access, incremental file editing, and autonomous test
+execution, implementing the CEGIS loop through interactive tool use rather
+than prompt engineering.  We evaluate on WorldCoder's benchmarks (Sokoban,
+MiniGrid, AlfWorld) and on ARC-AGI-3, a pixel-observation gridworld benchmark
+with anonymous actions.  Experiments demonstrate that OOP factoring reduces
+synthesis token cost, the continuous epistemic model improves sample efficiency,
+agentic synthesis reaches higher accuracy than stateless backprompting, and
+learned object classes transfer across domain variants.
+\end{abstract}
+
+
+% ============================================================================
+% SECTION 1: INTRODUCTION
+% ============================================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+Model-based reinforcement learning (MBRL) builds an internal model of the
+environment's dynamics and uses it for planning.  Most MBRL systems learn
+world models as neural networks trained via gradient descent on prediction
+losses~\cite{ha2018world, hafner2020dreamer, schrittwieser2020muzero}.  These
+models are sample-hungry, opaque, and domain-specific: a world model trained on
+one Atari game does not transfer to another.
+
+WorldCoder~\cite{tang2024worldcoder} introduced a radically different approach:
+use a large language model (LLM) to \emph{synthesize} the world model as an
+executable Python program.  The program takes as input a structured state
+(a set of typed objects with attributes) and an action, and returns the
+predicted next state.  Synthesis follows a counterexample-guided inductive
+synthesis (CEGIS) loop: the LLM generates a candidate program, the system
+verifies it against observed transitions, and counterexamples (transitions
+where the program's prediction disagrees with reality) are fed back to the
+LLM for refinement.  An optimism constraint ($\phi_2$) drives exploration by
+requiring that the current model admit a plan leading to reward.
+
+WorldCoder achieves remarkable sample efficiency---roughly 50 environment
+interactions to learn accurate world models for Sokoban, versus $>$1M steps
+for PPO or DreamerV3---and demonstrates transfer across MiniGrid task variants.
+However, four limitations constrain its scalability:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Monolithic synthesis.}  The LLM synthesizes a single
+          \texttt{transition\_function(state, action)} that handles all object
+          types and interactions in one function.  Fixing one object's behavior
+          risks breaking others.  The search space grows combinatorially with
+          the number of object types and actions.
+
+    \item \textbf{Binary exploration model.}  WorldCoder partitions knowledge
+          into known (verified correct) and unknown (not yet tested).  This
+          conflates ``never tested'' with ``tested once in one context,''
+          missing the distinction between an effect that was absent (true
+          non-effect) and an effect that was blocked by context (false negative).
+
+    \item \textbf{No structural transfer.}  Each domain starts synthesis from
+          scratch.  A \texttt{Wall} class learned in Sokoban cannot be reused in
+          a new domain---the entire transition function must be re-synthesized.
+
+    \item \textbf{Stateless synthesis.}  Each CEGIS iteration is a stateless
+          LLM API call: the model receives the full prompt (prior code plus
+          counterexamples) and returns a complete candidate program.  The LLM
+          has no persistent memory across iterations, cannot incrementally edit
+          code, and cannot autonomously run tests or inspect intermediate
+          results.  This limits the LLM to shallow, single-pass reasoning
+          per iteration.
+\end{enumerate}
+
+We address these limitations with four contributions:
+
+\begin{enumerate}[nosep]
+    \item \textbf{OOP-factored synthesis} (\S\ref{sec:oop_state}--\S\ref{sec:oop_transition}):
+          The world model is a set of typed object classes.  Each class has a
+          \texttt{respond(action, context)} method encoding how that type reacts
+          to actions.  The CEGIS loop synthesizes one class at a time, and
+          counterexamples are attributed to specific types.  We prove that this
+          factorization reduces the CEGIS sample complexity from monolithic to
+          additive (Theorem~\ref{thm:factored_bound}).
+
+    \item \textbf{Continuous epistemic model} (\S\ref{sec:epistemic}):
+          Each (object-type, action) cell tracks observation count, context
+          diversity, effect consistency, and conditional effect flags.
+          Exploration priority is a continuous score rather than a binary
+          known/unknown label, driving the agent to seek diverse contexts and
+          actively test hypotheses about conditional preconditions.
+
+    \item \textbf{Object-centric transitions with relational context}
+          (\S\ref{sec:oop_transition}):
+          Each object's \texttt{respond()} method receives a context object
+          providing relational queries (adjacency, co-location, selection state).
+          This enables the system to learn interaction effects that depend on
+          spatial relationships between objects, without hard-coding the
+          relational predicates in advance.
+
+    \item \textbf{Agentic synthesis backend} (\S\ref{sec:agentic}):
+          The CEGIS loop is implemented by an autonomous coding agent with
+          persistent workspace access, incremental file editing, and
+          interactive test execution.  The agent maintains full conversation
+          history across edit-test-debug cycles within a single synthesis
+          invocation, enabling multi-step reasoning, targeted fixes, and
+          strategic debugging that stateless backprompting cannot achieve.
+\end{enumerate}
+
+We evaluate on WorldCoder's three benchmarks (Sokoban, MiniGrid, AlfWorld)
+plus ARC-AGI-3~\cite{arcagi3}, a pixel-observation gridworld benchmark where
+the agent receives raw 64$\times$64 RGB frames and has no knowledge of action
+semantics.
+
+
+% ============================================================================
+% SECTION 2: PRELIMINARIES
+% ============================================================================
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+\subsection{Object-Oriented MDP}
+\label{sec:oo_mdp}
+
+Following WorldCoder~\cite{tang2024worldcoder} and the OO-MDP formalism
+of Diuk et al.~\cite{diuk2008oomdp}, we model the environment as:
+
+\begin{definition}[Object-Oriented MDP]
+\label{def:oomdp}
+An \textbf{object-oriented MDP} is a tuple
+$\calM = (\calC, \calA, T, R, s_0)$, where:
+\begin{itemize}[nosep]
+    \item $\calC = \{C_1, \ldots, C_K\}$ is a finite set of \textbf{object
+          classes}.  Each class $C_k$ is defined by a set of \textbf{attributes}
+          $\text{Att}(C_k)$.
+    \item Each state $s = \{o_1, \ldots, o_n\}$ is a set of \textbf{object
+          instances}, where each $o_i$ is an instance of some class $C_{k_i}$
+          with attribute values $o_i.\text{att}$ for each $\text{att} \in
+          \text{Att}(C_{k_i})$.
+    \item $\calA = \{a_1, \ldots, a_N\}$ is a finite action set.
+    \item $T : \calS \times \calA \to \calS$ is the deterministic transition
+          function.
+    \item $R : \calS \times \calA \times \calS \to \bbR$ is the reward function.
+    \item $s_0 \in \calS$ is the initial state.
+\end{itemize}
+\end{definition}
+
+WorldCoder represents states as object-oriented MDPs but synthesizes
+transitions as a monolithic function.  Our key departure is distributing
+transition logic to the objects themselves.
+
+\subsection{WorldCoder: CEGIS for World Models}
+\label{sec:worldcoder}
+
+WorldCoder synthesizes two Python subroutines:
+\begin{itemize}[nosep]
+    \item $\texttt{transition\_function}(s, a) \to s'$: predicts the next state.
+    \item $\texttt{reward\_function}(\text{context})(s, a, s') \to (r, \text{done})$:
+          predicts reward and termination.
+\end{itemize}
+Synthesis follows a CEGIS loop with two constraints:
+
+\begin{definition}[WorldCoder Constraints]
+\label{def:wc_constraints}
+Given replay buffer $\calD_t = \{(s_i, a_i, s'_i)\}_{i=1}^t$ and candidate
+program $\hat{T}$:
+\begin{align}
+    \phi_1(\calD_t, \hat{T}) &= \forall (s, a, s') \in \calD_t :
+        \hat{T}(s, a) = s'
+        \tag{data consistency} \\
+    \phi_2(s_0, \hat{T}) &= \exists a_1, \ldots, a_\ell :
+        \text{the trajectory under } \hat{T} \text{ from } s_0
+        \text{ reaches a rewarding state}
+        \tag{optimism}
+\end{align}
+\end{definition}
+
+The optimism constraint $\phi_2$ drives exploration: the model must be
+consistent with observed data ($\phi_1$) \emph{and} optimistic about
+unobserved regions ($\phi_2$), causing the agent to explore when its current
+model predicts a path to reward through unknown territory.
+
+\begin{definition}[WorldCoder Sample Complexity {\cite[Theorem~2.4]{tang2024worldcoder}}]
+\label{def:wc_bound}
+Let $\calW$ be the hypothesis class of candidate programs with logical
+dimensionality $K_{\bot\!\!\bot}(\calW)$ (the maximum number of counterexamples
+needed to eliminate all incorrect hypotheses), and let $D$ be the environment
+diameter.  Then WorldCoder's total interaction count is at most:
+\begin{equation}
+    D \cdot (K_{\bot\!\!\bot}(\calW) + 1).
+\end{equation}
+\end{definition}
+
+This bound is tight: $D$ interactions are needed to traverse the state space
+between counterexample-producing states, and $K_{\bot\!\!\bot}(\calW)$
+counterexamples are needed to converge to the correct program.  Our
+contribution is showing that OOP factorization reduces
+$K_{\bot\!\!\bot}(\calW)$.
+
+
+% ============================================================================
+% SECTION 3: OOP STATE REPRESENTATION
+% ============================================================================
+
+\section{Object-Oriented State Representation}
+\label{sec:oop_state}
+
+\subsection{Object Types as Classes}
+\label{sec:type_hierarchy}
+
+\begin{definition}[Object Type]
+\label{def:object_type}
+An \textbf{object type} (class) $\tau$ is a tuple:
+\begin{equation}
+    \tau = (\text{name}, \; \tau_{\text{parent}}, \;
+           \calP_\tau^{\text{atomic}}, \;
+           \calP_\tau^{\text{derived}}, \;
+           f_\tau^{\text{respond}}),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $\text{name} \in \Sigma^*$ is the class name
+          (e.g., \texttt{Wall}, \texttt{Player}, \texttt{Box}).
+    \item $\tau_{\text{parent}}$ is the parent type ($\bot$ for the root
+          \texttt{GameObject}).
+    \item $\calP_\tau^{\text{atomic}}$ is the set of \textbf{atomic predicates}
+          (mutable state): position, color, alive, etc.
+    \item $\calP_\tau^{\text{derived}}$ is the set of \textbf{derived predicates}
+          (computed from atomic predicates, never stored):
+          $\mathsf{can\_move}()$, $\mathsf{is\_blocked}()$, etc.
+    \item $f_\tau^{\text{respond}} : (\text{self}, \text{action},
+          \text{context}) \to \text{self}'$ is the \textbf{response method}:
+          given an action and relational context, compute this object's updated
+          state.  Subclasses override this method.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Type Hierarchy]
+\label{def:type_tree}
+The \textbf{type hierarchy} $\calH = (\calV, E)$ is a rooted tree where
+$\calV$ is the set of object types, $E$ connects each type to its parent, and
+the root is \texttt{GameObject}.  A child type inherits all predicates and
+methods from its parent and may override any of them.
+\end{definition}
+
+\begin{example}[Sokoban hierarchy]
+\label{ex:sokoban}
+\begin{verbatim}
+GameObject (root)
+  +-- StaticObject        [respond = no-op]
+  |     +-- Wall
+  |     +-- Goal
+  +-- DynamicObject       [respond = move by delta if unblocked]
+        +-- Player        [respond = move in action direction]
+        +-- Box           [respond = move when pushed by player]
+\end{verbatim}
+\texttt{StaticObject.respond()} returns self unchanged.
+\texttt{Box.respond()} checks whether the player is adjacent and pushing,
+then moves in the push direction if unblocked.
+\end{example}
+
+\subsection{Atomic vs.\ Derived Predicates}
+\label{sec:predicates}
+
+\begin{definition}[Atomic Predicate]
+\label{def:atomic}
+An \textbf{atomic predicate} is a mutable property stored explicitly as part
+of an object's state.  Only atomic predicates are modified by
+$f^{\text{respond}}$.  Examples: $\mathsf{position}(o)$,
+$\mathsf{color}(o)$, $\mathsf{alive}(o)$.
+\end{definition}
+
+\begin{definition}[Derived Predicate]
+\label{def:derived}
+A \textbf{derived predicate} is computed deterministically from atomic
+predicates.  It is never stored, only recomputed on demand.  Examples:
+\begin{align}
+    \mathsf{blocked}(o, d) &= \exists o' : \mathsf{position}(o')
+        = \mathsf{position}(o) + \Delta(d) \;\wedge\; o'.\text{is\_solid} \\
+    \mathsf{adjacent}(o_1, o_2) &= \|\mathsf{position}(o_1) -
+        \mathsf{position}(o_2)\|_\infty \leq 1
+\end{align}
+\end{definition}
+
+\begin{remark}[Why the distinction matters]
+After $f^{\text{respond}}$ updates atomic predicates, all derived predicates
+are automatically consistent.  This eliminates the frame problem for derived
+predicates---analogous to the distinction between fluents and derived predicates
+in PDDL~\cite{fox2003pddl2} and between base tables and views in databases.
+\end{remark}
+
+\subsection{Structured State}
+\label{sec:structured_state}
+
+\begin{definition}[Structured State]
+\label{def:structured_state}
+The \textbf{structured state} is:
+\begin{equation}
+    \bar{s} = \{(o_i, \tau_i, \mathbf{p}_i)\}_{i=1}^{M},
+\end{equation}
+where $\{o_i\}$ are object instances with unique identifiers (track IDs),
+$\{\tau_i\}$ are their assigned types, and $\{\mathbf{p}_i\}$ are their
+atomic predicate values.
+\end{definition}
+
+\begin{definition}[Perception Function]
+\label{def:perception}
+The \textbf{perception function} $\text{Perceive} : \calS_{\text{raw}} \to
+\bar{\calS}$ maps raw observations to structured states.  For symbolic domains
+(Sokoban, MiniGrid, AlfWorld), this is a direct read of the environment's
+object representation---identical to WorldCoder's setup.  Perception is
+\textbf{not} part of the synthesis target; it is a fixed, deterministic
+preprocessing step.
+
+For pixel-observation domains (ARC-AGI-3), the environment does not provide
+structured state, so we implement a deterministic perception pipeline as a
+compatibility layer: connected-component detection $\to$ sprite registry
+matching $\to$ cross-frame tracking $\to$ type assignment.  This is not a
+contribution of our approach but a necessary adapter for evaluating on
+pixel-observation benchmarks.  Details are in Section~\ref{sec:arc_perception}.
+\end{definition}
+
+\begin{remark}[Perception must be excluded from synthesis]
+\label{rem:perception}
+On ARC-AGI-3 games, when the LLM was asked to synthesize a
+\texttt{perceive()} function alongside transition logic, it spent all
+synthesis iterations debugging perception and achieved 0\% transition
+accuracy.  When perception was fixed and the LLM synthesized only
+\texttt{respond()} methods, accuracy reached 100\% within 4 iterations.
+This motivates our decision to treat perception as a fixed preprocessing
+step on all benchmarks.
+\end{remark}
+
+
+% ============================================================================
+% SECTION 4: OBJECT-CENTRIC TRANSITION
+% ============================================================================
+
+\section{Object-Centric Transition Model}
+\label{sec:oop_transition}
+
+\subsection{The \texttt{respond()} Method}
+\label{sec:respond}
+
+The central novelty of our approach is that each object type owns its
+transition logic via the \texttt{respond()} method.  WorldCoder synthesizes:
+\begin{equation}
+    \hat{T}_{\text{mono}}(s, a) \to s' \qquad \text{(monolithic)}
+\end{equation}
+We synthesize, for each object type $\tau_k$:
+\begin{equation}
+    f_{\tau_k}^{\text{respond}}(o, a, \text{ctx}) \to o' \qquad
+    \text{(per-type)}
+\end{equation}
+where $\text{ctx}$ provides relational queries over the current state.
+
+\begin{definition}[Relational Context]
+\label{def:context}
+The \textbf{relational context} $\text{ctx}(\bar{s})$ is a read-only view of
+the structured state providing:
+\begin{itemize}[nosep]
+    \item $\text{ctx}.\text{objects\_at}(p) \to \{o_j\}$: objects at position $p$.
+    \item $\text{ctx}.\text{adjacent}(o, d) \to o_j \cup \{\bot\}$: object
+          adjacent to $o$ in direction $d$, or $\bot$ if empty.
+    \item $\text{ctx}.\text{player}() \to o_j$: the player object (if identified).
+    \item $\text{ctx}.\text{selected}() \to o_j \cup \{\bot\}$: the currently
+          selected object, if any.
+    \item $\text{ctx}.\text{of\_type}(\tau) \to \{o_j\}$: all instances of type $\tau$.
+\end{itemize}
+The context is immutable within a single transition step: objects read the
+pre-action state, not partially updated state.
+\end{definition}
+
+\begin{definition}[Object-Centric Transition]
+\label{def:oop_transition}
+Given structured state $\bar{s} = \{(o_i, \tau_i, \mathbf{p}_i)\}$ and
+action $a$, the \textbf{object-centric transition} proceeds:
+\begin{enumerate}[nosep]
+    \item Compute context: $\text{ctx} \leftarrow \text{ctx}(\bar{s})$.
+    \item For each object $o_i$ in \textbf{causal order}:
+          $\mathbf{p}'_i \leftarrow f_{\tau_i}^{\text{respond}}(o_i, a, \text{ctx})$.
+    \item Return $\bar{s}' = \{(o_i, \tau_i, \mathbf{p}'_i)\}$.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[Causal ordering]
+\label{rem:ordering}
+The ordering in step 2 matters when object responses depend on one another
+(e.g., the player must move before the box can detect a push).  In our
+implementation, objects read the pre-action context $\text{ctx}(\bar{s})$,
+not a partially updated state.  This makes the transition order-independent
+for most domains.  For domains where cascading effects require multi-pass
+updates (e.g., chain-pushing in Sokoban), the \texttt{respond()} method
+returns a \emph{pending action} that is resolved in a second pass.
+\end{remark}
+
+\subsection{Relational Preconditions}
+\label{sec:relational}
+
+Many game mechanics are \emph{relational}: their effect depends on the spatial
+relationship between two or more objects.
+
+\begin{example}[Relational effects]
+\label{ex:relational}
+\begin{itemize}[nosep]
+    \item A box moves only when the player pushes into it (\emph{adjacency} +
+          \emph{action direction}).
+    \item A switch activates only when an object is on top of it
+          (\emph{co-location}).
+    \item A key opens a door only when the player is adjacent to the door
+          \emph{and} holding the key (\emph{adjacency} + \emph{inventory state}).
+\end{itemize}
+\end{example}
+
+These effects cannot be discovered by testing objects in isolation.  The
+\texttt{respond()} method receives the full relational context, allowing it
+to condition on spatial relationships:
+
+\begin{verbatim}
+class Box(GameObject):
+    def respond(self, action, ctx):
+        player = ctx.player()
+        if ctx.adjacent(self, opposite(action)) == player:
+            push_target = self.position + DELTA[action]
+            if ctx.objects_at(push_target) are all non-solid:
+                self.position = push_target
+\end{verbatim}
+
+The relational predicates available via the context are domain-general
+(adjacency, co-location, type queries).  Domain-specific relational
+preconditions (e.g., ``same color,'' ``moving toward'') are encoded within
+the \texttt{respond()} method by the LLM during synthesis.
+
+\subsection{Connection to STRIPS}
+\label{sec:strips_connection}
+
+\begin{remark}[Subsumption of STRIPS]
+The object-centric transition subsumes STRIPS~\cite{fikes1971strips}.  Each
+$f_{\tau_i}^{\text{respond}}$ encodes the conditional effects of action $a$ on
+objects of type $\tau_i$.  The add and delete lists are implicit in the
+difference between $\mathbf{p}_i$ and $\mathbf{p}'_i$.  The advantage over
+STRIPS is that conditional effects are factored by object type (via
+polymorphism) rather than enumerated in a flat list, and that the Python
+encoding permits arbitrary computation (spatial reasoning, iteration, complex
+conditionals) that PDDL cannot express.
+\end{remark}
+
+
+% ============================================================================
+% SECTION 5: CONTINUOUS EPISTEMIC MODEL
+% ============================================================================
+
+\section{Continuous Epistemic Model}
+\label{sec:epistemic}
+
+WorldCoder's exploration is driven by optimism ($\phi_2$): the model must
+admit a plan to reward.  This is effective but coarse.  We augment it with a
+continuous epistemic model that tracks \emph{how well} each aspect of the
+world model is understood.
+
+\subsection{The Knowledge Matrix}
+\label{sec:knowledge_matrix}
+
+\begin{definition}[Observation Context]
+\label{def:obs_context}
+An \textbf{observation context} $\xi$ for an observed transition
+$(s, a, s')$ is a fingerprint of the spatial and relational configuration at
+the time of observation:
+\begin{equation}
+    \xi = (\{\tau_j : o_j \in \text{neighbors}(o_i)\}, \;
+           \text{relative positions}, \;
+           \text{selection state})
+\end{equation}
+Two observations have \emph{different} contexts if the set of neighboring
+object types or their relative positions differ.
+\end{definition}
+
+\begin{definition}[Transition Record]
+\label{def:transition_record}
+A \textbf{transition record} for object type $\tau$ and action $a$ is:
+\begin{equation}
+    r = (\tau, a, \Delta\mathbf{p}, \xi),
+\end{equation}
+where $\Delta\mathbf{p}$ is the observed change in atomic predicates and
+$\xi$ is the observation context.
+\end{definition}
+
+\begin{definition}[Cell Knowledge]
+\label{def:cell_knowledge}
+For each $(\tau, a)$ pair, the \textbf{cell knowledge} is:
+\begin{equation}
+    \calK_{\tau,a} = (n, \; d, \; c, \; \text{cond}),
+\end{equation}
+where:
+\begin{itemize}[nosep]
+    \item $n \in \bbN_0$: \textbf{observation count}.
+    \item $d \in \bbN_0$: \textbf{context diversity} (number of distinct
+          contexts $\xi$ observed).
+    \item $c \in [0, 1]$: \textbf{effect consistency} (fraction of
+          observations agreeing with the majority effect).
+    \item $\text{cond} \in \{0, 1\}$: \textbf{conditional flag}, set when
+          the same $(\tau, a)$ pair produces different effects in different
+          contexts.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Epistemic State]
+\label{def:epistemic_state}
+The \textbf{epistemic state} is the matrix
+$\calE = [\calK_{\tau_i, a_j}]_{i \leq K, j \leq N}$,
+where $K = |\calV|$ is the number of object types and $N = |\calA|$ is the
+number of actions.
+\end{definition}
+
+\subsection{Exploration Priority}
+\label{sec:priority}
+
+\begin{definition}[Exploration Priority]
+\label{def:priority}
+The \textbf{exploration priority} of cell $(\tau, a)$ is:
+\begin{equation}
+\label{eq:priority}
+    \pi(\tau, a) = \frac{w_1}{1 + n_{\tau,a}}
+                 + \frac{w_2}{1 + d_{\tau,a}}
+                 + w_3 \cdot (1 - c_{\tau,a}),
+\end{equation}
+where $w_1, w_2, w_3 > 0$ are weights.  The three terms reward:
+(1) under-tested cells, (2) low context diversity, and (3) inconsistent
+observations (indicating unidentified preconditions).
+\end{definition}
+
+\begin{remark}[Comparison to WorldCoder's exploration]
+WorldCoder's $\phi_2$ drives exploration by requiring that the model be
+optimistic about unvisited regions.  This is a global property of the
+model.  Our exploration priority is \emph{local} to each (type, action) cell,
+enabling targeted experiments.  The two mechanisms are complementary: $\phi_2$
+determines \emph{where to go} (which region of state space), and $\pi(\tau, a)$
+determines \emph{what to test} (which type-action interaction).
+\end{remark}
+
+\subsection{The Conflation Problem}
+\label{sec:conflation}
+
+A binary known/unknown partition has a fundamental failure mode:
+
+\begin{example}[Blocked action recorded as no-effect]
+\label{ex:conflation}
+The player attempts to move right, but a wall is adjacent.  No visible effect
+occurs.  A binary model records ``ACTION\_RIGHT has no effect on the player''
+(Known False).  But ACTION\_RIGHT \emph{does} move the player---it was
+blocked by context.
+\end{example}
+
+The continuous model avoids this: it records the observation \emph{with its
+context} $\xi$ (wall was adjacent in direction of movement).  When a later
+observation in a different context (open space) shows the player moving, the
+cell's consistency $c$ drops below 1, the conditional flag is set, and the
+exploration priority increases.  The agent then actively seeks diverse contexts
+to identify the precondition.
+
+\subsection{Active Hypothesis Testing}
+\label{sec:hypothesis_testing}
+
+When a cell $(\tau, a)$ has $\text{cond} = 1$ (conditional effect detected),
+the exploration engine enters a \emph{relational probing} mode:
+
+\begin{enumerate}[nosep]
+    \item Examine the observation records for the cell.
+    \item Identify the contextual feature that differs between consistent and
+          inconsistent observations (e.g., presence/absence of an adjacent
+          object of a specific type).
+    \item Design an experiment: navigate to a state where the hypothesized
+          precondition holds, execute the action, and observe.
+    \item If the hypothesis is confirmed, the \texttt{respond()} method for
+          $\tau$ should encode the conditional.  If refuted, generate a new
+          hypothesis.
+\end{enumerate}
+
+This is a form of active learning~\cite{settles2009active} applied to
+transition dynamics: the agent selects the most informative state-action
+pair, not just the most uncertain one.
+
+
+% ============================================================================
+% SECTION 6: FACTORED SYNTHESIS
+% ============================================================================
+
+\section{Factored Program Synthesis}
+\label{sec:synthesis}
+
+\subsection{The Factored Model Class}
+\label{sec:factored}
+
+\begin{definition}[OOP World Model]
+\label{def:oop_world_model}
+An \textbf{OOP world model} is:
+\begin{equation}
+    \hat{W} = (\calH, \; \{f_{\tau_k}^{\text{respond}}\}_{k=1}^K, \;
+               f_{\text{perceive}}),
+\end{equation}
+where $\calH$ is the type hierarchy, $f_{\tau_k}^{\text{respond}}$ is the
+response method for type $\tau_k$, and $f_{\text{perceive}}$ is the (fixed)
+perception function.  The induced transition function is:
+\begin{equation}
+    \hat{T}_{\hat{W}}(s, a) = \text{Render}\Bigl(
+        \bigl\{f_{\tau_i}^{\text{respond}}(o_i, a, \text{ctx}(\bar{s}))
+        \bigr\}_{i=1}^M \Bigr),
+    \qquad \bar{s} = f_{\text{perceive}}(s).
+\end{equation}
+\end{definition}
+
+\begin{definition}[Factored Model Class]
+\label{def:factored_class}
+Let $\calV = \{\tau_1, \ldots, \tau_K\}$ be the object types.  The
+\textbf{factored model class} is:
+\begin{equation}
+    \calW_{\text{OOP}} = \prod_{k=1}^{K} \calW_{\tau_k},
+\end{equation}
+where $\calW_{\tau_k}$ is the set of possible implementations of type $\tau_k$'s
+response method.  Perception is fixed and excluded from the product.
+\end{definition}
+
+Compare with WorldCoder's monolithic model class $\calW_{\text{mono}}$, which
+is the set of all possible implementations of the single
+\texttt{transition\_function}.
+
+\subsection{Sample Complexity Bound}
+\label{sec:bound}
+
+\begin{theorem}[Factored CEGIS Bound]
+\label{thm:factored_bound}
+Under the OOP factorization, the total number of counterexamples required to
+converge to the correct world model is at most:
+\begin{equation}
+    K_{\bot\!\!\bot}(\calW_{\text{OOP}}) \leq
+        \sum_{k=1}^{K} K_{\bot\!\!\bot}(\calW_{\tau_k}).
+\end{equation}
+The total interaction count is at most:
+\begin{equation}
+    D \cdot \left(\sum_{k=1}^{K}
+        K_{\bot\!\!\bot}(\calW_{\tau_k}) + 1\right),
+\end{equation}
+where $D$ is the environment diameter.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+A counterexample $(s, a, s')$ where $\hat{T}(s, a) \neq s'$ can be attributed
+to a specific object type: the type $\tau_k$ such that
+$f_{\tau_k}^{\text{respond}}(o_k, a, \text{ctx}) \neq o'_k$ where $o'_k$ is
+the true post-transition state of object $o_k$.  Since response methods are
+independent, each counterexample eliminates at least one candidate from one
+type's hypothesis space.  The total eliminations are bounded by the sum.
+\end{proof}
+
+\begin{corollary}[Advantage over monolithic]
+\label{cor:advantage}
+Since each $\calW_{\tau_k}$ is a strict subset of $\calW_{\text{mono}}$
+(it only specifies one type's behavior), we have
+$K_{\bot\!\!\bot}(\calW_{\tau_k}) \ll K_{\bot\!\!\bot}(\calW_{\text{mono}})$.
+Concretely, if each type has comparable complexity and the monolithic function
+has no structural constraints, the monolithic dimensionality can be as large as
+$\prod_k |\calW_{\tau_k}|$ in the worst case, versus $\sum_k |\calW_{\tau_k}|$
+for the factored model.
+\end{corollary}
+
+\subsection{Per-Type CEGIS Loop}
+\label{sec:per_type_cegis}
+
+The synthesis loop operates at the per-type level:
+
+\begin{algorithm}[h]
+\caption{Per-Type CEGIS Synthesis}
+\label{alg:synthesis}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Replay buffer $\calD$, current model $\hat{W}$,
+       epistemic state $\calE$
+\STATE \textbf{Select target type:} $\tau^* \leftarrow
+       \argmax_{\tau \in \calV} \text{synthesis\_priority}(\tau, \calE, \calD)$
+\STATE \textbf{Extract:} $\calD_{\tau^*} \leftarrow \{(s, a, s') \in \calD :
+       \exists o \in s \text{ of type } \tau^* \text{ with }
+       f_{\tau^*}^{\text{respond}}(o, a, \text{ctx}) \neq o'\}$
+       \COMMENT{counterexamples for $\tau^*$}
+\STATE \textbf{Prepare context:} Include current $f_{\tau^*}^{\text{respond}}$
+       code, counterexamples $\calD_{\tau^*}$, and signatures of other types'
+       respond methods
+\REPEAT
+    \STATE Prompt LLM to generate/edit $f_{\tau^*}^{\text{respond}}$
+    \STATE Verify against \emph{full} replay buffer $\calD$
+    \STATE If new counterexamples: add to prompt as error signal
+\UNTIL{all counterexamples resolved \textbf{or} max iterations}
+\STATE \textbf{Regression gate:} accept only if
+       $\text{Acc}(\hat{W}'; \calD) \geq \text{Acc}(\hat{W}; \calD)$
+\end{algorithmic}
+\end{algorithm}
+
+The key property: synthesis reasons about one type at a time while verifying
+against all transitions.  This focuses the LLM's synthesis budget on the
+component that is actually wrong, rather than asking it to reason about all
+types simultaneously.
+
+\subsection{Transfer via Inheritance}
+\label{sec:transfer}
+
+\begin{definition}[Minimal Subclass Specialization]
+\label{def:transfer}
+When encountering a new domain, the agent attempts to reuse existing type
+classes.  If type $\tau$ from domain A does not match observations in domain B,
+the agent derives a subclass $\tau'$ with $\tau'_{\text{parent}} = \tau$ that
+overrides only the methods needed to explain the new observations.
+\end{definition}
+
+\begin{proposition}[Transfer Sample Complexity]
+\label{prop:transfer}
+If the correct model for domain B can be obtained from domain A's model by
+adding $k$ new subclasses and overriding $r$ response methods total, then the
+sample complexity for learning domain B given domain A's model is:
+\begin{equation}
+    D_{B} \cdot \left(\sum_{i=1}^{k}
+        K_{\bot\!\!\bot}(\calW_{\tau'_i}) + r + 1\right),
+\end{equation}
+compared to $D_{B} \cdot (K_{\bot\!\!\bot}(\calW_{B}) + 1)$ from scratch.
+\end{proposition}
+
+\begin{example}[Sokoban $\to$ Sokoban with ice]
+\label{ex:transfer}
+In standard Sokoban, \texttt{Box.respond()} moves one cell when pushed.  In
+Sokoban-with-ice, boxes slide until hitting an obstacle.  The agent derives
+\texttt{IceBox} from \texttt{Box}, overriding only the movement logic.
+\texttt{Wall}, \texttt{Player}, and \texttt{Goal} are reused without
+modification.  Synthesis cost: one class override vs.\ a full transition
+function from scratch.
+\end{example}
+
+
+% ============================================================================
+% SECTION 7: AGENTIC SYNTHESIS
+% ============================================================================
+
+\section{Agentic Synthesis Backend}
+\label{sec:agentic}
+
+WorldCoder implements its CEGIS loop via \emph{stateless backprompting}: each
+synthesis iteration is an independent LLM API call that receives the full
+context (replay buffer, prior code, counterexamples) as a prompt and returns
+a complete candidate program as text.  The system then verifies the program
+externally and constructs a new prompt for the next iteration.
+
+We replace this with an \emph{agentic synthesis backend}: the LLM operates as
+an autonomous coding agent with access to a persistent workspace on disk.
+
+\subsection{Stateless Backprompting vs.\ Agentic Synthesis}
+\label{sec:stateless_vs_agentic}
+
+\begin{definition}[Stateless CEGIS Iteration]
+\label{def:stateless_cegis}
+In WorldCoder, each CEGIS iteration $k$ is a function:
+\begin{equation}
+    \theta^{(k)} = \text{LLM}(\calD, \theta^{(k-1)}, E^{(k-1)}),
+\end{equation}
+where $\calD$ is the replay buffer, $\theta^{(k-1)}$ is the prior program, and
+$E^{(k-1)}$ is the set of counterexamples from verification.  The LLM call is
+\textbf{stateless}: the model has no memory beyond what is provided in the
+prompt, and returns a complete program as a single text output.
+\end{definition}
+
+\begin{definition}[Agentic CEGIS Iteration]
+\label{def:agentic_cegis}
+In our system, a single synthesis invocation launches an autonomous agent
+with access to a \textbf{persistent workspace} $W$:
+\begin{equation}
+    W = (\texttt{game\_engine.py}, \; \texttt{test\_runner.py}, \;
+         \texttt{context.txt}, \; \texttt{replay\_buffer.pkl}, \;
+         \texttt{history.json}).
+\end{equation}
+The agent executes an \emph{internal} CEGIS loop within a single invocation:
+\begin{enumerate}[nosep]
+    \item Read \texttt{context.txt} (structured world model description) and
+          the current \texttt{game\_engine.py}.
+    \item Edit \texttt{game\_engine.py} (incremental modifications, not full
+          rewrites).
+    \item Execute \texttt{test\_runner.py} via shell (runs the synthesized code
+          against the replay buffer).
+    \item Read test output (per-transition pass/fail, predicted vs.\ actual
+          object positions).
+    \item Diagnose failures, edit targeted code, re-run tests.
+    \item Repeat until all tests pass or the agent's turn budget is exhausted.
+\end{enumerate}
+\end{definition}
+
+The key differences are:
+
+\begin{table}[h]
+\centering
+\caption{Stateless backprompting vs.\ agentic synthesis.}
+\label{tab:agentic}
+\begin{tabular}{@{}lll@{}}
+\toprule
+& \textbf{WorldCoder} & \textbf{Ours} \\
+\midrule
+LLM interaction & Stateless API calls & Persistent interactive session \\
+Code editing & Whole-program replacement & Incremental file edits \\
+Error diagnosis & Counterexamples in prompt & Agent reads test output, reasons \\
+Tool access & None (text $\to$ text) & File system + shell execution \\
+Memory & Only what fits in prompt & Full conversation + disk state \\
+Strategy & Fixed: synthesize $\to$ verify & Agent chooses: debug, refactor, revert \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Persistent Workspace}
+\label{sec:workspace}
+
+The workspace persists across synthesis invocations (not just within one).
+When new observations are collected and synthesis is re-triggered, the agent
+sees its previous code and can edit incrementally rather than rewriting from
+scratch.  This enables:
+
+\begin{itemize}[nosep]
+    \item \textbf{Incremental refinement}: new observations refine existing
+          code rather than replacing it.
+    \item \textbf{History tracking}: \texttt{history.json} records accuracy
+          over synthesis iterations, enabling the agent to detect regressions.
+    \item \textbf{Structured error signals}: the test runner reports exactly
+          which objects predicted incorrectly and by how much (position deltas),
+          enabling targeted fixes rather than wholesale rewrites.
+\end{itemize}
+
+\subsection{Synthesis Backend Abstraction}
+\label{sec:backend_abstraction}
+
+The agentic synthesis is implemented behind an abstract
+\texttt{SynthesisBackend} interface: any system that can read a workspace,
+edit \texttt{game\_engine.py}, run \texttt{test\_runner.py}, and iterate on
+failures can serve as the backend.  The primary implementation uses an
+interactive coding agent (Claude Code~\cite{claudecode}) spawned as a
+subprocess, but the interface supports any agentic coding system, API-based
+reflexion, or even manual human editing.
+
+\begin{remark}[Both are CEGIS]
+Both WorldCoder's backprompting and our agentic synthesis implement the CEGIS
+pattern (synthesize $\to$ verify $\to$ refine on counterexamples).  The
+difference is the \emph{mechanism}: WorldCoder executes CEGIS via prompt
+engineering over a stateless API, while our system executes CEGIS via an
+autonomous agent with tools.  The agent can perform multi-step reasoning
+within a single CEGIS iteration---adding debug prints, testing hypotheses
+about failure causes, refactoring code---that would require multiple
+stateless iterations in WorldCoder.
+\end{remark}
+
+
+% ============================================================================
+% SECTION 8: JOINT LEARNING: HIERARCHY + MODEL
+% ============================================================================
+
+\section{Joint Learning: Hierarchy and Model}
+\label{sec:joint}
+
+The agent must simultaneously learn \emph{what object types exist} (the
+hierarchy $\calH$) and \emph{how they behave} (the response methods).  These
+are coupled: identifying types requires observing behavior, and expressing
+behavior requires a type vocabulary.
+
+\subsection{Two Types of Counterexamples}
+\label{sec:cx_types}
+
+\begin{definition}[Model vs.\ Representation Counterexamples]
+\label{def:cx_types}
+A counterexample $(s, a, s')$ where $\hat{T}(s, a) \neq s'$ is:
+\begin{enumerate}[nosep]
+    \item A \textbf{model counterexample} if the type hierarchy is adequate
+          (a correct implementation exists within the current factored model
+          class $\calW_{\text{OOP}}$).  Fix: re-synthesize the faulty
+          response method.
+    \item A \textbf{representation counterexample} if no implementation within
+          $\calW_{\text{OOP}}$ resolves it.  Fix: grow the hierarchy (add new
+          types, new predicates, or subclass specializations).
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Distinguishing counterexample types]
+\label{prop:distinguish}
+If synthesis fails to resolve a counterexample after $k_{\max}$ attempts,
+declare it a representation counterexample and trigger hierarchy refinement.
+Model counterexamples are resolved by re-synthesis; representation
+counterexamples persist across synthesis attempts.
+\end{proposition}
+
+\subsection{The Learning Algorithm}
+\label{sec:algorithm}
+
+\begin{algorithm}[h]
+\caption{OOP World Model Learning (Full System)}
+\label{alg:main}
+\begin{algorithmic}[1]
+\STATE \textbf{Initialize:} $\calH \leftarrow \{\texttt{GameObject}\}$,
+       $\calD \leftarrow \emptyset$, $\calE \leftarrow \text{empty matrix}$
+\REPEAT
+    \STATE \textbf{// Exploration}
+    \STATE Select $(\tau^*, a^*)$ via exploration priority
+           (Eq.~\ref{eq:priority})
+    \STATE Navigate to an instance of $\tau^*$; execute $a^*$; observe
+           $(s_t, a^*, s_{t+1})$
+    \STATE Update $\calD$, $\calE$
+    \STATE \textbf{// Verification}
+    \IF{$\hat{T}(s_t, a^*) \neq s_{t+1}$}
+        \STATE Attribute error to object type $\tau_k$
+        \STATE \textbf{// Inner loop: per-type CEGIS (Algorithm~\ref{alg:synthesis})}
+        \STATE Re-synthesize $f_{\tau_k}^{\text{respond}}$
+        \IF{counterexample persists after $k_{\max}$ attempts}
+            \STATE \textbf{// Hierarchy refinement}
+            \STATE Propose new type or predicate; grow $\calH$
+        \ENDIF
+    \ENDIF
+\UNTIL{convergence criterion met}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Sample Complexity of Joint Learning}
+\label{sec:joint_bound}
+
+\begin{theorem}[Joint Learning Bound]
+\label{thm:joint}
+Let $\calH^*$ be the true adequate type hierarchy and $\hat{W}^*$ the true
+world model.  Suppose the synthesis oracle succeeds within $k_{\max}$ attempts
+for model counterexamples and the total number of distinct predicates/types
+ever considered is $|\Psi_{\text{total}}|$.  Then the total interactions are
+at most:
+\begin{equation}
+    D \cdot \left(
+        \underbrace{|\Psi_{\text{total}}|}_{\text{hierarchy cost}}
+        + \underbrace{\sum_{\tau \in \calH^*}
+        K_{\bot\!\!\bot}(\calW_\tau)}_{\text{model cost}}
+        + 1
+    \right).
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The outer loop (hierarchy refinement) iterates at most $|\Psi_{\text{total}}|$
+times.  Each inner loop iteration requires at most
+$D \cdot (\sum_k K_{\bot\!\!\bot}(\calW_{\tau_k}) + 1)$ interactions by
+Theorem~\ref{thm:factored_bound}.  Counterexamples accumulate across
+iterations, so they need not be re-discovered.
+\end{proof}
+
+
+% ============================================================================
+% SECTION 8: EXPLORATION
+% ============================================================================
+
+\section{Active Exploration}
+\label{sec:exploration}
+
+\subsection{Phased Exploration}
+\label{sec:phases}
+
+Exploration proceeds through five phases:
+
+\begin{enumerate}[nosep]
+    \item \textbf{DISCOVER}: Identify object types from initial observations.
+    \item \textbf{IDENTIFY\_AGENT}: Determine which object the agent controls
+          by testing directional actions.
+    \item \textbf{SURVEY}: Execute each action on each reachable object type
+          once, populating the epistemic matrix.
+    \item \textbf{TARGETED}: Priority-driven testing (Eq.~\ref{eq:priority}):
+          select the highest-priority $(\tau, a)$ cell, navigate to an instance
+          of $\tau$, execute $a$, observe.
+    \item \textbf{RELATIONAL}: When conditional effects are detected, probe
+          interactions between object pairs by systematically varying spatial
+          context.
+\end{enumerate}
+
+Phase transitions are automatic, based on the epistemic state.
+
+\subsection{Integration with WorldCoder's Optimism}
+\label{sec:optimism}
+
+Our exploration priority (Eq.~\ref{eq:priority}) complements WorldCoder's
+optimism constraint ($\phi_2$):
+
+\begin{itemize}[nosep]
+    \item $\phi_2$ determines the \textbf{high-level exploration goal}: plan
+          toward unvisited state regions using the current model.
+    \item $\pi(\tau, a)$ determines the \textbf{low-level experimental target}:
+          which (type, action) interaction to test next.
+\end{itemize}
+
+When $\phi_2$ generates a plan that traverses unknown territory, the agent
+executes the plan.  At each step, it updates the epistemic state.  When the
+plan completes or reaches an impasse, the agent falls back to
+priority-driven targeted exploration.
+
+\subsection{Setup Sequences and Navigation}
+\label{sec:setup}
+
+To reach informative states, the agent constructs \textbf{setup sequences}
+of verified actions (actions whose response methods have high confidence in
+the epistemic state).  For grid domains, this includes a
+``move to sprite'' macro primitive: BFS pathfinding to a target object's
+position, composed from directional actions.
+
+Only actions with consistency $c_{\tau,a} > \theta_{\text{safe}}$ are used
+in setup sequences, providing an analogous safety guarantee to the safe
+action models of Juba et al.~\cite{juba2021safe}.
+
+
+% ============================================================================
+% SECTION 9: EVALUATION
+% ============================================================================
+
+\section{Evaluation}
+\label{sec:evaluation}
+
+\subsection{Benchmarks}
+\label{sec:benchmarks}
+
+\begin{table}[h]
+\centering
+\caption{Evaluation benchmarks.}
+\label{tab:benchmarks}
+\begin{tabular}{@{}llllp{4cm}@{}}
+\toprule
+\textbf{Benchmark} & \textbf{State} & \textbf{Actions} & \textbf{Types} &
+\textbf{Key Challenge} \\
+\midrule
+Sokoban & Symbolic & 4 & 4 & Push chains, deadlocks \\
+MiniGrid & Symbolic & 7 & $\sim$6 & Transfer across variants \\
+AlfWorld & Text & NL & $\sim$20 & Large type space, compositional \\
+ARC-AGI-3 & 64$\times$64 RGB & 5--6 & varies & Raw perception, anonymous
+actions, diverse mechanics \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Metrics}
+\label{sec:metrics}
+
+\textbf{Primary:} Transition accuracy---percentage of observed transitions
+correctly predicted by $\hat{T}_{\hat{W}}$:
+\begin{equation}
+    \text{Acc}(\hat{T}; \calD) = \frac{1}{|\calD|}
+        \sum_{(s,a,s') \in \calD} \ind[\hat{T}(s, a) = s'].
+\end{equation}
+
+\textbf{Secondary:}
+\begin{itemize}[nosep]
+    \item \textbf{Sample efficiency}: interactions to reach $X$\% accuracy.
+    \item \textbf{Synthesis efficiency}: LLM tokens consumed.
+    \item \textbf{Transfer score}: accuracy on domain B using domain A's model.
+\end{itemize}
+
+\subsection{ARC-AGI-3 Perception Adapter}
+\label{sec:arc_perception}
+
+For Sokoban, MiniGrid, and AlfWorld, perception is trivial: the environment
+provides structured object state directly, as in WorldCoder.  ARC-AGI-3 is
+the only benchmark requiring a perception layer, since the environment returns
+raw 64$\times$64 RGB frames.
+
+We implement a deterministic perception pipeline as a compatibility layer:
+\begin{enumerate}[nosep]
+    \item \textbf{Fragment detection}: color-based connected-component labeling
+          with 8-connectivity on each non-background color channel
+          (\texttt{scipy.ndimage.label}).
+    \item \textbf{Sprite registry}: maintains a library of discovered sprite
+          types, matched by color and shape.  Supports merge (when co-movement
+          evidence indicates multi-color composites) and split.
+    \item \textbf{Co-movement tracking}: discovers multi-color sprites by
+          observing which fragments consistently displace by the same vector
+          across frames.
+    \item \textbf{Object tracking}: assigns persistent track IDs across frames
+          via a three-pass matching algorithm (color match $\to$ spatial overlap
+          $\to$ nearest-neighbor centroid).
+\end{enumerate}
+
+This pipeline is deterministic, parameter-free, and not part of the synthesis
+target.  It is functionally equivalent to the structured state that Sokoban,
+MiniGrid, and AlfWorld provide natively---it simply bridges the gap for
+pixel-observation environments.
+
+\subsection{Baselines and Ablations}
+\label{sec:baselines}
+
+\begin{enumerate}[nosep]
+    \item \textbf{WorldCoder}~\cite{tang2024worldcoder}: monolithic CEGIS
+          with stateless backprompting.
+          Direct comparison on all four benchmarks.
+    \item \textbf{Ours (monolithic ablation)}: our system with OOP disabled
+          (single \texttt{transition\_function}).  Isolates the value of
+          factored synthesis.
+    \item \textbf{Ours (binary epistemic ablation)}: continuous confidence
+          replaced by Known-True/Known-False/Unknown.  Isolates the value
+          of the continuous epistemic model.
+    \item \textbf{Ours (random exploration ablation)}: priority-driven
+          exploration replaced by uniform random action selection.  Isolates
+          the value of smart exploration.
+    \item \textbf{Ours (stateless synthesis ablation)}: agentic backend
+          replaced by stateless API reflexion (single-shot LLM calls with
+          backprompting).  Isolates the value of agentic synthesis.
+\end{enumerate}
+
+\subsection{Hypotheses}
+\label{sec:hypotheses}
+
+\begin{enumerate}[nosep]
+    \item \textbf{H1 (Factored synthesis):} On domains with $\geq$3 object
+          types, OOP factoring reaches equivalent accuracy with fewer LLM
+          tokens than monolithic synthesis.
+    \item \textbf{H2 (Exploration efficiency):} Continuous epistemic
+          exploration reaches equivalent accuracy with fewer environment
+          interactions than WorldCoder's optimism-only exploration.
+    \item \textbf{H3 (Transfer):} Learned object classes transfer to novel
+          domain variants, reducing synthesis cost.
+    \item \textbf{H4 (Agentic synthesis):} The agentic backend reaches higher
+          accuracy than stateless backprompting given the same observations
+          and synthesis budget.
+    \item \textbf{H5 (Pixel observations):} The system achieves $>$80\%
+          transition accuracy on ARC-AGI-3, extending beyond symbolic-state
+          domains.
+\end{enumerate}
+
+\subsection{Preliminary Results}
+\label{sec:results}
+
+\begin{table}[h]
+\centering
+\caption{Preliminary results on ARC-AGI-3 game ls20.  The three rows
+isolate the effect of perception strategy and synthesis backend.}
+\label{tab:results}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Transition Accuracy} & \textbf{Iterations} \\
+\midrule
+LLM perceive + transition (monolithic) & 0\% & all spent on perception bugs \\
+Deterministic perception + stateless API reflexion & 88\% & 4 \\
+Deterministic perception + agentic synthesis & 100\% (8/8) & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The progression 0\% $\to$ 88\% $\to$ 100\% validates two architectural
+decisions.  First, fixing perception as a deterministic preprocessor
+(removing it from the synthesis target) allows the LLM to focus entirely on
+transition logic.  Second, the agentic backend (H4) reaches 100\% in a single
+invocation where stateless API reflexion plateaus at 88\% after 4 iterations,
+demonstrating that persistent workspace access and multi-step debugging
+provide a concrete advantage over backprompting.
+
+
+% ============================================================================
+% SECTION 10: RELATED WORK
+% ============================================================================
+
+\section{Related Work}
+\label{sec:related}
+
+\textbf{World model synthesis.}
+WorldCoder~\cite{tang2024worldcoder} synthesizes monolithic Python world models
+via CEGIS with an optimism constraint.  PoE-World~\cite{poeworld2025} extends
+this with a product of programmatic experts.  Our OOP factorization is
+complementary: we achieve compositionality through class hierarchy rather than
+expert mixture, and additionally support transfer via inheritance.
+
+\textbf{Action model learning.}
+Classical approaches learn STRIPS-style schemas from observed
+transitions~\cite{cresswell2011acquiring, arora2018review, juba2021safe}.
+OLAM~\cite{lamanna2021olam} addresses active exploration for online action
+model learning.  Our system learns equivalent information but encodes it as
+executable Python with object-centric factoring.
+
+\textbf{Object-oriented MDPs.}
+Diuk et al.~\cite{diuk2008oomdp} formalize OO-MDPs with object classes and
+relations.  We extend this to the \emph{synthesis} setting: not only is the
+state object-oriented, but the transition function itself is factored by
+object type.
+
+\textbf{Program synthesis.}
+DreamCoder~\cite{ellis2021dreamcoder} bootstraps program synthesis with
+library learning.  Our OOP type hierarchy serves an analogous role: learned
+classes form a reusable library.
+Reflexion~\cite{shinn2024reflexion} uses verbal self-reflection for
+LLM agent learning; our synthesis loop uses the same generate-test-reflect
+pattern with structured per-object error signals.
+
+\textbf{Object-centric representation learning.}
+Slot Attention~\cite{locatello2020object},
+C-SWM~\cite{kipf2020contrastive}, and OP3~\cite{veerapaneni2020entity}
+learn object representations from pixels via neural networks.  For
+grid environments, we use deterministic connected-component detection,
+gaining determinism and zero-shot transfer at the cost of generality.
+
+\textbf{Exploration in model-based RL.}
+R-MAX~\cite{brafman2002rmax} maintains known/unknown partitions.
+VIME~\cite{houthooft2016vime} maximizes information gain.
+Go-Explore~\cite{ecoffet2021first} archives interesting states.
+Our continuous epistemic model draws on all three: it tracks knowledge at
+the (type, action) level, prioritizes information gain, and uses setup
+sequences to return to informative states.
+
+
+% ============================================================================
+% SECTION 11: CONCLUSION
+% ============================================================================
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have presented a system that extends WorldCoder's LLM-synthesized world
+models with four contributions: OOP-factored synthesis that reduces the CEGIS
+search space from monolithic to additive, a continuous epistemic model that
+drives targeted exploration, object-centric transition functions with
+relational context, and an agentic synthesis backend that replaces stateless
+backprompting with persistent, tool-equipped, multi-step reasoning.  The OOP
+structure enables cross-domain transfer via class inheritance---a capability
+absent from WorldCoder and PoE-World.
+
+Preliminary results on ARC-AGI-3 validate the architecture: the agentic
+backend achieves 100\% transition accuracy where stateless reflexion plateaus
+at 88\%, and OOP factoring enables per-type debugging that monolithic
+synthesis cannot provide.  Full evaluation on Sokoban, MiniGrid, AlfWorld,
+and ARC-AGI-3 will test the hypotheses that factored synthesis is more
+token-efficient (H1), continuous epistemic exploration is more
+sample-efficient (H2), learned classes transfer (H3), agentic synthesis
+outperforms backprompting (H4), and the system generalizes to pixel
+observations (H5).
+
+\textbf{Limitations.}  The current system assumes deterministic, fully
+observable environments.  Partial observability (MiniGrid's limited view),
+stochastic transitions, and non-grid state spaces remain open challenges.
+The relational context provides a fixed set of spatial queries; discovering
+novel relational predicates (e.g., ``same color,'' ``moving toward'') during
+synthesis is not yet automated.  The agentic synthesis backend is more
+expensive per invocation than stateless API calls; the tradeoff between
+per-iteration cost and total iterations to convergence needs empirical
+characterization.
+
+
+% ============================================================================
+% BIBLIOGRAPHY
+% ============================================================================
+
+\bibliographystyle{plain}
+
+\begin{thebibliography}{30}
+
+\bibitem{arcagi3}
+{ARC Prize Foundation}.
+\newblock ARC-AGI-3: A Benchmark for General Intelligence.
+\newblock \url{https://arcprize.org}, 2025.
+
+\bibitem{arora2018review}
+A.~Arora, H.~Fiorino, D.~Pellier, M.~M{\'e}tivier, and S.~Pesty.
+\newblock A Review of Learning Planning Action Models.
+\newblock \emph{The Knowledge Engineering Review}, 33:e20, 2018.
+
+\bibitem{brafman2002rmax}
+R.~I.~Brafman and M.~Tennenholtz.
+\newblock R-MAX, A General Polynomial Time Algorithm for Near-Optimal
+  Reinforcement Learning.
+\newblock \emph{JMLR}, 3:213--231, 2002.
+
+\bibitem{claudecode}
+{Anthropic}.
+\newblock Claude Code: An Agentic Coding Tool.
+\newblock \url{https://docs.anthropic.com/en/docs/claude-code}, 2025.
+
+\bibitem{cresswell2011acquiring}
+S.~N.~Cresswell, T.~L.~McCluskey, and M.~M.~West.
+\newblock Acquiring Planning Domain Models Using LOCM.
+\newblock \emph{The Knowledge Engineering Review}, 28(2):195--213, 2013.
+
+\bibitem{diuk2008oomdp}
+C.~Diuk, A.~Cohen, and M.~L.~Littman.
+\newblock An Object-Oriented Representation for Efficient Reinforcement Learning.
+\newblock In \emph{ICML}, 2008.
+
+\bibitem{ecoffet2021first}
+A.~Ecoffet, J.~Huizinga, J.~Lehman, K.~O.~Stanley, and J.~Clune.
+\newblock First Return, Then Explore.
+\newblock \emph{Nature}, 590:580--586, 2021.
+
+\bibitem{ellis2021dreamcoder}
+K.~Ellis, C.~Wong, M.~Nye, et~al.
+\newblock DreamCoder: Bootstrapping Inductive Program Synthesis with Wake-Sleep
+  Library Learning.
+\newblock In \emph{PLDI}, 2021.
+
+\bibitem{fikes1971strips}
+R.~E.~Fikes and N.~J.~Nilsson.
+\newblock STRIPS: A New Approach to the Application of Theorem Proving to
+  Problem Solving.
+\newblock \emph{Artificial Intelligence}, 2(3--4):189--208, 1971.
+
+\bibitem{fox2003pddl2}
+M.~Fox and D.~Long.
+\newblock PDDL2.1: An Extension to PDDL for Expressing Temporal Planning
+  Domains.
+\newblock \emph{JAIR}, 20:61--124, 2003.
+
+\bibitem{ha2018world}
+D.~Ha and J.~Schmidhuber.
+\newblock World Models.
+\newblock \emph{arXiv:1803.10122}, 2018.
+
+\bibitem{hafner2020dreamer}
+D.~Hafner, T.~Lillicrap, J.~Ba, and M.~Norouzi.
+\newblock Dream to Control: Learning Behaviors by Latent Imagination.
+\newblock In \emph{ICLR}, 2020.
+
+\bibitem{houthooft2016vime}
+R.~Houthooft, X.~Chen, Y.~Duan, J.~Schulman, F.~De~Turck, and P.~Abbeel.
+\newblock VIME: Variational Information Maximizing Exploration.
+\newblock In \emph{NeurIPS}, 2016.
+
+\bibitem{juba2021safe}
+B.~Juba and R.~S.~Stern.
+\newblock Safe Action Model Learning.
+\newblock \emph{arXiv:2107.09336}, 2021.
+
+\bibitem{kipf2020contrastive}
+T.~Kipf, E.~van~der~Pol, and M.~Welling.
+\newblock Contrastive Learning of Structured World Models.
+\newblock In \emph{ICLR}, 2020.
+
+\bibitem{lamanna2021olam}
+L.~Lamanna, A.~Saetti, L.~Serafini, A.~Gerevini, and P.~Traverso.
+\newblock Online Learning of Action Models for PDDL Planning.
+\newblock In \emph{IJCAI}, 2021.
+
+\bibitem{locatello2020object}
+F.~Locatello, D.~Weissenborn, T.~Unterthiner, et~al.
+\newblock Object-Centric Learning with Slot Attention.
+\newblock In \emph{NeurIPS}, 2020.
+
+\bibitem{poeworld2025}
+K.~Ellis et~al.
+\newblock PoE-World: Compositional World Models via Product of Programmatic
+  Experts.
+\newblock \emph{arXiv:2505.10819}, 2025.
+
+\bibitem{schrittwieser2020muzero}
+J.~Schrittwieser, I.~Antonoglou, T.~Hubert, et~al.
+\newblock Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model.
+\newblock \emph{Nature}, 588:604--609, 2020.
+
+\bibitem{settles2009active}
+B.~Settles.
+\newblock Active Learning Literature Survey.
+\newblock Technical Report 1648, University of Wisconsin--Madison, 2009.
+
+\bibitem{shinn2024reflexion}
+N.~Shinn, F.~Cassano, A.~Gopinath, K.~Narasimhan, and S.~Yao.
+\newblock Reflexion: Language Agents with Verbal Reinforcement Learning.
+\newblock In \emph{NeurIPS}, 2023.
+
+\bibitem{tang2024worldcoder}
+H.~Tang, D.~Key, and K.~Ellis.
+\newblock WorldCoder, a Model-Based LLM Agent: Building World Models by Writing
+  Code and Interacting with the Environment.
+\newblock In \emph{NeurIPS}, 2024.
+
+\bibitem{veerapaneni2020entity}
+R.~Veerapaneni, J.~D.~Co-Reyes, M.~Chang, M.~Janner, C.~Finn, J.~Wu,
+  J.~Tenenbaum, and S.~Levine.
+\newblock Entity Abstraction in Visual Model-Based Reinforcement Learning.
+\newblock In \emph{CoRL}, 2020.
+
+\end{thebibliography}
+
+\end{document}

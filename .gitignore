@@ -1,25 +1,41 @@
-# OS and environment
-.DS_Store
-*.log
-*.env
-!.env-example
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
 
-# Cache
-.ruff_cache/
-.mypy_cache/
-**/__pycache__/
+# Virtual environments
+.venv/
+venv/
+env/
 
-# IDE settings
+# IDE
+.idea/
 .vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Results
+results/
 
 # Recordings
-recordings/*.recording.jsonl
-tests/recordings/*.recording.jsonl
-tests/recordings/not-a-recording.txt
+recordings/
+tests/recordings/
 
-
-# Long-term memory
-memory.db
-
-environment_files/
-results/
+# OS
+.DS_Store
+Thumbs.db

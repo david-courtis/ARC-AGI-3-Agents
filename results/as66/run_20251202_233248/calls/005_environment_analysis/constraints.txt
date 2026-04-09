@@ -1,1 +1,0 @@
-- Movement appears to be confined within the outermost green border, and possibly more strictly within the inner blue border.

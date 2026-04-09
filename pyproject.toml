@@ -1,49 +1,29 @@
 [project]
-name = "arc-agi-3-agents"
+name = "arc-agi-3-research"
 version = "0.1.0"
-description = "ARC-AGI-3-Agents"
-readme = "readme.md"
+description = "Research agents for ARC-AGI-3 world model synthesis"
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv>=0.9.9",
-    "flask>=3.1.2",
-    "langchain[openai]>=0.3.27",
-    "langgraph>=0.6.3",
-    "langgraph-checkpoint-sqlite>=2.0.11",
-    "numpy>=2.3.2",
-    "openai>=1.107.2",
-    "pillow>=11.2.1",
-    "pydantic>=2.11.7",
-    "requests>=2.32.4",
-    "smolagents>=1.20.0",
-    "torch>=2.0.0",
-    "tensorboard>=2.15.0",
-    "pydantic-ai-slim[openai,openrouter]>=1.25.0",
-    "scipy>=1.16.3",
+    "numpy>=2.0",
+    "openai>=1.50",
+    "pydantic>=2.0",
+    "requests>=2.30",
+    "flask>=3.1",
+    "arc-agi>=0.9.6",
 ]
 
 [dependency-groups]
 dev = [
-    "mypy>=1.15.0",
-    "pre-commit>=4.2.0",
-    "pytest>=8.4.1",
-    "pytest-asyncio>=1.0.0",
-    "requests-mock>=1.12.1",
-    "ruff>=0.11.4",
+    "pytest>=8.0",
+    "ruff>=0.11",
 ]
 
-[project.optional-dependencies]
-agentops = [
-    "agentops>=0.4.18",
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (require LLM endpoint)",
 ]
-
-[tool.mypy]
-strict = true
-disallow_untyped_defs = true
-exclude = [
-    "tests",
-]
-plugins = []
 
 [tool.ruff.lint]
 extend-select = ["I"]
